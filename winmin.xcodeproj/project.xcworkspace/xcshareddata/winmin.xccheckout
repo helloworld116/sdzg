@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>629B9DD5-9997-40CE-AAF3-368449D8588C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>winmin</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>803CB60D-0CED-4686-88E2-495B29559156</key>
+		<string>svn://192.168.0.89/data/svn/ais/trunk/ios/winmin</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>winmin.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>803CB60D-0CED-4686-88E2-495B29559156</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>803CB60D-0CED-4686-88E2-495B29559156</key>
+		<string>svn://192.168.0.89/data/svn/ais</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>svn://192.168.0.89/data/svn/ais/trunk/ios/winmin/winmin.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>803CB60D-0CED-4686-88E2-495B29559156</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryBranchesRelativeLocationKey</key>
+			<string>branches</string>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlRepositoryTagsRelativeLocationKey</key>
+			<string>tags</string>
+			<key>IDESourceControlRepositoryTrunkRelativeLocationKey</key>
+			<string>trunk</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>803CB60D-0CED-4686-88E2-495B29559156</string>
+			<key>IDESourceControlWCCName</key>
+			<string>winmin</string>
+		</dict>
+	</array>
+</dict>
+</plist>

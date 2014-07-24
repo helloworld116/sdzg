@@ -1,0 +1,43 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import "AppDelegate.h"
+    #import "CC3xUtility.h"
+    #import "CC3xMessage.h"
+    #import "CC3xSwitch.h"
+    #import "CC3xTimerTask.h"
+    #import "Reachability.h"
+    #import "GCDAsyncUdpSocket.h"
+#endif
+
+//常用高度
+#define STATUS_HEIGHT 20
+#define NAVIGATION_HEIGHT 44
+#define TABBAR_HEIGHT 49
+#define kOFFSET_FOR_KEYBOARD 216
+
+//获取设备的高度，宽度
+#define DEVICE_HEIGHT [UIScreen mainScreen].bounds.size.height
+#define DEVICE_WIDTH [UIScreen mainScreen].bounds.size.width
+#define kSharedAppliction ((AppDelegate *)[UIApplication sharedApplication].delegate)
+
+//通知消息字段
+#define kDelayNotification @"DelayNotification"
+//UDP过期时间,单位秒
+#define kUDPTimeOut 10
+
+
+
+
