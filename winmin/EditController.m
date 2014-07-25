@@ -100,8 +100,7 @@
     [content_view addSubview:save_btn];
 }
 
-- (void)changeImage
-{
+- (void)changeImage{
     UIActionSheet * action = [[UIActionSheet alloc]initWithTitle:@"图片选择" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles: nil];
     [action addButtonWithTitle:@"从模板中获取"];
     [action addButtonWithTitle:@"拍照"];
@@ -110,85 +109,58 @@
     UIImageView * bg = [[UIImageView alloc]initWithFrame:action.frame];
     bg.image = [UIImage imageNamed:@"actionsheet_background"];
     [action addSubview:bg];
-
-    
     [action showFromRect:CGRectMake(0, DEVICE_HEIGHT/3, 320, DEVICE_HEIGHT*2/3) inView:self.view animated:YES];
 }
 
-- (void)lockDevice
-{
+- (void)lockDevice{
     NSString * lockName = !self.aSwitch.isLocked ? @"device_unlock" : @"device_lock";
     UIImage * image = [UIImage imageNamed:lockName];
-    if (self.aSwitch.isLocked)
-    {
+    if (self.aSwitch.isLocked){
         self.aSwitch.isLocked = NO;
-    }else
-    {
+    }else{
         self.aSwitch.isLocked = YES;
     }
     [lock_btn setImage:image forState:UIControlStateNormal];
-    
-    
-    
-    
-    
 }
 
-- (void)save
-{
-    //save data
-    
+- (void)save{
     name_text.text = [name_text.text stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-    
-    if ([name_text.text  isEqual: @""])
-    {
-        self.aSwitch.switchName = name_text.placeholder;
-        
-    }else
-    {
+    if ([name_text.text isEqual: @""]){
+        self.aSwitch.switchName = name_text.text;
+    }else{
         self.aSwitch.switchName = name_text.text;
     }
     UIImage * image = [UIImage imageWithContentsOfFile:filePath];
     self.aSwitch.image = image;
     [image_btn setImage:image forState:UIControlStateNormal];
     NSLog(@"图片abc的%@",image_btn.imageView.image);
-    if (self.view.frame.origin.y < 0)
-    {
-        
+    if (self.view.frame.origin.y < 0){
         [self setViewMoveUp:NO];
         [name_text resignFirstResponder];
     }
     
     //备份设备名到服务端
-    if (_udpSocket.isClosed == YES || _udpSocket == nil)
-    {
+    if (_udpSocket.isClosed == YES || _udpSocket == nil){
         [CC3xUtility setupUdpSocket:self.udpSocket
                                port:APP_PORT];
     }
-    dispatch_apply(REPEATE_TIME, GLOBAL_QUEUE, ^(size_t index){
-        if (self.aSwitch.status == SWITCH_LOCAL ||
-            self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-            [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg3F:name_text.text]
-                              toHost:self.aSwitch.ip
-                                port:self.aSwitch.port
-                         withTimeout:10
-                                 tag:P2D_SET_NAME_REQ_3F];
-        } else if (self.aSwitch.status == SWITCH_REMOTE ||
-                   self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-            [self.udpSocket sendData:
-             [CC3xMessageUtil getP2sMsg41:self.aSwitch.macAddress
-                                     name:name_text.text]
-                              toHost:SERVER_IP
-                                port:SERVER_PORT
-                         withTimeout:10
-                                 tag:P2S_SET_NAME_REQ_41];
-            NSLog(@" editcontroller   191：\n发送名字 %@ 到服务器",name_text.text);
-        }
-    });
-    
-    
-//    [self.navigationController popViewControllerAnimated:YES];
-    
+    if (self.aSwitch.status == SWITCH_LOCAL ||
+        self.aSwitch.status == SWITCH_LOCAL_LOCK) {
+        [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg3F:name_text.text]
+                          toHost:self.aSwitch.ip
+                            port:self.aSwitch.port
+                     withTimeout:10
+                             tag:P2D_SET_NAME_REQ_3F];
+    } else if (self.aSwitch.status == SWITCH_REMOTE ||
+               self.aSwitch.status == SWITCH_REMOTE_LOCK) {
+        [self.udpSocket sendData:
+         [CC3xMessageUtil getP2sMsg41:self.aSwitch.macAddress
+                                 name:name_text.text]
+                          toHost:SERVER_IP
+                            port:SERVER_PORT
+                     withTimeout:10
+                             tag:P2S_SET_NAME_REQ_41];
+    }
 }
 
 #pragma mark ---------- ActionSheetDelegate----
@@ -323,21 +295,19 @@
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     //初始化udpsocket，绑定接收端口
-//    _udpSocket = [[GCDAsyncUdpSocket alloc]
-//                  initWithDelegate:self
-//                  delegateQueue:GLOBAL_QUEUE];
-//    [CC3xUtility setupUdpSocket:self.udpSocket
-//                           port:APP_PORT];
+    _udpSocket = [[GCDAsyncUdpSocket alloc]
+                  initWithDelegate:self
+                  delegateQueue:GLOBAL_QUEUE];
+    [CC3xUtility setupUdpSocket:self.udpSocket
+                           port:APP_PORT];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    if (self.udpSocket)
-    {
+    if (self.udpSocket){
         [self.udpSocket close];
     }
-    
+    [super viewWillDisappear:animated];
 }
 
 #pragma mark -----imagePicker
@@ -399,15 +369,8 @@
 
 
 
-- (void)back
-{
-    
-    
-    
-    
-    
+- (void)back{
     [self.navigationController popViewControllerAnimated:YES];
-     
 }
 
 - (void)didReceiveMemoryWarning
@@ -418,45 +381,21 @@
 
 
 #pragma mark --------udp delegate
-- (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext
-{
-    if (data)
-    {
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext{
+    NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
+    if (data){
         CC3xMessage * msg = (CC3xMessage *)filterContext;
-        if (msg.msgId == 0x40)
-        {
+        if (msg.msgId == 0x40||msg.msgId == 0x42){
             NSLog(@"本地设置设备名");
         }
-        if (msg.msgId == 0x42) {
-            NSLog(@"远程设置设备名");
-        }
     }
-    
-    
 }
 
-- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag
-{
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag{
     NSLog(@"msg %ld  has sent", tag);
 }
 
-- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error
-{
-    
+- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error{
     NSLog(@"edit UDP has been closed, %@",error);
 }
-
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
 @end

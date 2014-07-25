@@ -62,6 +62,7 @@
 		1568F15419244EE100BCA667 /* TimerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1568F15319244EE100BCA667 /* TimerController.m */; };
 		1568F15719244F1F00BCA667 /* EditController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1568F15619244F1F00BCA667 /* EditController.m */; };
 		1568F15D192452E800BCA667 /* AddNewDevicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1568F15C192452E800BCA667 /* AddNewDevicesController.m */; };
+		159283C81982441500E2196E /* MessageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 159283C71982441500E2196E /* MessageUtil.m */; };
 		15B6195D192D1B3E00B5F2E4 /* CustomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 15B6195B192D1B3E00B5F2E4 /* CustomCell.m */; };
 		15B61962192D1B8600B5F2E4 /* SockerAndFileController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15B61961192D1B8600B5F2E4 /* SockerAndFileController.m */; };
 		15B81D921977C68A00AD80B7 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 15B81D911977C68A00AD80B7 /* MainStoryboard.storyboard */; };
@@ -174,6 +175,8 @@
 		1568F15619244F1F00BCA667 /* EditController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditController.m; sourceTree = "<group>"; };
 		1568F15B192452E800BCA667 /* AddNewDevicesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddNewDevicesController.h; sourceTree = "<group>"; };
 		1568F15C192452E800BCA667 /* AddNewDevicesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddNewDevicesController.m; sourceTree = "<group>"; };
+		159283C61982441500E2196E /* MessageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageUtil.h; sourceTree = "<group>"; };
+		159283C71982441500E2196E /* MessageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageUtil.m; sourceTree = "<group>"; };
 		15B6195A192D1B3E00B5F2E4 /* CustomCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCell.h; sourceTree = "<group>"; };
 		15B6195B192D1B3E00B5F2E4 /* CustomCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCell.m; sourceTree = "<group>"; };
 		15B61960192D1B8600B5F2E4 /* SockerAndFileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SockerAndFileController.h; sourceTree = "<group>"; };
@@ -367,6 +370,8 @@
 		154E3D3C1920C25F00D05EA0 /* winmin */ = {
 			isa = PBXGroup;
 			children = (
+				159283C61982441500E2196E /* MessageUtil.h */,
+				159283C71982441500E2196E /* MessageUtil.m */,
 				154E3D451920C25F00D05EA0 /* AppDelegate.h */,
 				154E3D461920C25F00D05EA0 /* AppDelegate.m */,
 				155A726E19230A6D00695EAE /* devices */,
@@ -557,6 +562,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				159283C81982441500E2196E /* MessageUtil.m in Sources */,
 				150F45EA1928FF23000E5527 /* DDLog.m in Sources */,
 				560586A61963D9D3004BCAC6 /* CRC.c in Sources */,
 				150F461C1928FF95000E5527 /* CC3xSwitch.m in Sources */,

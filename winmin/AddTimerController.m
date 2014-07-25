@@ -507,8 +507,7 @@
     int weekday = ([comps weekday] + 5) % 7;
     int hour = [comps hour];
     int min = [comps minute];
-//    [comps release];
-    
+    //获取当前时间离本周一0点开始的秒数
     NSInteger currentTime = weekday *24 * 3600 + hour * 3600 + min * 60;
     NSData *msg;
     NSString *host;
@@ -540,6 +539,7 @@
    didReceiveData:(NSData *)data
       fromAddress:(NSData *)address
 withFilterContext:(id)filterContext{
+    NSLog(@"AddTimeController ReceiveData");
     if (data){
         CC3xMessage * msg = (CC3xMessage *)filterContext;
         NSLog(@"recv %02x from %@:%d %@",msg.msgId,msg.ip,msg.port,[CC3xMessageUtil hexString:data]);

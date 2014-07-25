@@ -20,6 +20,7 @@
     #import "CC3xTimerTask.h"
     #import "Reachability.h"
     #import "GCDAsyncUdpSocket.h"
+    #import "MessageUtil.h"
 #endif
 
 //常用高度

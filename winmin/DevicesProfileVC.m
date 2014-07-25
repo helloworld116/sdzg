@@ -30,7 +30,7 @@
 
 @property (strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
 
-@property (strong, nonatomic) GCDAsyncUdpSocket *udpSocket;
+@property (strong, atomic) GCDAsyncUdpSocket *udpSocket;
 @property (assign, nonatomic) BOOL isSwitchOn;//设备是否打开
 @property (assign, atomic) BOOL isLockOK;
 
@@ -63,8 +63,7 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad{
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.navigationItem.title = self.aSwitch.switchName;
@@ -75,14 +74,10 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     //初始化udpsocket,绑定接收端口
-    self.udpSocket = [[GCDAsyncUdpSocket alloc]
-                      initWithDelegate:self
-                      delegateQueue:GLOBAL_QUEUE];
-    if (self.udpSocket == nil||self.udpSocket.isClosed == YES){
-        [CC3xUtility setupUdpSocket:self.udpSocket
-                               port:APP_PORT];
-    }
+    self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:GLOBAL_QUEUE];
+    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
     
+    //根据不同的网络环境，发送 本地/远程 消息
     //定时列表
     dispatch_async(GLOBAL_QUEUE, ^{
         //根据不同的网络环境，发送 本地/远程 消息
@@ -130,7 +125,7 @@
             }
         });
     });
-    
+
     //页面刷新定时器
     double delayInSeconds2 = kRefreshIntveral;
     dispatch_time_t delayInNanoSeconds2 = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds2*NSEC_PER_SEC);
@@ -143,7 +138,9 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     if (self.udpSocket) {
-        [self.udpSocket close];
+        if (!self.udpSocket.isClosed) {
+            [self.udpSocket close];
+        }
         self.udpSocket=nil;
     }
     [self.delayTimer invalidate];
@@ -360,7 +357,6 @@
     NSDate *zeroDate = [dateFormatter dateFromString:dateString];
     //当前时间距离零时的秒数
     NSTimeInterval diff = [currentDate timeIntervalSince1970] - [zeroDate timeIntervalSince1970];
-    NSLog(@"current second is %f",diff);
     //公历，国外的习惯，周日是一周的开始，也就是说周日返回1，周六返回7
     int weekday = [comps weekday];
     if (weekday==1) {
@@ -368,7 +364,7 @@
     }
     weekday-=2;
     //保存操作打开，且今天包含在定时列表、设定时间晚于当前时间并且操作打开的task集合
-    NSMutableArray *taskInTodayList = [NSMutableArray arrayWithCapacity:self.timeTaskList.count];
+    NSMutableArray *taskInTodayList = [NSMutableArray array];
     for (CC3xTimerTask *task in self.timeTaskList) {
         //操作开关打开
         if (task.timeDetail&1<<0) {
@@ -381,7 +377,8 @@
             }
         }
     }
-    if (taskInTodayList) {
+    //有满足条件的定时列表
+    if ([taskInTodayList count]>0) {
         NSMutableArray *startTimeList = [NSMutableArray array];
         NSMutableArray *endTimeList = [NSMutableArray array];
         for (CC3xTimerTask *task in taskInTodayList) {
@@ -432,6 +429,15 @@
             self.imgViewPreExec3.image = [UIImage imageNamed:image3Name];
             self.imgViewPreExec4.image = [UIImage imageNamed:image4Name];
             self.lblPreExecInfo.text = desc;
+        });
+        //时间到后清空
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((min-(long)diff) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            NSString *imageName = @"digit_0";
+            self.imgViewPreExec1.image = [UIImage imageNamed:imageName];
+            self.imgViewPreExec2.image = [UIImage imageNamed:imageName];
+            self.imgViewPreExec3.image = [UIImage imageNamed:imageName];
+            self.imgViewPreExec4.image = [UIImage imageNamed:imageName];
+            self.lblPreExecInfo.text = @"";
         });
     }
 }

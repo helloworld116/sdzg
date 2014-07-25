@@ -616,7 +616,11 @@ typedef struct {
     header[1] = (Byte) bufLen;
     header[2] = (Byte) 0x1D;
     header[3]= (Byte) 0xAD;
-    memcpy(header + 4, &currentTime, 4);
+//    memcpy(header + 4, &currentTime, 4);
+    header[4] = (Byte) (currentTime>>24);
+    header[5] = (Byte) (currentTime>>16);
+    header[6] = (Byte) (currentTime>>8);
+    header[7] = (Byte) (currentTime);
     header[8] = (Byte) num;
     
     NSMutableData *msg = [[NSMutableData alloc] initWithCapacity:bufLen];
@@ -661,7 +665,11 @@ typedef struct {
     Byte *macBytes = [CC3xMessageUtil mac2HexBytes:aMac];
     memcpy(header + 4, macBytes, 6);
     free(macBytes);
-    memcpy(header + 10, &currentTime, 4);
+//    memcpy(header + 10, &currentTime, 4);
+    header[10] = (Byte) (currentTime>>24);
+    header[11] = (Byte) (currentTime>>16);
+    header[12] = (Byte) (currentTime>>8);
+    header[13] = (Byte) (currentTime);
     header[14] = (Byte) num;
     
     NSMutableData *msg = [[NSMutableData alloc] initWithCapacity:bufLen];
@@ -682,10 +690,19 @@ typedef struct {
         [msg appendBytes:item length:10];
     }
     Byte cc[2];
-    short crc = CRC16((unsigned char *)&header[0], bufLen - 2);
+//    char *tt = [msg bytes];
+//    char *tt = (char *)[[NSData dataWithData:msg] bytes];
+//    [msg bytes];
+//    char tt[bufLen];
+//    [msg getBytes:tt length:msg.length];
+    char tt[msg.length];
+    [msg getBytes:tt length:msg.length];
+    NSLog(@"%ld",(long)msg.length);
+    short crc = CRC16((unsigned char *)&tt, bufLen - 2);
     cc[0] = (Byte) (crc >> 8);
     cc[1] = (Byte) crc;
     [msg appendBytes:cc length:2];
+    NSLog(@"%ld",(long)msg.length);
     return msg;
     
 }
@@ -797,7 +814,7 @@ typedef struct {
 {
     p2sMsg41 msg;
     memset(&msg, 0, sizeof(msg));
-    msg.header.msgId = 0x3b;
+    msg.header.msgId = 0x41;
     msg.header.msgDir = 0xA5;
     Byte *macBytes = [CC3xMessageUtil mac2HexBytes:mac];
     memcpy(&msg.mac, macBytes, sizeof(msg.mac));

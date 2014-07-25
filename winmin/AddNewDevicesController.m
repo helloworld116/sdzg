@@ -39,6 +39,7 @@
     background_imageView = nil;
     
     self.navigationItem.hidesBackButton = YES;
+    self.navigationItem.title = @"添加新设备";
     //返回按钮
     UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
     
@@ -141,12 +142,11 @@
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock
    didReceiveData:(NSData *)data
       fromAddress:(NSData *)address
-withFilterContext:(id)filterContext
-{
-	if (!_isRunning) return;
+withFilterContext:(id)filterContext{
+//	if (!_isRunning) return;
+    NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
     if (data) {
         CC3xMessage *msg = (CC3xMessage *)filterContext;
-        
         if (msg.msgId == 0x2) {
             NSLog(@"添加设备，mac:%@，ip:%@，port:%d", msg.mac, msg.ip, msg.port);
             /*if (![self.switchesDict objectForKey:msg.mac]) {
@@ -160,7 +160,7 @@ withFilterContext:(id)filterContext
                              tag:P2D_SERVER_INFO_05];
             
         }else if (msg.msgId==0x06){
-            NSLog(@"添加成功，mac:%@,state:%du",msg.mac,msg.state);
+            NSLog(@"添加成功，mac:%@,state:%d",msg.mac,msg.state);
             UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"添加成功" message:msg.mac delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [alert show];
         }

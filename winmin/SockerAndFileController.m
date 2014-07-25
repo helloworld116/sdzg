@@ -279,10 +279,8 @@
 
 
 //更新设备状态
-- (void)updateSwitchStatus
-{
-    if (_udpSocket.isClosed == YES || _udpSocket == nil)
-    {
+- (void)updateSwitchStatus{
+    if (_udpSocket.isClosed == YES || _udpSocket == nil){
         _udpSocket =[[GCDAsyncUdpSocket alloc] initWithDelegate:self
                                       delegateQueue:GLOBAL_QUEUE];
         [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
@@ -306,13 +304,15 @@
 //扫描设备
 - (void)sendStateInquiry{
     NSLog(@"扫描设备状态");
-    [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg0B]
-                          toHost:BROADCAST_ADDRESS
-                            port:DEVICE_PORT
-                     withTimeout:10
-                             tag:P2D_STATE_INQUIRY_0B];
+//    [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg0B]
+//                          toHost:BROADCAST_ADDRESS
+//                            port:DEVICE_PORT
+//                     withTimeout:10
+//                             tag:P2D_STATE_INQUIRY_0B];
+    [[MessageUtil shareInstance] sendMsg0B:self.udpSocket];
     for (NSString *mac in [self.switchDict allKeys]) {
-        [self.udpSocket sendData:[CC3xMessageUtil getP2SMsg0D:mac] toHost:SERVER_IP port:SERVER_PORT withTimeout:10 tag:P2S_STATE_INQUIRY_0D];
+//        [self.udpSocket sendData:[CC3xMessageUtil getP2SMsg0D:mac] toHost:SERVER_IP port:SERVER_PORT withTimeout:10 tag:P2S_STATE_INQUIRY_0D];
+        [[MessageUtil shareInstance] sendMsg0D:self.udpSocket mac:mac];
     }
 }
 
@@ -549,8 +549,8 @@
         [self.udpSocket sendData:
          [CC3xMessageUtil getP2sMsg49:_selectedSwitch.macAddress
                                  lock:isLock]
-                          toHost:_selectedSwitch.ip
-                            port:_selectedSwitch.port
+                          toHost:SERVER_IP
+                            port:SERVER_PORT
                      withTimeout:10
                              tag:P2S_DEV_LOCK_REQ_49];
     }
@@ -685,7 +685,7 @@
         } else if(aSwitch.status == SWITCH_UNKNOWN){
             aSwitch.status = SWITCH_OFFLINE;
         }
-//        aSwitch.status = SWITCH_REMOTE;
+        aSwitch.status = SWITCH_REMOTE;
         [self.switchDict setObject:aSwitch forKey:msg.mac];
     }
 }
