@@ -7,16 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Reachability.h"
 
-@interface AppDelegate : NSObject<UIApplicationDelegate>
-{
-
-    
+@interface AppDelegate : NSObject<UIApplicationDelegate> {
 }
-@property (nonatomic ,strong) UIWindow * window;
-@property (nonatomic ,strong) UIStoryboard *mainStoryboard;
-@property (nonatomic ,retain) UINavigationController * navigationController;
-
-
-
+@property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) UIStoryboard *mainStoryboard;
+@property (nonatomic, retain) UINavigationController *navigationController;
+@property (nonatomic, assign) NetworkStatus networkStatus;
 @end

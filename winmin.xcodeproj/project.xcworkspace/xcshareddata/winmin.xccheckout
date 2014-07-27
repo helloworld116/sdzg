@@ -5,47 +5,36 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>629B9DD5-9997-40CE-AAF3-368449D8588C</string>
+	<string>71D7374F-E127-413E-918E-F7C7681A2527</string>
 	<key>IDESourceControlProjectName</key>
 	<string>winmin</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>803CB60D-0CED-4686-88E2-495B29559156</key>
-		<string>svn://192.168.0.89/data/svn/ais/trunk/ios/winmin</string>
+		<key>D73AF901-ABD7-4948-9307-A467617FDDF7</key>
+		<string>https://github.com/helloworld116/sdzg.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>winmin.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>803CB60D-0CED-4686-88E2-495B29559156</key>
+		<key>D73AF901-ABD7-4948-9307-A467617FDDF7</key>
 		<string>../..</string>
 	</dict>
-	<key>IDESourceControlProjectRepositoryRootDictionary</key>
-	<dict>
-		<key>803CB60D-0CED-4686-88E2-495B29559156</key>
-		<string>svn://192.168.0.89/data/svn/ais</string>
-	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>svn://192.168.0.89/data/svn/ais/trunk/ios/winmin/winmin.xcodeproj</string>
+	<string>https://github.com/helloworld116/sdzg.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>803CB60D-0CED-4686-88E2-495B29559156</string>
+	<string>D73AF901-ABD7-4948-9307-A467617FDDF7</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
-			<key>IDESourceControlRepositoryBranchesRelativeLocationKey</key>
-			<string>branches</string>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.subversion</string>
-			<key>IDESourceControlRepositoryTagsRelativeLocationKey</key>
-			<string>tags</string>
-			<key>IDESourceControlRepositoryTrunkRelativeLocationKey</key>
-			<string>trunk</string>
+			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>803CB60D-0CED-4686-88E2-495B29559156</string>
+			<string>D73AF901-ABD7-4948-9307-A467617FDDF7</string>
 			<key>IDESourceControlWCCName</key>
-			<string>winmin</string>
+			<string>sdzg</string>
 		</dict>
 	</array>
 </dict>

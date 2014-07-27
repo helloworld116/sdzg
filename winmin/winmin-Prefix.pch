@@ -21,6 +21,8 @@
     #import "Reachability.h"
     #import "GCDAsyncUdpSocket.h"
     #import "MessageUtil.h"
+    #import "NetUtil.h"
+    #import "UdpSocketUtil.h"
 #endif
 
 //常用高度
