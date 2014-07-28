@@ -23,6 +23,7 @@
     #import "MessageUtil.h"
     #import "NetUtil.h"
     #import "UdpSocketUtil.h"
+    #import "SendResponseHandler.h"
 #endif
 
 //常用高度
@@ -39,7 +40,7 @@
 //通知消息字段
 #define kDelayNotification @"DelayNotification"
 //UDP过期时间,单位秒
-#define kUDPTimeOut 10
+#define kUDPTimeOut 0.01
 
 
 

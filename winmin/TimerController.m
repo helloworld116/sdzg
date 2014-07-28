@@ -15,7 +15,7 @@
 #import "CC3xTimerTask.h"
 #import "AddTimerController.h"
 #import "DevicesProfileController.h"
-@interface TimerController ()<ResponseDelegate>
+@interface TimerController ()<UDPDelegate>
 
 @end
 
@@ -84,12 +84,6 @@
 
   background_imageView = nil;
 
-  //    if (_udpSocket.isClosed == YES || _udpSocket == nil)
-  //    {
-  //        [CC3xUtility setupUdpSocket:self.udpSocket
-  //                               port:APP_PORT];
-  //    }
-
   _timerList = [[NSMutableArray alloc] init];
 
   self.isRefresh = NO;
@@ -100,9 +94,9 @@
   content_view.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_view];
   UIImageView *content_bg = [[UIImageView alloc]
-      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
-                                                       STATUS_HEIGHT -
-                                                       NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(
+                        0, 0, DEVICE_WIDTH,
+                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT)];
   content_bg.image = [UIImage imageNamed:@"window_background"];
   //    [content_bg setBounds:CGRectMake(0, 0, 260, DEVICE_HEIGHT-STATUS_HEIGHT
   //    - NAVIGATION_HEIGHT)];
@@ -149,13 +143,8 @@
 }
 
 //视图出现之前，从服务器获取定时列表（本地列表对比？）
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  //  self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                                 delegateQueue:GLOBAL_QUEUE];
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
   [UdpSocketUtil shareInstance].delegate = self;
   [self getTimerList];
   //    self.timerList = self.aSwitch.timerList;
@@ -163,10 +152,6 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  //  if (self.udpSocket) {
-  //    [self.udpSocket close];
-  //    self.udpSocket = nil;
-  //  }
   [UdpSocketUtil shareInstance].delegate = self;
   [self endRefreshing];
   //    self.aSwitch.timerList = self.timerList;
@@ -188,9 +173,6 @@
   if (self.isRefresh) {
     return;
   }
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
   [self getTimerList];
 
   self.isRefresh = YES;
@@ -202,35 +184,6 @@
 }
 
 - (void)getTimerList {
-  //从服务器获取定时列表
-  //  if (self.aSwitch.status == SWITCH_OFFLINE ||
-  //      self.aSwitch.status == SWITCH_UNKNOWN) {
-  //    [self.navigationController popToRootViewControllerAnimated:YES];
-  //  }
-  //  NSData *msg;
-  //  NSString *host;
-  //  uint16_t port;
-  //  long tag;
-  //  //根据不同的网络环境，发送 本地/远程 消息
-  //  if (self.aSwitch.status == SWITCH_LOCAL ||
-  //      self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //    msg = [CC3xMessageUtil getP2dMsg17];
-  //    host = self.aSwitch.ip;
-  //    port = self.aSwitch.port;
-  //    tag = P2D_GET_TIMER_REQ_17;
-  //  } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //             self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //    msg = [CC3xMessageUtil getP2SMsg19:self.aSwitch.macAddress];
-  //    host = SERVER_IP;
-  //    port = SERVER_PORT;
-  //    tag = P2S_GET_TIMER_REQ_19;
-  //  }
-  //  [self.udpSocket sendData:msg
-  //                    toHost:host
-  //                      port:port
-  //               withTimeout:kUDPTimeOut
-  //                       tag:tag];
-
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
                                      aSwitch:self.aSwitch];
 }
@@ -432,132 +385,11 @@
 
 #pragma mark - network
 - (void)saveTheTimerList {
-  //  NSCalendar *gregorian =
-  //      [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-  //
-  //  NSDateComponents *comps =
-  //      [gregorian components:NSWeekdayCalendarUnit | NSHourCalendarUnit |
-  //                            NSMinuteCalendarUnit
-  //                   fromDate:[NSDate date]];
-  //  NSLog(@"comps ==== %@", comps);
-  //
-  //  NSInteger weekday = ([comps weekday] + 5) % 7;
-  //  NSInteger hour = [comps hour];
-  //  NSInteger min = [comps minute];
-  //  NSInteger currentTime = weekday * 24 * 3600 + hour * 3600 + min * 60;
-  //  NSData *msg;
-  //  NSString *host;
-  //  uint16_t port;
-  //  long tag;
-  //  //根据不同的网络环境，发送 本地/远程 消息
-  //  if (self.aSwitch.status == SWITCH_LOCAL ||
-  //      self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //    msg = [CC3xMessageUtil getP2dMsg1D:currentTime
-  //                              timerNum:self.timerList.count
-  //                             timerList:self.timerList];
-  //    host = self.aSwitch.ip;
-  //    port = self.aSwitch.port;
-  //    tag = P2D_SET_TIMER_REQ_1D;
-  //  } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //             self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //    msg = [CC3xMessageUtil getP2SMsg1F:currentTime
-  //                              timerNum:self.timerList.count
-  //                             timerList:self.timerList
-  //                                   mac:self.aSwitch.macAddress];
-  //    host = SERVER_IP;
-  //    port = SERVER_PORT;
-  //    tag = P2S_SET_TIMER_REQ_1F;
-  //  }
-  //  [self.udpSocket sendData:msg
-  //                    toHost:host
-  //                      port:port
-  //               withTimeout:kUDPTimeOut
-  //                       tag:tag];
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
                                     timeList:self.timerList];
 }
 
-#pragma mark - udp delegate method
-
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//       didReceiveData:(NSData *)data
-//          fromAddress:(NSData *)address
-//    withFilterContext:(id)filterContext {
-//  NSLog(@"received  timerList data------------------------");
-//  if (data) {
-//    CC3xMessage *msg = (CC3xMessage *)filterContext;
-//    NSLog(@"recv %02x from %@:%d %@", msg.msgId, msg.ip, msg.port,
-//          [CC3xMessageUtil hexString:data]);
-//    if (msg.msgId == 0x18 || msg.msgId == 0x1a) {
-//      NSLog(@"获取定时列表成功");
-//      dispatch_sync(GLOBAL_QUEUE, ^{
-//          //如果收到定时数据，本地数据清零
-//          [self.timerList removeAllObjects];
-//          for (CC3xTimerTask *task in msg.timerTaskList) {
-//            if (![self.timerList containsObject:task]) {
-//              [self.timerList addObject:task];
-//            }
-//          }
-//      });
-//      dispatch_async(dispatch_get_main_queue(), ^{
-//          [timer_table reloadData];
-//          [self endRefreshing];
-//      });
-//    } else if (msg.msgId == 0x1e || msg.msgId == 0x20) {
-//      NSLog(@"编辑定时列表成功");
-//      dispatch_async(dispatch_get_main_queue(), ^{
-//          [timer_table reloadData];
-//          [self endRefreshing];
-//      });
-//    }
-//  }
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-//  LogInfo(@"msg %ld is sent", tag);
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//    didNotSendDataWithTag:(long)tag
-//               dueToError:(NSError *)error {
-//  dispatch_async(dispatch_get_main_queue(), ^{
-//      if (tag == P2D_SET_TIMER_REQ_1D || tag == P2S_SET_TIMER_REQ_1F) {
-//        self.selectedSwitch.on = !self.selectedSwitch.on;
-//      }
-//      [self endRefreshing];
-//      LogInfo(@"Error happens %@", error);
-//  });
-//}
-//
-//- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error
-//{
-//  NSLog(@"TimerController udp has closed");
-//}
-
-#pragma mark ResponseDelegate
-- (void)responseMsgId18Or1A:(CC3xMessage *)msg {
-  dispatch_sync(GLOBAL_QUEUE, ^{
-      //如果收到定时数据，本地数据清零
-      [self.timerList removeAllObjects];
-      for (CC3xTimerTask *task in msg.timerTaskList) {
-        if (![self.timerList containsObject:task]) {
-          [self.timerList addObject:task];
-        }
-      }
-  });
-  dispatch_async(dispatch_get_main_queue(), ^{
-      [timer_table reloadData];
-      [self endRefreshing];
-  });
-}
-
-- (void)responseMsgId1EOr20:(CC3xMessage *)msg {
-  dispatch_async(dispatch_get_main_queue(), ^{
-      [timer_table reloadData];
-      [self endRefreshing];
-  });
-}
 //进入定时编辑页面
 - (void)addTimer {
   AddTimerController *add = [[AddTimerController alloc] init];
@@ -588,48 +420,6 @@
   //    NSLog(@"返回devices成功");
 }
 
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little
-// preparation before navigation
-//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-//{
-//    if (self.udpSocket) {
-//        [self.udpSocket close];
-//    }
-//    if ([segue.identifier isEqualToString:@"add_timer"]) {
-//        id theSegue = segue.destinationViewController;
-//        [theSegue setValue:self.aSwitch
-//                forKeyPath:@"aSwitch"];
-//        [theSegue setValue:self.timerList forKey:@"timerList"];
-//        if (sender == self.selectedCell) {
-//            NSIndexPath *indexPath = [timer_table
-//            indexPathForCell:self.selectedCell];
-//            CC3xTimerTask *task = self.timerList[indexPath.row];
-//            [theSegue setValue:task forKey:@"timerTask"];
-//        }
-//    }
-//}
-#pragma mark------ timeListDelegate
-//添加定时器代理，
-//- (void)changeTimerList:(id)sender
-//{
-//    if (self.udpSocket) {
-//        [self.udpSocket close];
-//    }
-//    self.timerList = sender;
-//    if (sender == self.selectedCell)
-//    {
-//        NSIndexPath *indexPath = [timer_table
-//        indexPathForCell:self.selectedCell];
-//        CC3xTimerTask *task = self.timerList[indexPath.row];
-//        self.aSwitch.timerList = self.timerList;
-//        task = sender;
-//    }
-//
-//    [timer_table reloadData];
-//}
-
 //返回设备控制页面
 - (void)godevices {
   [self.navigationController popViewControllerAnimated:YES];
@@ -637,5 +427,51 @@
 //刷新
 - (void)refresh {
   [timer_table reloadData];
+}
+
+#pragma mark - UDPDelegate
+- (void)responseMsgId18Or1A:(CC3xMessage *)msg {
+  dispatch_sync(GLOBAL_QUEUE, ^{
+      //如果收到定时数据，本地数据清零
+      [self.timerList removeAllObjects];
+      for (CC3xTimerTask *task in msg.timerTaskList) {
+        if (![self.timerList containsObject:task]) {
+          [self.timerList addObject:task];
+        }
+      }
+  });
+  dispatch_async(dispatch_get_main_queue(), ^{
+      [timer_table reloadData];
+      [self endRefreshing];
+  });
+}
+
+- (void)noResponseMsgId18Or1A {
+  [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
+                                     aSwitch:self.aSwitch];
+}
+
+- (void)noSendMsgId17Or19 {
+  [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
+                                     aSwitch:self.aSwitch];
+}
+
+- (void)responseMsgId1EOr20:(CC3xMessage *)msg {
+  dispatch_async(dispatch_get_main_queue(), ^{
+      [timer_table reloadData];
+      [self endRefreshing];
+  });
+}
+
+- (void)noResponseMsgId1EOr20 {
+  [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                    timeList:self.timerList];
+}
+
+- (void)noSendMsgId1DOr1F {
+  [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                    timeList:self.timerList];
 }
 @end

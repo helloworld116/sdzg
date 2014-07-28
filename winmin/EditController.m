@@ -10,7 +10,7 @@
 #import "CC3xSwitch.h"
 #import "CC3xUtility.h"
 #import "CC3xMessage.h"
-@interface EditController ()
+@interface EditController ()<UDPDelegate>
 
 @end
 
@@ -98,6 +98,7 @@
     [save_btn setTitle:@"保存" forState:UIControlStateNormal];
     [save_btn setBackgroundImage:[UIImage imageNamed:@"save_button_image"] forState:UIControlStateNormal];
     [content_view addSubview:save_btn];
+    self.udpSocket = [UdpSocketUtil shareInstance].udpSocket;
 }
 
 - (void)changeImage{
@@ -140,27 +141,28 @@
     }
     
     //备份设备名到服务端
-    if (_udpSocket.isClosed == YES || _udpSocket == nil){
-        [CC3xUtility setupUdpSocket:self.udpSocket
-                               port:APP_PORT];
-    }
-    if (self.aSwitch.status == SWITCH_LOCAL ||
-        self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-        [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg3F:name_text.text]
-                          toHost:self.aSwitch.ip
-                            port:self.aSwitch.port
-                     withTimeout:10
-                             tag:P2D_SET_NAME_REQ_3F];
-    } else if (self.aSwitch.status == SWITCH_REMOTE ||
-               self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-        [self.udpSocket sendData:
-         [CC3xMessageUtil getP2sMsg41:self.aSwitch.macAddress
-                                 name:name_text.text]
-                          toHost:SERVER_IP
-                            port:SERVER_PORT
-                     withTimeout:10
-                             tag:P2S_SET_NAME_REQ_41];
-    }
+//    if (_udpSocket.isClosed == YES || _udpSocket == nil){
+//        [CC3xUtility setupUdpSocket:self.udpSocket
+//                               port:APP_PORT];
+//    }
+//    if (self.aSwitch.status == SWITCH_LOCAL ||
+//        self.aSwitch.status == SWITCH_LOCAL_LOCK) {
+//        [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg3F:name_text.text]
+//                          toHost:self.aSwitch.ip
+//                            port:self.aSwitch.port
+//                     withTimeout:10
+//                             tag:P2D_SET_NAME_REQ_3F];
+//    } else if (self.aSwitch.status == SWITCH_REMOTE ||
+//               self.aSwitch.status == SWITCH_REMOTE_LOCK) {
+//        [self.udpSocket sendData:
+//         [CC3xMessageUtil getP2sMsg41:self.aSwitch.macAddress
+//                                 name:name_text.text]
+//                          toHost:SERVER_IP
+//                            port:SERVER_PORT
+//                     withTimeout:10
+//                             tag:P2S_SET_NAME_REQ_41];
+//    }
+    [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket aSwitch:self.aSwitch name:name_text.text];
 }
 
 #pragma mark ---------- ActionSheetDelegate----
@@ -295,18 +297,20 @@
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     //初始化udpsocket，绑定接收端口
-    _udpSocket = [[GCDAsyncUdpSocket alloc]
-                  initWithDelegate:self
-                  delegateQueue:GLOBAL_QUEUE];
-    [CC3xUtility setupUdpSocket:self.udpSocket
-                           port:APP_PORT];
+//    _udpSocket = [[GCDAsyncUdpSocket alloc]
+//                  initWithDelegate:self
+//                  delegateQueue:GLOBAL_QUEUE];
+//    [CC3xUtility setupUdpSocket:self.udpSocket
+//                           port:APP_PORT];
+    [UdpSocketUtil shareInstance].delegate = self;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    if (self.udpSocket){
-        [self.udpSocket close];
-    }
+//    if (self.udpSocket){
+//        [self.udpSocket close];
+//    }
+    [UdpSocketUtil shareInstance].delegate = nil;
     [super viewWillDisappear:animated];
 }
 
@@ -381,21 +385,24 @@
 
 
 #pragma mark --------udp delegate
-- (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext{
-    NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
-    if (data){
-        CC3xMessage * msg = (CC3xMessage *)filterContext;
-        if (msg.msgId == 0x40||msg.msgId == 0x42){
-            NSLog(@"本地设置设备名");
-        }
-    }
-}
+//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext{
+//    NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
+//    if (data){
+//        CC3xMessage * msg = (CC3xMessage *)filterContext;
+//        if (msg.msgId == 0x40||msg.msgId == 0x42){
+//            NSLog(@"本地设置设备名");
+//        }
+//    }
+//}
+//
+//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag{
+//    NSLog(@"msg %ld  has sent", tag);
+//}
+//
+//- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error{
+//    NSLog(@"edit UDP has been closed, %@",error);
+//}
+-(void)responseMsgId40Or42:(CC3xMessage *)msg{
 
-- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag{
-    NSLog(@"msg %ld  has sent", tag);
-}
-
-- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error{
-    NSLog(@"edit UDP has been closed, %@",error);
 }
 @end

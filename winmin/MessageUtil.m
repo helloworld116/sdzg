@@ -56,15 +56,6 @@
   });
 }
 
-- (void)sendMsg0B:(GCDAsyncUdpSocket *)udpSocket aSwitch:(CC3xSwitch *)aSwitch {
-  self.udpSocket = udpSocket;
-  self.msg = [CC3xMessageUtil getP2dMsg0B];
-  self.host = aSwitch.ip;
-  self.port = aSwitch.port;
-  self.tag = P2D_STATE_INQUIRY_0B;
-  [self send];
-}
-
 - (void)sendMsg0B:(GCDAsyncUdpSocket *)udpSocket {
   dispatch_async(GLOBAL_QUEUE, ^{
       self.udpSocket = udpSocket;
@@ -85,6 +76,15 @@
       self.tag = P2S_STATE_INQUIRY_0D;
       [self send];
   });
+}
+
+- (void)sendMsg0B:(GCDAsyncUdpSocket *)udpSocket aSwitch:(CC3xSwitch *)aSwitch {
+    self.udpSocket = udpSocket;
+    self.msg = [CC3xMessageUtil getP2dMsg0B];
+    self.host = aSwitch.ip;
+    self.port = aSwitch.port;
+    self.tag = P2D_STATE_INQUIRY_0B;
+    [self send];
 }
 
 - (void)sendMsg0D:(GCDAsyncUdpSocket *)udpSocket aSwitch:(CC3xSwitch *)aSwitch {

@@ -10,8 +10,8 @@
 #import "DevicesProfileController.h"
 #import "DevicesProfileVC.h"
 
-@interface SockerAndFileController ()<ResponseDelegate>
-@property (nonatomic, retain) NSIndexPath *selectedIndexPath; //当前操作的列
+@interface SockerAndFileController ()<UDPDelegate>
+@property(nonatomic, retain) NSIndexPath *selectedIndexPath;  //当前操作的列
 @end
 
 @implementation SockerAndFileController
@@ -94,20 +94,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  //  //初始化socket
-  //  _udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                             delegateQueue:GLOBAL_QUEUE];
-  //
   [UdpSocketUtil shareInstance].delegate = self;
   //查询开关状态
   [self updateSwitchStatus];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  //  if (self.udpSocket != nil && self.udpSocket) {
-  //    [self.udpSocket close];
-  //    _udpSocket = nil;
-  //  }
   if (self.updateTimer) {
     [self.updateTimer invalidate];
     _updateTimer = nil;
@@ -268,12 +260,6 @@
 
 //更新设备状态
 - (void)updateSwitchStatus {
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    _udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                               delegateQueue:GLOBAL_QUEUE];
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
-
   if (self.updateTimer) {
     [self.updateTimer invalidate];
 
@@ -292,19 +278,10 @@
 //扫描设备
 - (void)sendStateInquiry {
   NSLog(@"扫描设备状态");
-  //  [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg0B]
-  //                    toHost:BROADCAST_ADDRESS
-  //                      port:DEVICE_PORT
-  //               withTimeout:10
-  //                       tag:P2D_STATE_INQUIRY_0B];
   [[MessageUtil shareInstance] sendMsg0B:self.udpSocket];
+
   NSArray *macs = [self.switchDict allKeys];
   for (int i = 0; i < macs.count; i++) {
-    //    [self.udpSocket sendData:[CC3xMessageUtil getP2SMsg0D:mac]
-    //                      toHost:SERVER_IP
-    //                        port:SERVER_PORT
-    //                 withTimeout:10
-    //                         tag:P2S_STATE_INQUIRY_0D];
     NSString *mac = [[self.switchDict allKeys] objectAtIndex:i];
     double delayInSeconds = 0.05 * i;
     dispatch_time_t delayInNanoSeconds =
@@ -316,10 +293,6 @@
 }
 
 - (void)dealloc {
-  //  _udpSocket.delegate = nil;
-  //  [_udpSocket close];
-  //
-  //  _udpSocket = nil;
   if (self.updateTimer) {
     [self.updateTimer invalidate];
     _updateTimer = nil;
@@ -333,30 +306,11 @@
 
 //发送扫描信息
 - (void)sendScanMsg {
-  //  [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg09]
-  //                    toHost:BROADCAST_ADDRESS
-  //                      port:DEVICE_PORT
-  //               withTimeout:10
-  //                       tag:P2D_SCAN_DEV_09];
   [[MessageUtil shareInstance] sendMsg09:self.udpSocket];
 }
 
 //刷新
 - (void)refreshViewControl:(UIRefreshControl *)refresh {
-  //  NetworkStatus reach = [[Reachability
-  //          reachabilityForInternetConnection] currentReachabilityStatus];
-  //  if (reach == NotReachable) {
-  //    [CC3xUtility networkNotReachableAlert];
-  //    //        [self.refreshControl endRefreshing];
-  //    return;
-  //  }
-  //
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    _udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                               delegateQueue:GLOBAL_QUEUE];
-  //
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
   [self sendScanMsg];
 
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)),
@@ -449,9 +403,6 @@
 #pragma mark-----devices  delegate----
 - (void)changeAswitch:(id)sender {
   self.selectedSwitch = sender;
-  //  if (self.udpSocket) {
-  //    [self.udpSocket close];
-  //  }
 
   UITableViewCell *cell = (UITableViewCell *)sender;
   NSIndexPath *indexPath = [tableView_DL indexPathForCell:cell];
@@ -502,7 +453,7 @@
     [self handleLock:YES];
   } else if ([title isEqualToString:NSLocalizedString(@"不锁定", nil)]) {
     [self handleLock:NO];
-  } else if ([title isEqualToString:NSLocalizedString(@"位置", nil)]) {
+  } else if ([title isEqualToString:NSLocalizedString(@"闪烁", nil)]) {
     [self handleLocate];
   } else if ([title isEqualToString:NSLocalizedString(@"重命名", nil)]) {
     [self handleRename];
@@ -515,61 +466,12 @@
 }
 
 - (void)handleLock:(BOOL)isLock {
-  //  if (![CC3xUtility checkNetworkStatus]) {
-  //    return;
-  //  }
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
-  //  if (_selectedSwitch.status == SWITCH_LOCAL ||
-  //      _selectedSwitch.status == SWITCH_LOCAL_LOCK) {
-  //    [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg47:isLock]
-  //                      toHost:_selectedSwitch.ip
-  //                        port:_selectedSwitch.port
-  //                 withTimeout:10
-  //                         tag:P2D_DEV_LOCK_REQ_47];
-  //  } else if (_selectedSwitch.status == SWITCH_REMOTE ||
-  //             _selectedSwitch.status == SWITCH_REMOTE_LOCK) {
-  //    [self.udpSocket
-  //           sendData:[CC3xMessageUtil getP2sMsg49:_selectedSwitch.macAddress
-  //                                            lock:isLock]
-  //             toHost:SERVER_IP
-  //               port:SERVER_PORT
-  //        withTimeout:10
-  //                tag:P2S_DEV_LOCK_REQ_49];
-  //  }
   [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
                                      aSwitch:_selectedSwitch
                                       isLock:isLock];
 }
 
 - (void)handleLocate {
-  //  if (![CC3xUtility checkNetworkStatus]) {
-  //    return;
-  //  }
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
-  //  for (int i = 0; i < REPEATE_TIME; i++) {
-  //    if (_selectedSwitch.status == SWITCH_LOCAL ||
-  //        _selectedSwitch.status == SWITCH_LOCAL_LOCK) {
-  //      [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg39:1]
-  //                        toHost:_selectedSwitch.ip
-  //                          port:_selectedSwitch.port
-  //                   withTimeout:10
-  //                           tag:P2D_LOCATE_REQ_39];
-  //    } else if (_selectedSwitch.status == SWITCH_LOCAL ||
-  //               _selectedSwitch.status == SWITCH_LOCAL_LOCK) {
-  //      [self.udpSocket
-  //             sendData:[CC3xMessageUtil
-  //             getP2SMsg3B:_selectedSwitch.macAddress
-  //                                                on:1]
-  //               toHost:SERVER_IP
-  //                 port:SERVER_PORT
-  //          withTimeout:10
-  //                  tag:P2S_LOCATE_REQ_3B];
-  //    }
-  //  }
   [[MessageUtil shareInstance] sendMsg39Or3B:self.udpSocket
                                      aSwitch:_selectedSwitch
                                           on:1];
@@ -598,29 +500,6 @@
     return;
   } else {
     if (name.length) {
-      //      if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-      //        [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-      //      }
-      //
-      //      dispatch_apply(REPEATE_TIME, GLOBAL_QUEUE, ^(size_t index) {
-      //          if (_selectedSwitch.status == SWITCH_LOCAL ||
-      //              _selectedSwitch.status == SWITCH_LOCAL_LOCK) {
-      //            [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg3F:name]
-      //                              toHost:_selectedSwitch.ip
-      //                                port:_selectedSwitch.port
-      //                         withTimeout:10
-      //                                 tag:P2D_SET_NAME_REQ_3F];
-      //          } else if (_selectedSwitch.status == SWITCH_REMOTE ||
-      //                     _selectedSwitch.status == SWITCH_REMOTE_LOCK) {
-      //            [self.udpSocket sendData:[CC3xMessageUtil
-      //                                         getP2sMsg41:_selectedSwitch.macAddress
-      //                                                name:name]
-      //                              toHost:SERVER_IP
-      //                                port:SERVER_PORT
-      //                         withTimeout:10
-      //                                 tag:P2S_SET_NAME_REQ_41];
-      //          }
-      //      });
       [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
                                          aSwitch:_selectedSwitch
                                             name:name];
@@ -666,8 +545,8 @@
       } else {
         aSwitch.status = SWITCH_LOCAL;
       }
-    } else if (msg.msgId == 0xe && aSwitch.status == SWITCH_UNKNOWN &&
-               aSwitch.status != SWITCH_NEW) {
+    } else if (msg.msgId == 0xe && aSwitch.status != SWITCH_NEW &&
+               aSwitch.status == SWITCH_UNKNOWN) {
       if (aSwitch.isLocked) {
         aSwitch.status = SWITCH_REMOTE_LOCK;
       } else {
@@ -676,7 +555,7 @@
     } else if (aSwitch.status == SWITCH_UNKNOWN) {
       aSwitch.status = SWITCH_OFFLINE;
     }
-    aSwitch.status = SWITCH_REMOTE;
+    //    aSwitch.status = SWITCH_REMOTE;
     [self.switchDict setObject:aSwitch forKey:msg.mac];
   }
 }
@@ -685,88 +564,7 @@
   [tableView_DL reloadData];
 }
 
-#pragma mark udp delegate method
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//       didReceiveData:(NSData *)data
-//          fromAddress:(NSData *)address
-//    withFilterContext:(id)filterContext {
-//  if (data) {
-//    CC3xMessage *msg = (CC3xMessage *)filterContext;
-//    NSLog(@"recv %02x from %@:%d %@", msg.msgId, msg.ip, msg.port,
-//          [CC3xMessageUtil hexString:data]);
-//    if (msg.msgId == 0xa) {
-//      //手机扫描设备
-//      dispatch_sync(GLOBAL_QUEUE, ^{
-//          CC3xSwitch *aSwitch =
-//              [[CC3xSwitch alloc] initWithName:msg.deviceName
-//                                    macAddress:msg.mac
-//                                        status:msg.state
-//                                            ip:msg.ip
-//                                          port:msg.port
-//                                      isLocked:msg.isLocked
-//                                          isOn:msg.isOn
-//                                     timerList:msg.timerTaskList];
-//          if (![self.switchDict objectForKey:aSwitch.macAddress]) {
-//            aSwitch.status = SWITCH_NEW;
-//          }
-//          [self.switchDict setObject:aSwitch forKey:msg.mac];
-//      });
-//    } else if (msg.msgId == 0xc || msg.msgId == 0xe) {
-//      //手机的开关状态，前者内网，后者外网
-//      [self updateSwitchByMsg:msg];
-//      dispatch_async(dispatch_get_main_queue(),
-//                     ^{ [tableView_DL reloadData]; });
-//    } else if (msg.msgId == 0x48 || msg.msgId == 0x4a) {
-//      //锁定请求后的响应，48是内网，4a是外网
-//      NSLog(@"请求锁定");
-//      [self updateSwitchByMsg:msg];
-//      if (!msg.state) {
-//        NSLog(@"已锁定");
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            if (self.selectedIndexPath) {
-//              NSArray *indexPaths = @[ self.selectedIndexPath ];
-//              [tableView_DL beginUpdates];
-//              [tableView_DL reloadRowsAtIndexPaths:indexPaths
-//                                  withRowAnimation:UITableViewRowAnimationNone];
-//              [tableView_DL endUpdates];
-//              self.selectedIndexPath = nil;
-//            }
-//        });
-//      }
-//    } else if (msg.msgId == 0x26 || msg.msgId == 0x28) {
-//      //手机获取控制权限，前者是内网，后者是外网
-//      NSLog(@"获取属性");
-//      if (!msg.state) {
-//        self.isAllowded = YES;
-//        dispatch_async(dispatch_get_main_queue(), ^{});
-//      }
-//    }
-//  } else {
-//    NSLog(@"没有收到Data，设备状态无");
-//  }
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-//  // NSLog(@" %ld 号信息发送", tag);
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//    didNotSendDataWithTag:(long)tag
-//               dueToError:(NSError *)error {
-//  //    [self.refreshControl endRefreshing];
-//  NSLog(@"错误： %@", error);
-//}
-//
-//- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error
-//{
-//  NSLog(@"关闭 socked %@", sock);
-//  if (error) {
-//    NSLog(@"关闭通信，因为 %@", error);
-//  }
-//}
-//
-
+#pragma mark ResponseDelegate
 - (void)responseMsgIdA:(CC3xMessage *)msg {
   dispatch_sync(GLOBAL_QUEUE, ^{
       CC3xSwitch *aSwitch = [[CC3xSwitch alloc] initWithName:msg.deviceName
@@ -782,6 +580,12 @@
       }
       [self.switchDict setObject:aSwitch forKey:msg.mac];
   });
+}
+
+- (void)noResponseMsgIdA {
+}
+
+- (void)noSendMsgId9 {
 }
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {
@@ -810,5 +614,11 @@
         }
     });
   }
+}
+
+- (void)noResponseMsgId48Or4A {
+}
+
+- (void)noSendMsgId47Or49 {
 }
 @end

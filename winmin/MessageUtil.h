@@ -75,6 +75,12 @@
 
 - (void)sendMsg59:(GCDAsyncUdpSocket *)udpSocket aSwitch:(CC3xSwitch *)aSwitch;
 
+/**
+ *  手机查询开关状态
+ *
+ *  @param udpSocket
+ *  @param aSwitch
+ */
 - (void)sendMsg0BOr0D:(GCDAsyncUdpSocket *)udpSocket
               aSwitch:(CC3xSwitch *)aSwitch;
 - (void)sendMsg11Or13:(GCDAsyncUdpSocket *)udpSocket

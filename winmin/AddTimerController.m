@@ -13,10 +13,10 @@
 #import "CC3xMessage.h"
 #import "CC3xSwitch.h"
 #import "Reachability.h"
-@interface AddTimerController ()<ResponseDelegate>
-@property (nonatomic, strong) NSString *startTime,
-    *endTime; //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
-@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+@interface AddTimerController ()<UDPDelegate>
+@property(nonatomic, strong) NSString *startTime,
+    *endTime;  //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
+@property(nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
 
 @implementation AddTimerController
@@ -69,9 +69,9 @@
   content_View.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_View];
   UIImageView *content_bg = [[UIImageView alloc]
-      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
-                                                       STATUS_HEIGHT -
-                                                       NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(
+                        0, 0, DEVICE_WIDTH,
+                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT)];
   content_bg.image = [UIImage imageNamed:@"window_background"];
   //    //    [content_bg setBounds:CGRectMake(0, 0, 260,
   //    DEVICE_HEIGHT-STATUS_HEIGHT - NAVIGATION_HEIGHT)];
@@ -85,10 +85,6 @@
   //    [label setBounds:CGRectMake(100 , 20, 60, 20)];
   label.textColor = [UIColor whiteColor];
   [content_View addSubview:label];
-
-  //  //创建socket通信
-  //  _udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                             delegateQueue:GLOBAL_QUEUE];
 
   //重复星期选择按钮Mon.-Sun.
   mondayButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -337,14 +333,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  //  [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
   [UdpSocketUtil shareInstance].delegate = self;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  //  if (self.udpSocket) {
-  //    [_udpSocket close];
-  //  }
   [UdpSocketUtil shareInstance].delegate = nil;
   [super viewWillDisappear:animated];
 }
@@ -545,95 +537,9 @@
     [self.timerList addObject:task];
     //    NSLog(@"添加timerList元素");
   }
-
-  NSArray *timeList = [NSArray arrayWithArray:self.timerList];
-  //  //获取公历日期,相对的当前时间
-  //  NSCalendar *gregorian =
-  //      [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-  //
-  //  NSDateComponents *comps =
-  //      [gregorian components:NSWeekdayCalendarUnit | NSHourCalendarUnit |
-  //                            NSMinuteCalendarUnit
-  //                   fromDate:[NSDate date]];
-  //
-  //  int weekday = ([comps weekday] + 5) % 7;
-  //  int hour = [comps hour];
-  //  int min = [comps minute];
-  //  //获取当前时间离本周一0点开始的秒数
-  //  NSInteger currentTime = weekday * 24 * 3600 + hour * 3600 + min * 60;
-  //  NSData *msg;
-  //  NSString *host;
-  //  uint16_t port;
-  //  long tag;
-  //  //根据不同的网络环境，发送 本地/远程 消息
-  //  if (self.aSwitch.status == SWITCH_LOCAL ||
-  //      self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //    msg = [CC3xMessageUtil getP2dMsg1D:currentTime
-  //                              timerNum:timeList.count
-  //                             timerList:timeList];
-  //    host = self.aSwitch.ip;
-  //    port = self.aSwitch.port;
-  //    tag = P2D_SET_TIMER_REQ_1D;
-  //  } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //             self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //    msg = [CC3xMessageUtil getP2SMsg1F:currentTime
-  //                              timerNum:timeList.count
-  //                             timerList:timeList
-  //                                   mac:self.aSwitch.macAddress];
-  //    host = SERVER_IP;
-  //    port = SERVER_PORT;
-  //    tag = P2S_SET_TIMER_REQ_1F;
-  //  }
-  //  [self.udpSocket sendData:msg
-  //                    toHost:host
-  //                      port:port
-  //               withTimeout:kUDPTimeOut
-  //                       tag:tag];
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
-                                    timeList:timeList];
-}
-
-#pragma mark----------udp socket
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//       didReceiveData:(NSData *)data
-//          fromAddress:(NSData *)address
-//    withFilterContext:(id)filterContext {
-//  NSLog(@"AddTimeController ReceiveData");
-//  if (data) {
-//    CC3xMessage *msg = (CC3xMessage *)filterContext;
-//    NSLog(@"recv %02x from %@:%d %@", msg.msgId, msg.ip, msg.port,
-//          [CC3xMessageUtil hexString:data]);
-//    if (msg.msgId == 0x1e || msg.msgId == 0x20) {
-//      NSLog(@"定时设置成功");
-//    }
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        NSLog(@"received    add Timer  data
-//        ++++++++++++++++++++++++++++++++");
-//        [self.navigationController popViewControllerAnimated:YES];
-//    });
-//  }
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-//  NSLog(@"msg %ld is sent", tag);
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//    didNotSendDataWithTag:(long)tag
-//               dueToError:(NSError *)error {
-//  NSLog(@"Error happens %@", error);
-//}
-//
-//- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error
-//{
-//  NSLog(@"AddTimerController udp has close");
-//}
-#pragma mark ResponseDelegate
-- (void)responseMsgId1EOr20:(CC3xMessage *)msg {
-  dispatch_async(dispatch_get_main_queue(), ^{
-      [self.navigationController popViewControllerAnimated:YES];
-  });
+                                    timeList:self.timerList];
 }
 
 #pragma mark---action sheet
@@ -649,25 +555,25 @@
 }
 
 - (void)back {
-  //    if (self.delegate && [self.delegate
-  //    respondsToSelector:@selector(changeTimerList:)])
-  //    {
-  //        [self.delegate changeTimerList:self.timerList];
-  ////        [self.delegate changeTimerList:self.timerTask];
   [self.navigationController popViewControllerAnimated:YES];
-  //    }
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little
-preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+#pragma mark UDPDelegate
+- (void)responseMsgId1EOr20:(CC3xMessage *)msg {
+  dispatch_async(dispatch_get_main_queue(), ^{
+      [self.navigationController popViewControllerAnimated:YES];
+  });
 }
-*/
 
+- (void)noResponseMsgId1EOr20 {
+  [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                    timeList:self.timerList];
+}
+
+- (void)noSendMsgId17Or19 {
+  [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                    timeList:self.timerList];
+}
 @end

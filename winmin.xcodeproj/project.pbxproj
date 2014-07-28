@@ -68,6 +68,7 @@
 		15B81D921977C68A00AD80B7 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 15B81D911977C68A00AD80B7 /* MainStoryboard.storyboard */; };
 		15B81D951977D32600AD80B7 /* DevicesProfileVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 15B81D941977D32600AD80B7 /* DevicesProfileVC.m */; };
 		15B9313B192F2E4800452301 /* TimerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 15B9313A192F2E4800452301 /* TimerTableViewCell.m */; };
+		15BEA9F01985FF11003F8AE8 /* SendResponseHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 15BEA9EF1985FF11003F8AE8 /* SendResponseHandler.m */; };
 		15C1E88619342C8D003B7231 /* DelayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15C1E88519342C8D003B7231 /* DelayController.m */; };
 		15F20F92192378A400EE6D83 /* DevicesProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15F20F91192378A400EE6D83 /* DevicesProfileController.m */; };
 		470F98561983845300EF65F8 /* UdpSocketUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 470F98551983845300EF65F8 /* UdpSocketUtil.m */; };
@@ -188,6 +189,8 @@
 		15B81D941977D32600AD80B7 /* DevicesProfileVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesProfileVC.m; sourceTree = "<group>"; };
 		15B93139192F2E4800452301 /* TimerTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimerTableViewCell.h; sourceTree = "<group>"; };
 		15B9313A192F2E4800452301 /* TimerTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimerTableViewCell.m; sourceTree = "<group>"; };
+		15BEA9EE1985FF11003F8AE8 /* SendResponseHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendResponseHandler.h; sourceTree = "<group>"; };
+		15BEA9EF1985FF11003F8AE8 /* SendResponseHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendResponseHandler.m; sourceTree = "<group>"; };
 		15C1E88419342C8D003B7231 /* DelayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DelayController.h; sourceTree = "<group>"; };
 		15C1E88519342C8D003B7231 /* DelayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DelayController.m; sourceTree = "<group>"; };
 		15F20F90192378A400EE6D83 /* DevicesProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesProfileController.h; sourceTree = "<group>"; };
@@ -376,6 +379,8 @@
 		154E3D3C1920C25F00D05EA0 /* winmin */ = {
 			isa = PBXGroup;
 			children = (
+				15BEA9EE1985FF11003F8AE8 /* SendResponseHandler.h */,
+				15BEA9EF1985FF11003F8AE8 /* SendResponseHandler.m */,
 				470F98541983845300EF65F8 /* UdpSocketUtil.h */,
 				470F98551983845300EF65F8 /* UdpSocketUtil.m */,
 				4747C61D1982B0D2001F8A24 /* NetUtil.h */,
@@ -576,6 +581,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				159283C81982441500E2196E /* MessageUtil.m in Sources */,
+				15BEA9F01985FF11003F8AE8 /* SendResponseHandler.m in Sources */,
 				150F45EA1928FF23000E5527 /* DDLog.m in Sources */,
 				560586A61963D9D3004BCAC6 /* CRC.c in Sources */,
 				150F461C1928FF95000E5527 /* CC3xSwitch.m in Sources */,

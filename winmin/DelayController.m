@@ -11,9 +11,9 @@
 #import "CC3xUtility.h"
 #import "CC3xSwitch.h"
 #import "CC3xMessage.h"
-@interface DelayController ()<ResponseDelegate>
-@property (nonatomic, strong) UIButton *
-btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，选中按钮切换到此按钮
+@interface DelayController ()<UDPDelegate>
+@property(nonatomic, strong) UIButton *
+    btnOfTextfeildSide;  // textfeild旁边的按钮，用于text选中输入时，选中按钮切换到此按钮
 @end
 
 @implementation DelayController
@@ -62,9 +62,9 @@ btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，�
   content_view.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_view];
   UIImageView *content_bg = [[UIImageView alloc]
-      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
-                                                       STATUS_HEIGHT -
-                                                       NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(
+                        0, 0, DEVICE_WIDTH,
+                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT)];
   content_bg.image = [UIImage imageNamed:@"window_background"];
   //    [content_bg setBounds:CGRectMake(0, 0, 260, DEVICE_HEIGHT-STATUS_HEIGHT
   //    - NAVIGATION_HEIGHT)];
@@ -175,50 +175,17 @@ btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，�
              name:UIKeyboardWillShowNotification
            object:self.view.window];
   [UdpSocketUtil shareInstance].delegate = self;
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  //  _udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                             delegateQueue:GLOBAL_QUEUE];
-  //  [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  NSData *msg;
-  //  NSString *host;
-  //  uint16_t port;
-  //  long tag;
-  //  //根据不同的网络环境，发送 本地/远程 消息
-  //  if (self.aSwitch.status == SWITCH_LOCAL ||
-  //      self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //    msg = [CC3xMessageUtil getP2dMsg53];
-  //    host = self.aSwitch.ip;
-  //    port = self.aSwitch.port;
-  //    tag = P2D_GET_DELAY_REQ_53;
-  //  } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //             self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //    msg = [CC3xMessageUtil getP2SMsg55:self.aSwitch.macAddress];
-  //    host = SERVER_IP;
-  //    port = SERVER_PORT;
-  //    tag = P2S_GET_DELAY_REQ_55;
-  //  }
-  //  [self.udpSocket sendData:msg
-  //                    toHost:host
-  //                      port:port
-  //               withTimeout:kUDPTimeOut
-  //                       tag:tag];
   [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
                                      aSwitch:self.aSwitch];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
   [UdpSocketUtil shareInstance].delegate = nil;
-  [super viewWillDisappear:animated];
   [[NSNotificationCenter defaultCenter]
       removeObserver:self
                 name:UIKeyboardWillShowNotification
               object:nil];
-  //  if (self.udpSocket) {
-  //    [self.udpSocket close];
-  //  }
+  [super viewWillDisappear:animated];
 }
 
 - (void)ButtonAction:(UIButton *)sender {
@@ -381,39 +348,6 @@ btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，�
     default:
       break;
   }
-
-  //  if (![CC3xUtility checkNetworkStatus]) {
-  //    return;
-  //  }
-  //
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
-  //  NSData *msg;
-  //  NSString *host;
-  //  uint16_t port;
-  //  long tag;
-  //  //根据不同的网络环境，发送 本地/远程 消息
-  //  if (self.aSwitch.status == SWITCH_LOCAL ||
-  //      self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //    msg = [CC3xMessageUtil getP2dMsg4D:delayTime on:startSwitch.on];
-  //    host = self.aSwitch.ip;
-  //    port = self.aSwitch.port;
-  //    tag = P2D_SET_DELAY_REQ_4D;
-  //  } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //             self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //    msg = [CC3xMessageUtil getP2SMsg4F:self.aSwitch.macAddress
-  //                                 delay:delayTime
-  //                                    on:startSwitch.on];
-  //    host = SERVER_IP;
-  //    port = SERVER_PORT;
-  //    tag = P2S_SET_DELAY_REQ_4F;
-  //  }
-  //  [self.udpSocket sendData:msg
-  //                    toHost:host
-  //                      port:port
-  //               withTimeout:kUDPTimeOut
-  //                       tag:tag];
   [[MessageUtil shareInstance] sendMsg4DOr4F:self.udpSocket
                                      aSwitch:self.aSwitch
                                    delayTime:delayTime
@@ -429,51 +363,25 @@ btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，�
   [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark-----udp delegate
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//       didReceiveData:(NSData *)data
-//          fromAddress:(NSData *)address
-//    withFilterContext:(id)filterContext {
-//  if (data) {
-//    [self.udpSocket close];
-//    // ip port 为空  排查
-//    CC3xMessage *msg = (CC3xMessage *)filterContext;
-//    NSLog(@"msgId is %02x", msg.msgId);
-//    NSLog(@"recv %02x from %@:%d %@", msg.msgId, msg.ip, msg.port,
-//          [CC3xMessageUtil hexString:data]);
-//    if (msg.msgId == 0x4E || msg.msgId == 0x50) {
-//      //设备延时设置
-//      if (msg.state == 0) {
-//        dispatch_async(dispatch_get_main_queue(), ^{ [self back]; });
-//      }
-//    } else if (msg.msgId == 0x54 || msg.msgId == 0x56) {
-//      //设备延时查询
-//      NSLog(@"msgId is %02x and delay time is %u", msg.msgId, msg.delay);
-//      if (msg.delay > 0) {
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            self.field.text = [NSString stringWithFormat:@"%u", msg.delay];
-//            self.startSwitch.on = msg.isOn;
-//            UIButton *btn = (UIButton *)[self.content_view viewWithTag:306];
-//            btn.selected = YES;
-//        });
-//      }
-//    }
-//  }
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-//  NSLog(@"msg %ld has send", tag);
-//}
-//
-//- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error
-//{
-//  NSLog(@"Delay socket has closed!!!!  %@", error);
-//}
-
+#pragma mark UDPDelegate
 - (void)responseMsgId4EOr50:(CC3xMessage *)msg {
   if (msg.state == 0) {
     dispatch_async(dispatch_get_main_queue(), ^{ [self back]; });
   }
+}
+
+- (void)noResponseMsgId4EOr50 {
+  [[MessageUtil shareInstance] sendMsg4DOr4F:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                   delayTime:delayTime
+                                    switchOn:startSwitch.on];
+}
+
+- (void)noSendMsgId4DOr4F {
+  [[MessageUtil shareInstance] sendMsg4DOr4F:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                   delayTime:delayTime
+                                    switchOn:startSwitch.on];
 }
 
 - (void)responseMsgId54Or56:(CC3xMessage *)msg {
@@ -485,5 +393,15 @@ btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，�
         btn.selected = YES;
     });
   }
+}
+
+- (void)noResponseMsgId54Or56 {
+  [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
+                                     aSwitch:self.aSwitch];
+}
+
+- (void)noSendMsgId53Or55 {
+  [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
+                                     aSwitch:self.aSwitch];
 }
 @end

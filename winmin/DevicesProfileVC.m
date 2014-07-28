@@ -10,39 +10,40 @@
 #import "EditController.h"
 #import "TimerController.h"
 #import "DelayController.h"
-#define kRefreshIntveral 3
+#import <AudioToolbox/AudioToolbox.h>
+#define kRefreshIntveral 5
 
-@interface DevicesProfileVC ()<ResponseDelegate>
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewLight;
+@interface DevicesProfileVC ()<UDPDelegate>
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewLight;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
-@property (strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
+@property(strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
-@property (strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
+@property(strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
 
-@property (strong, atomic) GCDAsyncUdpSocket *udpSocket;
-@property (assign, nonatomic) BOOL isSwitchOn; //设备是否打开
-@property (assign, atomic) BOOL isLockOK;
+@property(strong, atomic) GCDAsyncUdpSocket *udpSocket;
+@property(assign, nonatomic) BOOL isSwitchOn;  //设备是否打开
+@property(assign, atomic) BOOL isLockOK;
 
 //延迟相关量
-@property (strong, nonatomic) NSTimer *delayTimer; //延迟操作
-@property (nonatomic, assign) NSInteger delayTime; //延迟时间，单位分钟
-@property (nonatomic, assign) BOOL delayIsOn;      //延迟操作是开还是关
+@property(strong, nonatomic) NSTimer *delayTimer;  //延迟操作
+@property(nonatomic, assign) NSInteger delayTime;  //延迟时间，单位分钟
+@property(nonatomic, assign) BOOL delayIsOn;       //延迟操作是开还是关
 
 //定时列表相关量
-@property (nonatomic, strong) NSArray *timeTaskList;
+@property(nonatomic, strong) NSArray *timeTaskList;
 
-@property (strong, nonatomic) NSTimer *refreshTimer; //开关状态timer
+@property(strong, nonatomic) NSTimer *refreshTimer;  //开关状态timer
 
 - (IBAction)showPreExecPage:(id)sender;
 - (IBAction)showDelayPage:(id)sender;
@@ -75,64 +76,8 @@
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [UdpSocketUtil shareInstance].delegate = self;
-  //初始化udpsocket,绑定接收端口
-  //  self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                                 delegateQueue:GLOBAL_QUEUE];
-  //  [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-
-  //根据不同的网络环境，发送 本地/远程 消息
-  //定时列表
-  //  dispatch_async(GLOBAL_QUEUE, ^{
-  //根据不同的网络环境，发送 本地/远程 消息
-  //      if (self.aSwitch.status == SWITCH_LOCAL ||
-  //          self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //        NSData *timeMsg = [CC3xMessageUtil getP2dMsg17];
-  //        [self.udpSocket sendData:timeMsg
-  //                          toHost:self.aSwitch.ip
-  //                            port:self.aSwitch.port
-  //                     withTimeout:kUDPTimeOut
-  //                             tag:P2D_GET_TIMER_REQ_17];
-  //      } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //                 self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //        NSData *timeMsg = [CC3xMessageUtil
-  //        getP2SMsg19:self.aSwitch.macAddress];
-  //        [self.udpSocket sendData:timeMsg
-  //                          toHost:SERVER_IP
-  //                            port:SERVER_PORT
-  //                     withTimeout:kUDPTimeOut
-  //                             tag:P2S_GET_TIMER_REQ_19];
-  //      }
-  //  });
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
                                      aSwitch:self.aSwitch];
-
-  //  //延迟执行的任务
-  //  double delayInSeconds = 0.05;
-  //  dispatch_time_t delayInNanoSeconds =
-  //      dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-  //  dispatch_after(delayInNanoSeconds, GLOBAL_QUEUE, ^{
-  //      dispatch_async(GLOBAL_QUEUE, ^{
-  //          //根据不同的网络环境，发送 本地/远程 消息
-  //          if (self.aSwitch.status == SWITCH_LOCAL ||
-  //              self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //            NSData *delayMsg = [CC3xMessageUtil getP2dMsg53];
-  //            [self.udpSocket sendData:delayMsg
-  //                              toHost:self.aSwitch.ip
-  //                                port:self.aSwitch.port
-  //                         withTimeout:kUDPTimeOut
-  //                                 tag:P2D_GET_DELAY_REQ_53];
-  //          } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //                     self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //            NSData *delayMsg =
-  //                [CC3xMessageUtil getP2SMsg55:self.aSwitch.macAddress];
-  //            [self.udpSocket sendData:delayMsg
-  //                              toHost:SERVER_IP
-  //                                port:SERVER_PORT
-  //                         withTimeout:kUDPTimeOut
-  //                                 tag:P2S_GET_DELAY_REQ_55];
-  //          }
-  //      });
-  //  });
   //延迟执行的任务
   double delayInSeconds = 0.05;
   dispatch_time_t delayInNanoSeconds =
@@ -148,12 +93,11 @@
       dispatch_time(DISPATCH_TIME_NOW, delayInSeconds2 * NSEC_PER_SEC);
   dispatch_after(
       delayInNanoSeconds2, dispatch_get_main_queue(),
-      ^{
-        //      self.refreshTimer =
+      ^{//      self.refreshTimer =
         //          [[NSTimer alloc] initWithFireDate:[NSDate date]
         //                                   interval:kRefreshIntveral
         //                                     target:self
-        //                                   selector:@selector(checkSwitchStateInTimer)
+        // selector:@selector(checkSwitchStateInTimer)
         //                                   userInfo:nil
         //                                    repeats:YES];
         //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
@@ -162,7 +106,7 @@
         //      self.refreshTimer = [NSTimer
         //          scheduledTimerWithTimeInterval:kRefreshIntveral
         //                                  target:self
-        //                                selector:@selector(checkSwitchStateInTimer)
+        // selector:@selector(checkSwitchStateInTimer)
         //                                userInfo:nil
         //                                 repeats:YES];
       });
@@ -175,12 +119,6 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  //  if (self.udpSocket) {
-  //    if (!self.udpSocket.isClosed) {
-  //      [self.udpSocket close];
-  //    }
-  //    self.udpSocket = nil;
-  //  }
   [self.delayTimer invalidate];
   [self.refreshTimer invalidate];
   self.delayTimer = nil;
@@ -212,25 +150,6 @@
 }
 
 - (void)checkSwitchStateInTimer {
-  //  //根据不同的网络环境，发送 本地/远程 消息
-  //  if (self.aSwitch.status == SWITCH_LOCAL ||
-  //      self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //    //开关状态
-  //    [self.udpSocket sendData:[CC3xMessageUtil getP2dMsg0B]
-  //                      toHost:self.aSwitch.ip
-  //                        port:self.aSwitch.port
-  //                 withTimeout:kUDPTimeOut
-  //                         tag:P2D_STATE_INQUIRY_0B];
-  //  } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //             self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //    //开关状态
-  //    [self.udpSocket
-  //           sendData:[CC3xMessageUtil getP2SMsg0D:self.aSwitch.macAddress]
-  //             toHost:SERVER_IP
-  //               port:SERVER_PORT
-  //        withTimeout:kUDPTimeOut
-  //                tag:P2S_STATE_INQUIRY_0D];
-  //  }
   [[MessageUtil shareInstance] sendMsg0BOr0D:self.udpSocket
                                      aSwitch:self.aSwitch];
 }
@@ -274,16 +193,16 @@ preparation before navigation
   //检测设备状态
   [self checkSwitchStatus];
   //发送控制消息包
-  [self sendMsg17];
+  [self sendMsg11];
 
   self.isLockOK = NO;
 
   //是否震动 userdefault
-  //    BOOL shake =
-  //    [[[NSUserDefaults standardUserDefaults] valueForKey:kShake] boolValue];
-  //    if (shake) {
-  //        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-  //    }
+  BOOL shake =
+      [[[NSUserDefaults standardUserDefaults] valueForKey:kShake] boolValue];
+  if (shake) {
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+  }
 }
 
 - (IBAction)back:(id)sender {
@@ -301,7 +220,7 @@ preparation before navigation
 }
 
 //发送控制消息包
-- (void)sendMsg17 {
+- (void)sendMsg11 {
   //发送消息之前检测网络状态
   NetworkStatus reach = [[Reachability
           reachabilityForInternetConnection] currentReachabilityStatus];
@@ -316,38 +235,6 @@ preparation before navigation
     [alert show];
     return;
   }
-  //  //发送消息包之前检测udpsocket的状态，
-  //  if (_udpSocket.isClosed == YES || _udpSocket == nil) {
-  //    _udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
-  //                                               delegateQueue:GLOBAL_QUEUE];
-  //    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
-  //  }
-  //  dispatch_async(GLOBAL_QUEUE, ^{
-  //      NSData *msg;
-  //      NSString *host;
-  //      uint16_t port;
-  //      long tag;
-  //      //根据不同的网络环境，发送 本地/远程 消息
-  //      if (self.aSwitch.status == SWITCH_LOCAL ||
-  //          self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //        msg = [CC3xMessageUtil getP2dMsg11:!self.isSwitchOn];
-  //        host = self.aSwitch.ip;
-  //        port = self.aSwitch.port;
-  //        tag = P2D_CONTROL_REQ_11;
-  //      } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //                 self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //        msg = [CC3xMessageUtil getP2sMsg13:self.aSwitch.macAddress
-  //                                   aSwitch:!self.isSwitchOn];
-  //        host = SERVER_IP;
-  //        port = SERVER_PORT;
-  //        tag = P2S_CONTROL_REQ_13;
-  //      }
-  //      [self.udpSocket sendData:msg
-  //                        toHost:host
-  //                          port:port
-  //                   withTimeout:kUDPTimeOut
-  //                           tag:tag];
-  //  });
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
                                   isSwitchOn:self.isSwitchOn];
@@ -356,7 +243,7 @@ preparation before navigation
 //倒计时显示，
 - (void)countDown {
   dispatch_async(dispatch_get_main_queue(), ^{
-      NSLog(@"delay time is %d", self.delayTime);
+      //      NSLog(@"delay time is %d", self.delayTime);
       if (self.delayTime <= 0) {
         [self.delayTimer invalidate];
         self.imgViewDelay1.image = [UIImage imageNamed:@"digit_0"];
@@ -392,15 +279,6 @@ preparation before navigation
 #pragma mark 延迟操作处理
 - (void)delayHandler {
   dispatch_async(dispatch_get_main_queue(), ^{
-      //      self.delayTimer = [[NSTimer alloc] initWithFireDate:[NSDate
-      //      date]
-      //                                                 interval:60
-      //                                                   target:self
-      //                                                 selector:@selector(countDown)
-      //                                                 userInfo:nil
-      //                                                  repeats:YES];
-      //      [[NSRunLoop currentRunLoop] addTimer:self.delayTimer
-      //                                   forMode:NSRunLoopCommonModes];
       self.delayTimer =
           [NSTimer scheduledTimerWithTimeInterval:60
                                            target:self
@@ -516,105 +394,7 @@ preparation before navigation
   }
 }
 
-#pragma mark UDP Delegate
-///**
-// * By design, UDP is a connectionless protocol, and connecting is not needed.
-// * However, you may optionally choose to connect to a particular host for
-// *reasons
-// * outlined in the documentation for the various connect methods listed above.
-// *
-// * This method is called if one of the connect methods are invoked, and the
-// *connection is successful.
-// **/
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//    didConnectToAddress:(NSData *)address {
-//  NSLog(@"didConnectToAddress");
-//}
-//
-///**
-// * By design, UDP is a connectionless protocol, and connecting is not needed.
-// * However, you may optionally choose to connect to a particular host for
-// *reasons
-// * outlined in the documentation for the various connect methods listed above.
-// *
-// * This method is called if one of the connect methods are invoked, and the
-// *connection fails.
-// * This may happen, for example, if a domain name is given for the host and
-// the
-// *domain name is unable to be resolved.
-// **/
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotConnect:(NSError *)error {
-//  NSLog(@"didNotConnect");
-//}
-//
-///**
-// * Called when the datagram with the given tag has been sent.
-// **/
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-//  NSLog(@"didSendDataWithTag :%ld", tag);
-//}
-//
-///**
-// * Called if an error occurs while trying to send a datagram.
-// * This could be due to a timeout, or something more serious such as the data
-// *being too large to fit in a sigle packet.
-// **/
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//    didNotSendDataWithTag:(long)tag
-//               dueToError:(NSError *)error {
-//  NSLog(@"didNotSendDataWithTag :%ld", tag);
-//}
-//
-///**
-// * Called when the socket has received the requested datagram.
-// **/
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock
-//       didReceiveData:(NSData *)data
-//          fromAddress:(NSData *)address
-//    withFilterContext:(id)filterContext {
-//  NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
-//  if (data) {
-//    CC3xMessage *msg = (CC3xMessage *)filterContext;
-//    if (msg.msgId == 0x12 || msg.msgId == 0x14) {
-//      //设备开关
-//      if (msg.state == 0 && !self.isLockOK) {
-//        self.isLockOK = YES;
-//        self.isSwitchOn = !self.isSwitchOn;
-//        self.aSwitch.isOn = self.isSwitchOn;
-//        dispatch_async(dispatch_get_main_queue(),
-//                       ^{ [self changeOutwardBySwitchState:self.isSwitchOn];
-//                       });
-//      }
-//    } else if (msg.msgId == 0x18 || msg.msgId == 0x1a) {
-//      //定时列表
-//      if (msg.timerTaskNumber > 0) {
-//        self.timeTaskList = msg.timerTaskList;
-//        [self timeTaskHandler];
-//      }
-//    } else if (msg.msgId == 0x54 || msg.msgId == 0x56) {
-//      //延迟响应
-//      if (msg.delay > 0) {
-//        self.delayTime = msg.delay;
-//        self.delayIsOn = msg.isOn;
-//        [self delayHandler];
-//      }
-//    } else if (msg.msgId == 0xc || msg.msgId == 0xe) {
-//      //开关状态响应
-//      dispatch_async(dispatch_get_main_queue(),
-//                     ^{ [self changeOutwardBySwitchState:msg.isOn]; });
-//    }
-//  }
-//}
-//
-///**
-// * Called when the socket is closed.
-// **/
-//- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error
-//{
-//  NSLog(@"DevicesProfileVC udpSocketDidClose");
-//}
-
-#pragma mark ResponseDelegate
+#pragma mark UDPDelegate
 - (void)responseMsgId12Or14:(CC3xMessage *)msg {
   if (msg.state == 0 && !self.isLockOK) {
     self.isLockOK = YES;
@@ -622,6 +402,18 @@ preparation before navigation
     self.aSwitch.isOn = self.isSwitchOn;
     [self changeOutwardBySwitchState:self.isSwitchOn];
   }
+}
+
+- (void)noResponseMsgId12Or14 {
+  [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                  isSwitchOn:self.isSwitchOn];
+}
+
+- (void)noSendMsgId11Or13 {
+  [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                  isSwitchOn:self.isSwitchOn];
 }
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {
@@ -635,11 +427,32 @@ preparation before navigation
   }
 }
 
+- (void)noResponseMsgId18Or1A {
+  [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
+                                     aSwitch:self.aSwitch];
+}
+
+- (void)noSendMsgId17Or19 {
+  [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
+                                     aSwitch:self.aSwitch];
+}
+
 - (void)responseMsgId54Or56:(CC3xMessage *)msg {
   if (msg.delay > 0) {
     self.delayTime = msg.delay;
     self.delayIsOn = msg.isOn;
+    [self countDown];
     [self delayHandler];
   }
+}
+
+- (void)noResponseMsgId54Or56 {
+  [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
+                                     aSwitch:self.aSwitch];
+}
+
+- (void)noSendMsgId53Or55 {
+  [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
+                                     aSwitch:self.aSwitch];
 }
 @end
