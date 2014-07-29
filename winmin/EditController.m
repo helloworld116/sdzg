@@ -163,30 +163,6 @@
     [self setViewMoveUp:NO];
     [name_text resignFirstResponder];
   }
-
-  //备份设备名到服务端
-  //    if (_udpSocket.isClosed == YES || _udpSocket == nil){
-  //        [CC3xUtility setupUdpSocket:self.udpSocket
-  //                               port:APP_PORT];
-  //    }
-  //    if (self.aSwitch.status == SWITCH_LOCAL ||
-  //        self.aSwitch.status == SWITCH_LOCAL_LOCK) {
-  //        [self.udpSocket sendData:[CC3xMessageUtil
-  //        getP2dMsg3F:name_text.text]
-  //                          toHost:self.aSwitch.ip
-  //                            port:self.aSwitch.port
-  //                     withTimeout:10
-  //                             tag:P2D_SET_NAME_REQ_3F];
-  //    } else if (self.aSwitch.status == SWITCH_REMOTE ||
-  //               self.aSwitch.status == SWITCH_REMOTE_LOCK) {
-  //        [self.udpSocket sendData:
-  //         [CC3xMessageUtil getP2sMsg41:self.aSwitch.macAddress
-  //                                 name:name_text.text]
-  //                          toHost:SERVER_IP
-  //                            port:SERVER_PORT
-  //                     withTimeout:10
-  //                             tag:P2S_SET_NAME_REQ_41];
-  //    }
   [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
                                      aSwitch:self.aSwitch
                                         name:name_text.text];
@@ -219,33 +195,6 @@
     default:
       break;
   }
-}
-
-#pragma mark---获取图片
-- (void)takePhoto {
-  UIImagePickerControllerSourceType sourceType =
-      UIImagePickerControllerSourceTypeCamera;
-  if ([UIImagePickerController
-          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    //设置拍照后的图片可被编辑
-    picker.allowsEditing = YES;
-    picker.sourceType = sourceType;
-    //        [picker release];
-    [self presentModalViewController:picker animated:YES];
-  } else {
-    NSLog(@"模拟其中无法打开照相机,请在真机中使用");
-  }
-}
-
-- (void)localPhoto {
-  UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-  picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  picker.delegate = self;
-  //设置选择后的图片可被编辑
-  picker.allowsEditing = YES;
-  [self presentModalViewController:picker animated:YES];
 }
 
 #pragma mark---txetfield
@@ -294,6 +243,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(keyboardWillShow:)
@@ -324,62 +274,98 @@
   [super viewWillDisappear:animated];
 }
 
-#pragma mark-----imagePicker
-- (void)imagePickerController:(UIImagePickerController *)picker
-    didFinishPickingMediaWithInfo:(NSDictionary *)info {
-  NSString *type = [info objectForKey:UIImagePickerControllerMediaType];
-  //当选择的类型是图片
-  if ([type isEqualToString:@"public.image"]) {
-    //先把图片转成NSData
-    UIImage *image =
-        [info objectForKey:@"UIImagePickerControllerOriginalImage"];
-    NSData *data;
-    if (UIImagePNGRepresentation(image) == nil) {
-      data = UIImageJPEGRepresentation(image, 1.0);
-    } else {
-      data = UIImagePNGRepresentation(image);
-    }
-
-    //图片保存的路径
-    //这里将图片放在沙盒的documents文件夹中
-    NSString *DocumentsPath =
-        [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-
-    //文件管理器
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-
-    //把刚刚图片转换的data对象拷贝至沙盒中 并保存为image.png
-    [fileManager createDirectoryAtPath:DocumentsPath
-           withIntermediateDirectories:YES
-                            attributes:nil
-                                 error:nil];
-    [fileManager
-        createFileAtPath:[DocumentsPath stringByAppendingString:@"/image.png"]
-                contents:data
-              attributes:nil];
-
-    //得到选择后沙盒中图片的完整路径
-    filePath =
-        [[NSString alloc] initWithFormat:@"%@%@", DocumentsPath, @"/image.png"];
-
-    //关闭相册界面
-    [picker dismissModalViewControllerAnimated:YES];
-
-    //        //创建一个选择后图片的小图标放在下方
-    //        //类似微薄选择图后的效果
-    //        UIImageView *smallimage = [[[UIImageView alloc]
-    //        initWithFrame:CGRectMake(50, 120, 40, 40)] autorelease];
-    //
-    //        smallimage.image = image;
-    //        //加在视图中
-    //        [self.view addSubview:smallimage];
-    //        [image_btn setImage:image forState:UIControlStateNormal];
+#pragma mark---获取图片
+- (void)takePhoto {
+  UIImagePickerControllerSourceType sourceType =
+      UIImagePickerControllerSourceTypeCamera;
+  if ([UIImagePickerController
+          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.delegate = self;
+    //设置拍照后的图片可被编辑
+    picker.allowsEditing = YES;
+    picker.sourceType = sourceType;
+    [self presentModalViewController:picker animated:YES];
+  } else {
+    UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:@"连接到图片库错误"
+                                   message:@""
+                                  delegate:nil
+                         cancelButtonTitle:@"确定"
+                         otherButtonTitles:nil];
+    [alert show];
   }
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-  NSLog(@"您取消了选择图片");
-  [picker dismissModalViewControllerAnimated:YES];
+- (void)localPhoto {
+  if ([UIImagePickerController
+          isSourceTypeAvailable:
+              UIImagePickerControllerSourceTypePhotoLibrary]) {
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate = self;
+    //设置选择后的图片可被编辑
+    picker.allowsEditing = YES;
+    [self presentModalViewController:picker animated:YES];
+  } else {
+    UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:@"连接到图片库错误"
+                                   message:@""
+                                  delegate:nil
+                         cancelButtonTitle:@"确定"
+                         otherButtonTitles:nil];
+    [alert show];
+  }
+}
+
+#pragma mark UIImagePickerControllerDelegate
+- (void)imagePickerController:(UIImagePickerController *)picker
+    didFinishPickingMediaWithInfo:(NSDictionary *)info {
+  UIImage *image = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
+  if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+  }
+  UIImage *theImage =
+      [self imageWithImageSimple:image scaledToSize:CGSizeMake(160.0, 160.0)];
+  NSString *str =
+      [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
+  NSString *name = [[[str componentsSeparatedByString:@"."] objectAtIndex:0]
+      stringByAppendingString:@".png"];
+  [self saveImage:theImage withName:name];
+  [self dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark 保存图片到document
+- (void)saveImage:(UIImage *)tempImage withName:(NSString *)imageName {
+  NSData *imageData = UIImagePNGRepresentation(tempImage);
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                       NSUserDomainMask, YES);
+  NSString *documentsDirectory = [paths objectAtIndex:0];
+  // Now we get the full path to the file
+  NSString *fullPathToFile =
+      [documentsDirectory stringByAppendingPathComponent:imageName];
+  // and then we write it out
+  [imageData writeToFile:fullPathToFile atomically:NO];
+}
+
+#pragma mark 压缩图片
+- (UIImage *)imageWithImageSimple:(UIImage *)image
+                     scaledToSize:(CGSize)newSize {
+  // Create a graphics image context
+  UIGraphicsBeginImageContext(newSize);
+
+  // Tell the old image to draw in this new context, with the desired
+  // new size
+  [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+
+  // Get the new image from the context
+  UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+
+  // End the context
+  UIGraphicsEndImageContext();
+
+  // Return the new image.
+  return newImage;
 }
 
 - (void)back {
@@ -392,25 +378,6 @@
 }
 
 #pragma mark--------udp delegate
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data
-// fromAddress:(NSData *)address withFilterContext:(id)filterContext{
-//    NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
-//    if (data){
-//        CC3xMessage * msg = (CC3xMessage *)filterContext;
-//        if (msg.msgId == 0x40||msg.msgId == 0x42){
-//            NSLog(@"本地设置设备名");
-//        }
-//    }
-//}
-//
-//- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag{
-//    NSLog(@"msg %ld  has sent", tag);
-//}
-//
-//- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError
-//*)error{
-//    NSLog(@"edit UDP has been closed, %@",error);
-//}
 - (void)responseMsgId40Or42:(CC3xMessage *)msg {
 }
 @end

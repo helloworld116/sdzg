@@ -44,7 +44,7 @@
 //通知消息字段
 #define kDelayNotification @"DelayNotification"
 //UDP过期时间,单位秒
-#define kUDPTimeOut 0.5
+#define kUDPTimeOut -1
 
 
 

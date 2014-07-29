@@ -66,7 +66,7 @@
   NSLog(@"didSendDataWithTag :%ld", tag);
   //需要执行的操作：
   // 1、清空响应数据
-  // 2、定时器到点检查数据是否为空，为空说明未响应，触发请求重发
+  // 2、指定时间后检查数据是否为空，为空说明未响应，触发请求重发
   switch (tag) {
     case P2D_SERVER_INFO_05:
 
