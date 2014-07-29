@@ -12,16 +12,16 @@
 #import "MoreSettingsViewController.h"
 //判断设备是否4寸屏幕
 
-#define iPhone5                                                                \
-  ([UIScreen instancesRespondToSelector:@selector(currentMode)]                \
-       ? CGSizeEqualToSize(CGSizeMake(640, 1136),                              \
-                           [[UIScreen mainScreen] currentMode].size)           \
+#define iPhone5                                                      \
+  ([UIScreen instancesRespondToSelector:@selector(currentMode)]      \
+       ? CGSizeEqualToSize(CGSizeMake(640, 1136),                    \
+                           [[UIScreen mainScreen] currentMode].size) \
        : NO)
 
 //判断设备是否iOS7
 
-#define IOS7                                                                   \
-  ([[[UIDevice currentDevice] systemVersion] compare:@"7.0"] !=                \
+#define IOS7                                                    \
+  ([[[UIDevice currentDevice] systemVersion] compare:@"7.0"] != \
    NSOrderedAscending)
 @implementation AppDelegate
 @synthesize window;
@@ -55,39 +55,45 @@
   tabBar.viewControllers = array;
 
   array = nil;
-  [tabBar.tabBar setBackgroundImage:[UIImage imageNamed:@"tabbar_background"]];
+  //  [tabBar.tabBar setBackgroundImage:[UIImage
+  //  imageNamed:@"tabbar_background"]];
 
-  //导航栏
-  float systemVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-  UIImage *backgroundImage =
-      [UIImage imageNamed:@"navigation_background"]; //获取图片
-
-  self.navigationController.navigationBar.translucent = NO;
-  self.navigationController.extendedLayoutIncludesOpaqueBars = YES;
-
-  if (systemVersion >= 5.0) {
-    CGSize titleSize = self.navigationController.navigationBar.bounds
-                           .size; //获取Navigation Bar的位置和大小
-    backgroundImage =
-        [self scaleToSize:backgroundImage
-                     size:titleSize]; //设置图片的大小与Navigation Bar相同
-    [self.navigationController.navigationBar
-        setBackgroundImage:backgroundImage
-             forBarMetrics:UIBarMetricsDefault]; //设置背景
-    NSLog(@"systemVersion=%f", systemVersion);
-  } else {
-    [self.navigationController.navigationBar
-        insertSubview:[[UIImageView alloc] initWithImage:backgroundImage]
-              atIndex:1];
-    NSLog(@"systemVersion=%f", systemVersion);
-  }
-
-  backgroundImage = nil;
+  //  //导航栏
+  //  float systemVersion = [[[UIDevice currentDevice] systemVersion]
+  //  floatValue];
+  //  UIImage *backgroundImage =
+  //      [UIImage imageNamed:@"navigation_background"]; //获取图片
+  //
+  //  self.navigationController.navigationBar.translucent = NO;
+  //  self.navigationController.extendedLayoutIncludesOpaqueBars = YES;
+  //
+  //  if (systemVersion >= 5.0) {
+  //    CGSize titleSize = self.navigationController.navigationBar.bounds
+  //                           .size; //获取Navigation Bar的位置和大小
+  //    backgroundImage =
+  //        [self scaleToSize:backgroundImage
+  //                     size:titleSize]; //设置图片的大小与Navigation Bar相同
+  //    [self.navigationController.navigationBar
+  //        setBackgroundImage:backgroundImage
+  //             forBarMetrics:UIBarMetricsDefault]; //设置背景
+  //    NSLog(@"systemVersion=%f", systemVersion);
+  //  } else {
+  //    [self.navigationController.navigationBar
+  //        insertSubview:[[UIImageView alloc] initWithImage:backgroundImage]
+  //              atIndex:1];
+  //    NSLog(@"systemVersion=%f", systemVersion);
+  //  }
+  //  backgroundImage = nil;
   //    //设置背景样式可用通过设置tintColor来设置
   //    self.navigationController.navigationBar.tintColor = [UIColor
   //    colorWithRed:50/255.0 green:138/255.0 blue:233/255.0
   //    alpha:1.0];//改变navigation的背景颜色
   //状态栏显示
+
+  //设置导航栏背景图片
+  //  [[UINavigationBar appearance]
+  //      setBackgroundImage:[UIImage imageNamed:@"navigation_background.png"]
+  //           forBarMetrics:UIBarMetricsDefault];
 
   self.window.rootViewController = tabBar;
 

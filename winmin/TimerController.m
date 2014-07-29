@@ -15,7 +15,7 @@
 #import "CC3xTimerTask.h"
 #import "AddTimerController.h"
 #import "DevicesProfileController.h"
-@interface TimerController ()<UDPDelegate>
+@interface TimerController ()<UIAlertViewDelegate, UDPDelegate>
 
 @end
 
@@ -34,51 +34,36 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Do any additional setup after loading the view.
-  self.view.backgroundColor = [UIColor grayColor];
-  self.navigationItem.hidesBackButton = YES;
+  if ([UIViewController
+          instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+  }
   self.navigationItem.title = self.aSwitch.switchName;
 
   // navi
   UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
-
   [left setFrame:CGRectMake(0, 2, 28, 28)];
-
   [left setImage:[UIImage imageNamed:@"back_button"]
         forState:UIControlStateNormal];
-
   [left addTarget:self
                 action:@selector(backToDevicesWithTimer)
       forControlEvents:UIControlEventTouchUpInside];
-
   UIBarButtonItem *leftButton =
       [[UIBarButtonItem alloc] initWithCustomView:left];
-
   self.navigationItem.leftBarButtonItem = leftButton;
-
-  left = nil;
-  leftButton = nil;
-
   UIButton *right = [UIButton buttonWithType:UIButtonTypeCustom];
-
   [right setFrame:CGRectMake(290, 2, 28, 28)];
-
   [right setImage:[UIImage imageNamed:@"refresh_button"]
          forState:UIControlStateNormal];
-
   [right addTarget:self
                 action:@selector(refreshTimerList)
       forControlEvents:UIControlEventTouchUpInside];
-
   UIBarButtonItem *rightButton =
       [[UIBarButtonItem alloc] initWithCustomView:right];
-
   self.navigationItem.rightBarButtonItem = rightButton;
 
-  right = nil;
-  rightButton = nil;
-
   UIImageView *background_imageView =
-      [[UIImageView alloc] initWithFrame:[self.view frame]];
+      [[UIImageView alloc] initWithFrame:[self.view bounds]];
   background_imageView.image = [UIImage imageNamed:@"background.png"];
   [super.view addSubview:background_imageView];
 
@@ -88,8 +73,7 @@
 
   self.isRefresh = NO;
 
-  CGRect frame = CGRectMake(0, STATUS_HEIGHT + NAVIGATION_HEIGHT, DEVICE_WIDTH,
-                            DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT);
+  CGRect frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
   content_view = [[UIView alloc] initWithFrame:frame];
   content_view.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_view];
@@ -107,6 +91,7 @@
 
   UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(80, 13, 160, 20)];
   label.text = @"定时任务列表";
+  label.backgroundColor = [UIColor clearColor];
   label.textAlignment = NSTextAlignmentCenter;
   //    [label setBounds:CGRectMake(100 , 20, 60, 20)];
   label.textColor = [UIColor whiteColor];
@@ -137,8 +122,6 @@
                     action:@selector(addTimer)
           forControlEvents:UIControlEventTouchUpInside];
   [content_view addSubview:_addTimer_btn];
-
-  NSLog(@"定时cell绘制");
   self.udpSocket = [UdpSocketUtil shareInstance].udpSocket;
 }
 
@@ -200,25 +183,40 @@
 - (void)timerListCell:(TimerTableViewCell *)cell
     didHandleLongPress:(UIGestureRecognizer *)recognizer {
   self.selectedCell = cell;
-  UIActionSheet *actionSheet = [[UIActionSheet alloc]
-               initWithTitle:nil
-                    delegate:self
-           cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-      destructiveButtonTitle:nil
-           otherButtonTitles:NSLocalizedString(@"delete", nil),
-                             NSLocalizedString(@"Edit", nil), nil];
-  [actionSheet showFromRect:cell.bounds inView:cell animated:YES];
+  //  UIActionSheet *actionSheet = [[UIActionSheet alloc]
+  //               initWithTitle:nil
+  //                    delegate:self
+  //           cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+  //      destructiveButtonTitle:nil
+  //           otherButtonTitles:NSLocalizedString(@"delete", nil),
+  //                             NSLocalizedString(@"Edit", nil), nil];
+  //  [actionSheet showFromRect:cell.bounds inView:cell animated:YES];
+  UIAlertView *alertView =
+      [[UIAlertView alloc] initWithTitle:nil
+                                 message:@"想要删除该任务？"
+                                delegate:self
+                       cancelButtonTitle:@"取消"
+                       otherButtonTitles:@"确定", nil];
+  [alertView show];
 }
 
-#pragma mark - UIActionSheet delegate method
-//提示框触发不同的方案：编辑 / 删除
-- (void)actionSheet:(UIActionSheet *)actionSheet
+//#pragma mark - UIActionSheet delegate method
+////提示框触发不同的方案：编辑 / 删除
+//- (void)actionSheet:(UIActionSheet *)actionSheet
+//    clickedButtonAtIndex:(NSInteger)buttonIndex {
+//  NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
+//  if ([title isEqualToString:NSLocalizedString(@"delete", nil)]) {
+//    [self handleDeleteAction];
+//  } else if ([title isEqualToString:NSLocalizedString(@"Edit", nil)]) {
+//    [self handleEditAction];
+//  }
+//}
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView
     clickedButtonAtIndex:(NSInteger)buttonIndex {
-  NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
-  if ([title isEqualToString:NSLocalizedString(@"delete", nil)]) {
+  if (buttonIndex == 1) {
+    //执行删除操作
     [self handleDeleteAction];
-  } else if ([title isEqualToString:NSLocalizedString(@"Edit", nil)]) {
-    [self handleEditAction];
   }
 }
 //删除定时
@@ -354,11 +352,9 @@
 - (void)tableView:(UITableView *)tableView
     didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   [timer_table deselectRowAtIndexPath:indexPath animated:YES];
-  //    AddTimerController * add = [[AddTimerController alloc]init];
-  //    add.timerTask = [self.timerList objectAtIndex:indexPath.row];
-  //
-  //
-  //    [self.navigationController pushViewController:add animated:YES];
+  self.selectedCell =
+      (TimerTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+  [self handleEditAction];
 }
 
 #pragma mark - toggle the switch

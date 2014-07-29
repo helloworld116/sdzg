@@ -9,41 +9,64 @@
 #import "AboutViewController.h"
 
 @interface AboutViewController ()
+@property(strong, nonatomic) IBOutlet UILabel *lblVersion;
 
+- (IBAction)openPhone:(id)sender;
+- (IBAction)openEmail:(id)sender;
+- (IBAction)openWebsite:(id)sender;
 @end
 
 @implementation AboutViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+- (id)initWithNibName:(NSString *)nibNameOrNil
+               bundle:(NSBundle *)nibBundleOrNil {
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+  if (self) {
+    // Custom initialization
+  }
+  return self;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  // Do any additional setup after loading the view.
+  if ([UIViewController
+          instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+  }
+  self.navigationItem.title = @"关于";
+  //  [[UIApplication sharedApplication]
+  //      openURL:[NSURL URLWithString:self.lblPhone.text]];
+  //  NSString *appVersion =
+  //      [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+  NSString *appVersionShortString = [[NSBundle mainBundle]
+      objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+  self.lblVersion.text = [@"V " stringByAppendingString:appVersionShortString];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)didReceiveMemoryWarning {
+  [super didReceiveMemoryWarning];
+  // Dispose of any resources that can be recreated.
+}
+- (IBAction)openPhone:(id)sender {
+  UIButton *btn = (UIButton *)sender;
+  NSString *phoneNumFormatter =
+      [@"tel://" stringByAppendingString:btn.currentTitle];
+  [[UIApplication sharedApplication]
+      openURL:[NSURL URLWithString:phoneNumFormatter]];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (IBAction)openEmail:(id)sender {
+  UIButton *btn = (UIButton *)sender;
+  NSString *emailFormatter =
+      [@"mailto://" stringByAppendingString:btn.currentTitle];
+  [[UIApplication sharedApplication]
+      openURL:[NSURL URLWithString:emailFormatter]];
 }
-*/
 
+- (IBAction)openWebsite:(id)sender {
+  UIButton *btn = (UIButton *)sender;
+  [[UIApplication sharedApplication]
+      openURL:[NSURL URLWithString:btn.currentTitle]];
+}
 @end

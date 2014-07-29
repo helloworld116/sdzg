@@ -26,8 +26,6 @@
 		150F45ED1928FF23000E5527 /* DDDispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 150F45E31928FF23000E5527 /* DDDispatchQueueLogFormatter.m */; };
 		150F45EE1928FF23000E5527 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 150F45E51928FF23000E5527 /* DDMultiFormatter.m */; };
 		150F45EF1928FF23000E5527 /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 150F45E61928FF23000E5527 /* README.txt */; };
-		150F45F41928FF30000E5527 /* libFTC_DEBUG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F45F21928FF30000E5527 /* libFTC_DEBUG.a */; };
-		150F45F51928FF30000E5527 /* libFTC_RELEASE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F45F31928FF30000E5527 /* libFTC_RELEASE.a */; };
 		150F46011928FF3B000E5527 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 150F45F81928FF3B000E5527 /* GCDAsyncSocket.m */; };
 		150F46021928FF3B000E5527 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 150F45FA1928FF3B000E5527 /* GCDAsyncUdpSocket.m */; };
 		150F46031928FF3B000E5527 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 150F45FC1928FF3B000E5527 /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -41,6 +39,8 @@
 		150F461C1928FF95000E5527 /* CC3xSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 150F46161928FF95000E5527 /* CC3xSwitch.m */; };
 		150F461D1928FF95000E5527 /* CC3xTimerTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 150F46181928FF95000E5527 /* CC3xTimerTask.m */; };
 		150F4622192922DD000E5527 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F4621192922DD000E5527 /* libxml2.dylib */; };
+		153A338619876C5600016890 /* libFTC_DEBUG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F45F21928FF30000E5527 /* libFTC_DEBUG.a */; };
+		153A338719876C5600016890 /* libFTC_RELEASE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F45F31928FF30000E5527 /* libFTC_RELEASE.a */; };
 		153D4E02194B06C200E056A2 /* FAQViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E01194B06C200E056A2 /* FAQViewController.m */; };
 		153D4E05194B06E800E056A2 /* APPQrcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E04194B06E800E056A2 /* APPQrcodeViewController.m */; };
 		153D4E08194B070D00E056A2 /* USERSBookViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E07194B070D00E056A2 /* USERSBookViewController.m */; };
@@ -208,6 +208,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				153A338619876C5600016890 /* libFTC_DEBUG.a in Frameworks */,
+				153A338719876C5600016890 /* libFTC_RELEASE.a in Frameworks */,
 				150F4622192922DD000E5527 /* libxml2.dylib in Frameworks */,
 				150F047D1924ED87000398BB /* AVFoundation.framework in Frameworks */,
 				150F047B1924ED7F000398BB /* CoreMedia.framework in Frameworks */,
@@ -218,9 +220,7 @@
 				150F04711924ED3F000398BB /* SystemConfiguration.framework in Frameworks */,
 				150F046F1924ED2B000398BB /* Security.framework in Frameworks */,
 				150F046D1924ED21000398BB /* CoreImage.framework in Frameworks */,
-				150F45F41928FF30000E5527 /* libFTC_DEBUG.a in Frameworks */,
 				150F046B1924ED14000398BB /* AudioToolbox.framework in Frameworks */,
-				150F45F51928FF30000E5527 /* libFTC_RELEASE.a in Frameworks */,
 				154E3D391920C25F00D05EA0 /* CoreGraphics.framework in Frameworks */,
 				154E3D3B1920C25F00D05EA0 /* UIKit.framework in Frameworks */,
 				154E3D371920C25F00D05EA0 /* Foundation.framework in Frameworks */,

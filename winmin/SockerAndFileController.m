@@ -26,7 +26,10 @@
 }
 - (void)viewDidLoad {
   [super viewDidLoad];
-
+  if ([UIViewController
+          instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+  }
   //从本地文件中获得设备列表
   NSArray *switchArray = [self loadSwitches];
   _switchDict = [[NSMutableDictionary alloc] init];
@@ -35,10 +38,6 @@
       [_switchDict setObject:aSwitch forKey:aSwitch.macAddress];
     }
   }
-  //设置导航栏背景图片
-  [[UINavigationBar appearance]
-      setBackgroundImage:[UIImage imageNamed:@"navigation_background.png"]
-           forBarMetrics:UIBarMetricsDefault];
 
   self.navigationItem.title = @"智能插座列表";
   UIImageView *background_imageView = [[UIImageView alloc]
@@ -58,8 +57,7 @@
 
   // tableview，设备列表
   tableView_DL = [[UITableView alloc]
-      initWithFrame:CGRectMake(0, STATUS_HEIGHT + NAVIGATION_HEIGHT,
-                               DEVICE_WIDTH, DEVICE_HEIGHT - 64)
+      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)
               style:UITableViewStylePlain];
   NSLog(@"设备列表 x=%f,y=%f", tableView_DL.frame.origin.x,
         tableView_DL.frame.origin.y);
@@ -278,18 +276,26 @@
 //扫描设备
 - (void)sendStateInquiry {
   NSLog(@"扫描设备状态");
+  //先局域网内扫描，1秒后内网没有响应的请求外网，更新设备状态
   [[MessageUtil shareInstance] sendMsg0B:self.udpSocket];
 
-  NSArray *macs = [self.switchDict allKeys];
-  for (int i = 0; i < macs.count; i++) {
-    NSString *mac = [[self.switchDict allKeys] objectAtIndex:i];
-    double delayInSeconds = 0.05 * i;
-    dispatch_time_t delayInNanoSeconds =
-        dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-    dispatch_after(delayInNanoSeconds, GLOBAL_QUEUE, ^{
-        [[MessageUtil shareInstance] sendMsg0D:self.udpSocket mac:mac];
-    });
-  }
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
+                 GLOBAL_QUEUE, ^{
+      NSArray *macs = [self.switchDict allKeys];
+      int j = 0;
+      for (int i = 0; i < macs.count; i++) {
+        NSString *mac = [[self.switchDict allKeys] objectAtIndex:i];
+        CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
+        if (aSwitch.status == SWITCH_UNKNOWN) {
+          double delayInSeconds = 0.05 * j;
+          dispatch_time_t delayInNanoSeconds =
+              dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+          dispatch_after(delayInNanoSeconds, GLOBAL_QUEUE, ^{
+              [[MessageUtil shareInstance] sendMsg0D:self.udpSocket mac:mac];
+          });
+        }
+      }
+  });
 }
 
 - (void)dealloc {
@@ -418,26 +424,16 @@
   CGPoint p = [gestureRecognizer locationInView:tableView_DL];
   NSIndexPath *indexPath = [tableView_DL indexPathForRowAtPoint:p];
   self.selectedIndexPath = indexPath;
-  if (indexPath == nil) {
-    NSLog(@"长按屏幕不是长按开关");
-  } else if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-    NSString *lockTitle;
+  if (indexPath && gestureRecognizer.state == UIGestureRecognizerStateBegan) {
     self.selectedSwitch = [self.switchDict allValues][indexPath.row];
     UITableViewCell *cell = [tableView_DL cellForRowAtIndexPath:indexPath];
-    if (_selectedSwitch.status == SWITCH_LOCAL_LOCK ||
-        _selectedSwitch.status == SWITCH_REMOTE_LOCK) {
-      lockTitle = NSLocalizedString(@"不锁定", nil);
-    } else {
-      lockTitle = NSLocalizedString(@"锁定", nil);
-    }
     UIActionSheet *actionSheet = [[UIActionSheet alloc]
                  initWithTitle:nil
                       delegate:self
              cancelButtonTitle:NSLocalizedString(@"取消", nil)
         destructiveButtonTitle:nil
-             otherButtonTitles:lockTitle, NSLocalizedString(@"删除", nil),
-                               NSLocalizedString(@"位置", nil),
-                               NSLocalizedString(@"重命名", nil), nil];
+             otherButtonTitles:NSLocalizedString(@"闪烁", nil),
+                               NSLocalizedString(@"删除", nil), nil];
     [actionSheet showFromRect:cell.bounds inView:cell animated:YES];
   }
 }
@@ -449,14 +445,8 @@
   NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
   if ([title isEqualToString:NSLocalizedString(@"删除", nil)]) {
     [self handleDeleteAction];
-  } else if ([title isEqualToString:NSLocalizedString(@"锁定", nil)]) {
-    [self handleLock:YES];
-  } else if ([title isEqualToString:NSLocalizedString(@"不锁定", nil)]) {
-    [self handleLock:NO];
   } else if ([title isEqualToString:NSLocalizedString(@"闪烁", nil)]) {
     [self handleLocate];
-  } else if ([title isEqualToString:NSLocalizedString(@"重命名", nil)]) {
-    [self handleRename];
   }
 }
 
@@ -465,50 +455,49 @@
   [tableView_DL reloadData];
 }
 
-- (void)handleLock:(BOOL)isLock {
-  [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
-                                     aSwitch:_selectedSwitch
-                                      isLock:isLock];
-}
-
 - (void)handleLocate {
   [[MessageUtil shareInstance] sendMsg39Or3B:self.udpSocket
                                      aSwitch:_selectedSwitch
                                           on:1];
 }
 
-- (void)handleRename {
-  if (![CC3xUtility checkNetworkStatus]) {
-    return;
-  }
-  UIAlertView *alert = [[UIAlertView alloc]
-          initWithTitle:_selectedSwitch.switchName
-                message:nil
-               delegate:self
-      cancelButtonTitle:NSLocalizedString(@"取消", nil)
-      otherButtonTitles:NSLocalizedString(@"确定", nil), nil];
-  [alert setAlertViewStyle:UIAlertViewStylePlainTextInput];
-  [alert show];
-}
-
-#pragma mark - UIAlertViewDelegate method
-
-- (void)alertView:(UIAlertView *)alertView
-    clickedButtonAtIndex:(NSInteger)buttonIndex {
-  NSString *name = [alertView textFieldAtIndex:0].text;
-  if (buttonIndex == alertView.cancelButtonIndex) {
-    return;
-  } else {
-    if (name.length) {
-      [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
-                                         aSwitch:_selectedSwitch
-                                            name:name];
-    }
-  }
-  [[alertView textFieldAtIndex:0] resignFirstResponder];
-  self.selectedSwitch.switchName = name;
-  [tableView_DL reloadData];
-}
+//- (void)handleLock:(BOOL)isLock {
+//  [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
+//                                     aSwitch:_selectedSwitch
+//                                      isLock:isLock];
+//}
+//- (void)handleRename {
+//  if (![CC3xUtility checkNetworkStatus]) {
+//    return;
+//  }
+//  UIAlertView *alert = [[UIAlertView alloc]
+//          initWithTitle:_selectedSwitch.switchName
+//                message:nil
+//               delegate:self
+//      cancelButtonTitle:NSLocalizedString(@"取消", nil)
+//      otherButtonTitles:NSLocalizedString(@"确定", nil), nil];
+//  [alert setAlertViewStyle:UIAlertViewStylePlainTextInput];
+//  [alert show];
+//}
+//
+//#pragma mark - UIAlertViewDelegate method
+//
+//- (void)alertView:(UIAlertView *)alertView
+//    clickedButtonAtIndex:(NSInteger)buttonIndex {
+//  NSString *name = [alertView textFieldAtIndex:0].text;
+//  if (buttonIndex == alertView.cancelButtonIndex) {
+//    return;
+//  } else {
+//    if (name.length) {
+//      [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
+//                                         aSwitch:_selectedSwitch
+//                                            name:name];
+//    }
+//  }
+//  [[alertView textFieldAtIndex:0] resignFirstResponder];
+//  self.selectedSwitch.switchName = name;
+//  [tableView_DL reloadData];
+//}
 
 #pragma mark - Navigation
 
@@ -555,7 +544,6 @@
     } else if (aSwitch.status == SWITCH_UNKNOWN) {
       aSwitch.status = SWITCH_OFFLINE;
     }
-    //    aSwitch.status = SWITCH_REMOTE;
     [self.switchDict setObject:aSwitch forKey:msg.mac];
   }
 }
@@ -564,7 +552,7 @@
   [tableView_DL reloadData];
 }
 
-#pragma mark ResponseDelegate
+#pragma mark UDPDelegate
 - (void)responseMsgIdA:(CC3xMessage *)msg {
   dispatch_sync(GLOBAL_QUEUE, ^{
       CC3xSwitch *aSwitch = [[CC3xSwitch alloc] initWithName:msg.deviceName
@@ -583,9 +571,11 @@
 }
 
 - (void)noResponseMsgIdA {
+  [[MessageUtil shareInstance] sendMsg09:self.udpSocket];
 }
 
 - (void)noSendMsgId9 {
+  [[MessageUtil shareInstance] sendMsg09:self.udpSocket];
 }
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {
@@ -600,25 +590,31 @@
   }
 }
 
-- (void)responseMsgId48Or4A:(CC3xMessage *)msg {
-  [self updateSwitchByMsg:msg];
-  if (!msg.state) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.selectedIndexPath) {
-          NSArray *indexPaths = @[ self.selectedIndexPath ];
-          [tableView_DL beginUpdates];
-          [tableView_DL reloadRowsAtIndexPaths:indexPaths
-                              withRowAnimation:UITableViewRowAnimationNone];
-          [tableView_DL endUpdates];
-          self.selectedIndexPath = nil;
-        }
-    });
-  }
-}
-
-- (void)noResponseMsgId48Or4A {
-}
-
-- (void)noSendMsgId47Or49 {
-}
+//- (void)responseMsgId48Or4A:(CC3xMessage *)msg {
+//  [self updateSwitchByMsg:msg];
+//  if (!msg.state) {
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if (self.selectedIndexPath) {
+//          NSArray *indexPaths = @[ self.selectedIndexPath ];
+//          [tableView_DL beginUpdates];
+//          [tableView_DL reloadRowsAtIndexPaths:indexPaths
+//                              withRowAnimation:UITableViewRowAnimationNone];
+//          [tableView_DL endUpdates];
+//          self.selectedIndexPath = nil;
+//        }
+//    });
+//  }
+//}
+//
+//- (void)noResponseMsgId48Or4A {
+//  //    [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
+//  //                                       aSwitch:_selectedSwitch
+//  //                                        isLock:isLock];
+//}
+//
+//- (void)noSendMsgId47Or49 {
+//  //    [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
+//  //                                       aSwitch:_selectedSwitch
+//  //                                        isLock:isLock];
+//}
 @end

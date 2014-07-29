@@ -68,6 +68,17 @@
   [super viewDidLoad];
   // Do any additional setup after loading the view.
   self.navigationItem.title = self.aSwitch.switchName;
+  self.navigationItem.hidesBackButton = YES;
+  UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+  [backBtn setImage:[UIImage imageNamed:@"back_button"]
+           forState:UIControlStateNormal];
+  backBtn.frame = CGRectMake(0, 2, 28, 28);
+  [backBtn addTarget:self
+                action:@selector(back:)
+      forControlEvents:UIControlEventTouchUpInside];
+  self.navigationItem.leftBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:backBtn];
+
   self.isSwitchOn = self.aSwitch.isOn;
   [self changeOutwardBySwitchState:self.isSwitchOn];
   self.udpSocket = [UdpSocketUtil shareInstance].udpSocket;

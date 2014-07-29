@@ -31,10 +31,14 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Do any additional setup after loading the view.
+  if ([UIViewController
+          instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+  }
   self.navigationItem.title = self.aSwitch.switchName;
 
   UIImageView *background_imageView =
-      [[UIImageView alloc] initWithFrame:[self.view frame]];
+      [[UIImageView alloc] initWithFrame:[self.view bounds]];
   background_imageView.image = [UIImage imageNamed:@"background.png"];
   [super.view addSubview:background_imageView];
 
@@ -56,8 +60,7 @@
 
   self.isRefresh = NO;
 
-  CGRect frame = CGRectMake(0, STATUS_HEIGHT + NAVIGATION_HEIGHT, DEVICE_WIDTH,
-                            DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT);
+  CGRect frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
   content_view = [[UIView alloc] initWithFrame:frame];
   content_view.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_view];
@@ -73,6 +76,7 @@
 
   UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(80, 13, 160, 20)];
   label.text = @"定时任务列表";
+  label.backgroundColor = [UIColor clearColor];
   label.textAlignment = NSTextAlignmentCenter;
   //    [label setBounds:CGRectMake(100 , 20, 60, 20)];
   label.textColor = [UIColor whiteColor];
@@ -101,6 +105,7 @@
       label.textAlignment = NSTextAlignmentLeft;
       label.adjustsFontSizeToFitWidth = YES;
       label.adjustsLetterSpacingToFitWidth = YES;
+      label.backgroundColor = [UIColor clearColor];
       [content_view addSubview:label];
     }
   }
@@ -139,12 +144,14 @@
   UILabel *lastLabel =
       [[UILabel alloc] initWithFrame:CGRectMake(170, 239, 42, 21)];
   lastLabel.text = @"分钟";
+  lastLabel.backgroundColor = [UIColor clearColor];
   lastLabel.textColor = [UIColor blackColor];
   [content_view addSubview:lastLabel];
 
   UILabel *startLabel =
       [[UILabel alloc] initWithFrame:CGRectMake(49, 296, 42, 21)];
   startLabel.text = @"操作";
+  startLabel.backgroundColor = [UIColor clearColor];
   startLabel.textColor = [UIColor whiteColor];
   [content_view addSubview:startLabel];
   startSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(89, 291, 51, 31)];

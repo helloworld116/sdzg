@@ -36,7 +36,10 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Do any additional setup after loading the view.
-
+  if ([UIViewController
+          instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+  }
   self.navigationItem.title = @"定时任务";
 
   // background 背景图片
@@ -63,8 +66,7 @@
   self.navigationItem.leftBarButtonItem = leftButton;
 
   //任务列表背景图片，及范围
-  CGRect frame = CGRectMake(0, STATUS_HEIGHT + NAVIGATION_HEIGHT, DEVICE_WIDTH,
-                            DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT);
+  CGRect frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
   content_View = [[UIView alloc] initWithFrame:frame];
   content_View.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_View];
@@ -80,6 +82,7 @@
 
   //定时任务label的创建，文字格式等，
   UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(80, 13, 160, 20)];
+  label.backgroundColor = [UIColor clearColor];
   label.text = @"编辑任务";
   label.textAlignment = NSTextAlignmentCenter;
   //    [label setBounds:CGRectMake(100 , 20, 60, 20)];
@@ -175,6 +178,7 @@
   UILabel *repeat_label =
       [[UILabel alloc] initWithFrame:CGRectMake(40, 60, 80, 25)];
   repeat_label.text = @"重复";
+  repeat_label.backgroundColor = [UIColor clearColor];
   [content_View addSubview:repeat_label];
 
   //重复背景
@@ -186,6 +190,7 @@
   //开始时间label
   startTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(35, 167, 81, 21)];
   startTimeLabel.text = @"开启时间";
+  startTimeLabel.backgroundColor = [UIColor clearColor];
   [content_View addSubview:startTimeLabel];
 
   //开始时间button，button触发时间选择器，button的titlelabel.text属性显示当前时间（后面设置）
@@ -216,6 +221,7 @@
   //关闭时间同上
   endTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(35, 230, 81, 21)];
   endTimeLabel.text = @"关闭时间";
+  endTimeLabel.backgroundColor = [UIColor clearColor];
   [content_View addSubview:endTimeLabel];
 
   endTimeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -346,13 +352,13 @@
   // Dispose of any resources that can be recreated.
 }
 
-- (void)viewDidLayoutSubviews {
-  // layel层视图，主要是时间选择视图
-  CGRect frame = self.timePickerView.frame;
-  frame.origin.y = self.view.frame.size.height;
-  self.timePickerView.frame = frame;
-  LogInfo(@"%@", NSStringFromCGRect(self.timePickerView.frame));
-}
+//- (void)viewDidLayoutSubviews {
+//  // layel层视图，主要是时间选择视图
+//  CGRect frame = self.timePickerView.frame;
+//  frame.origin.y = self.view.frame.size.height;
+//  self.timePickerView.frame = frame;
+//  LogInfo(@"%@", NSStringFromCGRect(self.timePickerView.frame));
+//}
 
 //选中重复的星期，图片选择判断
 - (void)selectDayOfWeek:(id)sender {
@@ -369,8 +375,8 @@
 //弹出时间选择视图
 - (void)showTimePickerView:(id)sender {
   //创建timePicker视图
-  self.timePickerView = [[UIView alloc]
-      initWithFrame:CGRectMake(0, 328, 320, DEVICE_HEIGHT - 328 / 2.0)];
+  self.timePickerView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT-44-162, 320, 44 + 162)];
   self.timePickerView.layer.cornerRadius = 10.0;
   self.timePickerView.backgroundColor = [UIColor whiteColor];
   //添加主视图到window上
@@ -401,8 +407,8 @@
   [self.timePickerView addSubview:toolBar];
 
   //时间选择
-  _datePicker = [[UIDatePicker alloc]
-      initWithFrame:CGRectMake(0, 44, 320, DEVICE_HEIGHT - 372)];
+  _datePicker =
+      [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 44, DEVICE_WIDTH, 162)];
   _datePicker.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
   _datePicker.datePickerMode = UIDatePickerModeTime;
