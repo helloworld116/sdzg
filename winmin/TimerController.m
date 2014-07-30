@@ -78,9 +78,9 @@
   content_view.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_view];
   UIImageView *content_bg = [[UIImageView alloc]
-      initWithFrame:CGRectMake(
-                        0, 0, DEVICE_WIDTH,
-                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
+                                                       STATUS_HEIGHT -
+                                                       NAVIGATION_HEIGHT)];
   content_bg.image = [UIImage imageNamed:@"window_background"];
   //    [content_bg setBounds:CGRectMake(0, 0, 260, DEVICE_HEIGHT-STATUS_HEIGHT
   //    - NAVIGATION_HEIGHT)];
@@ -168,7 +168,8 @@
 
 - (void)getTimerList {
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:ActiveMode];
 }
 
 - (void)checkSwitchStatus {
@@ -383,7 +384,8 @@
 - (void)saveTheTimerList {
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
-                                    timeList:self.timerList];
+                                    timeList:self.timerList
+                                    sendMode:ActiveMode];
 }
 
 //进入定时编辑页面
@@ -444,12 +446,14 @@
 
 - (void)noResponseMsgId18Or1A {
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId17Or19 {
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 
 - (void)responseMsgId1EOr20:(CC3xMessage *)msg {
@@ -462,12 +466,14 @@
 - (void)noResponseMsgId1EOr20 {
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
-                                    timeList:self.timerList];
+                                    timeList:self.timerList
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId1DOr1F {
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
-                                    timeList:self.timerList];
+                                    timeList:self.timerList
+                                    sendMode:PassiveMode];
 }
 @end

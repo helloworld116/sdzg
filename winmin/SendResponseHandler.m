@@ -8,10 +8,11 @@
 
 #import "SendResponseHandler.h"
 
-#define kCheckPrivatePrivateResponseInterval \
-  0.1  //发送UDP内网请求后，检查是否有响应数据的间隔，单位为秒
-#define kCheckPublicPrivateResponseInterval \
-  0.5  //发送UDP外网请求后，检查是否有响应数据的间隔，单位为秒
+#define kCheckPrivatePrivateResponseInterval                                   \
+  0.1 //发送UDP内网请求后，检查是否有响应数据的间隔，单位为秒
+#define kCheckPublicPrivateResponseInterval                                    \
+  0.5 //发送UDP外网请求后，检查是否有响应数据的间隔，单位为秒
+#define kTryCount 3 //请求失败后自动尝试次数
 
 @implementation SendResponseHandler
 + (instancetype)shareInstance {
@@ -70,8 +71,10 @@
       break;
     case P2D_SCAN_DEV_09:
       if (!self.responseDataA) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg9SendCount + 1);
+        if ([MessageUtil shareInstance].msg9SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgIdA)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgIdA];
         }
@@ -80,8 +83,10 @@
     case P2D_STATE_INQUIRY_0B:
     case P2S_STATE_INQUIRY_0D:
       if (!self.responseDataCOrE) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msgBOrDSendCount + 1);
+        if ([MessageUtil shareInstance].msgBOrDSendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgIdCOrE)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgIdCOrE];
         }
@@ -90,8 +95,10 @@
     case P2D_CONTROL_REQ_11:
     case P2S_CONTROL_REQ_13:
       if (!self.responseData12Or14) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg11Or13SendCount + 1);
+        if ([MessageUtil shareInstance].msg11Or13SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId12Or14)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId12Or14];
         }
@@ -100,8 +107,10 @@
     case P2D_GET_TIMER_REQ_17:
     case P2S_GET_TIMER_REQ_19:
       if (!self.responseData18Or1A) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg17Or19SendCount + 1);
+        if ([MessageUtil shareInstance].msg17Or19SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId18Or1A)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId18Or1A];
         }
@@ -110,8 +119,10 @@
     case P2D_SET_TIMER_REQ_1D:
     case P2S_SET_TIMER_REQ_1F:
       if (!self.responseData1EOr20) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg1DOr1FSendCount + 1);
+        if ([MessageUtil shareInstance].msg1DOr1FSendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId1EOr20)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId1EOr20];
         }
@@ -120,8 +131,10 @@
     case P2D_GET_PROPERTY_REQ_25:
     case P2S_GET_PROPERTY_REQ_27:
       if (!self.responseData26Or28) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg25Or27SendCount + 1);
+        if ([MessageUtil shareInstance].msg25Or27SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId26Or28)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId26Or28];
         }
@@ -133,8 +146,10 @@
     case P2D_LOCATE_REQ_39:
     case P2S_LOCATE_REQ_3B:
       if (!self.responseData3AOr3C) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg39Or3BSendCount + 1);
+        if ([MessageUtil shareInstance].msg39Or3BSendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId3AOr3C)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId3AOr3C];
         }
@@ -143,8 +158,10 @@
     case P2D_SET_NAME_REQ_3F:
     case P2S_SET_NAME_REQ_41:
       if (!self.responseData40Or42) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg3FOr41SendCount + 1);
+        if ([MessageUtil shareInstance].msg3FOr41SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId40Or42)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId40Or42];
         }
@@ -153,8 +170,10 @@
     case P2D_DEV_LOCK_REQ_47:
     case P2S_DEV_LOCK_REQ_49:
       if (!self.responseData48Or4A) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg47Or49SendCount + 1);
+        if ([MessageUtil shareInstance].msg47Or49SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId48Or4A)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId48Or4A];
         }
@@ -163,8 +182,10 @@
     case P2D_SET_DELAY_REQ_4D:
     case P2S_SET_DELAY_REQ_4F:
       if (!self.responseData4EOr50) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg4DOr4FSendCount + 1);
+        if ([MessageUtil shareInstance].msg4DOr4FSendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId4EOr50)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId4EOr50];
         }
@@ -173,8 +194,10 @@
     case P2D_GET_DELAY_REQ_53:
     case P2S_GET_DELAY_REQ_55:
       if (!self.responseData54Or56) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg53Or55SendCount + 1);
+        if ([MessageUtil shareInstance].msg53Or55SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId54Or56)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId54Or56];
         }
@@ -182,8 +205,10 @@
       break;
     case P2S_PHONE_INIT_REQ_59:
       if (!self.responseData5A) {
-        NSLog(@"tag %ld 重新发送", tag);
-        if ([[UdpSocketUtil shareInstance].delegate
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msg59SendCount + 1);
+        if ([MessageUtil shareInstance].msg59SendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgId5A)]) {
           [[UdpSocketUtil shareInstance].delegate noResponseMsgId5A];
         }

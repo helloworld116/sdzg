@@ -14,36 +14,36 @@
 #define kRefreshIntveral 5
 
 @interface DevicesProfileVC ()<UDPDelegate>
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewLight;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewLight;
 
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
-@property(strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
+@property (strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
 
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
-@property(strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
+@property (strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
 
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
 
-@property(strong, atomic) GCDAsyncUdpSocket *udpSocket;
-@property(assign, nonatomic) BOOL isSwitchOn;  //设备是否打开
-@property(assign, atomic) BOOL isLockOK;
+@property (strong, atomic) GCDAsyncUdpSocket *udpSocket;
+@property (assign, nonatomic) BOOL isSwitchOn; //设备是否打开
+@property (assign, atomic) BOOL isLockOK;
 
 //延迟相关量
-@property(strong, nonatomic) NSTimer *delayTimer;  //延迟操作
-@property(nonatomic, assign) NSInteger delayTime;  //延迟时间，单位分钟
-@property(nonatomic, assign) BOOL delayIsOn;       //延迟操作是开还是关
+@property (strong, nonatomic) NSTimer *delayTimer; //延迟操作
+@property (nonatomic, assign) NSInteger delayTime; //延迟时间，单位分钟
+@property (nonatomic, assign) BOOL delayIsOn;      //延迟操作是开还是关
 
 //定时列表相关量
-@property(nonatomic, strong) NSArray *timeTaskList;
+@property (nonatomic, strong) NSArray *timeTaskList;
 
-@property(strong, nonatomic) NSTimer *refreshTimer;  //开关状态timer
+@property (strong, nonatomic) NSTimer *refreshTimer; //开关状态timer
 
 - (IBAction)showPreExecPage:(id)sender;
 - (IBAction)showDelayPage:(id)sender;
@@ -88,14 +88,16 @@
   [super viewWillAppear:animated];
   [UdpSocketUtil shareInstance].delegate = self;
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:ActiveMode];
   //延迟执行的任务
   double delayInSeconds = 0.05;
   dispatch_time_t delayInNanoSeconds =
       dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
   dispatch_after(delayInNanoSeconds, dispatch_get_main_queue(), ^{
       [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
-                                         aSwitch:self.aSwitch];
+                                         aSwitch:self.aSwitch
+                                        sendMode:ActiveMode];
   });
 
   //页面刷新定时器
@@ -104,22 +106,22 @@
       dispatch_time(DISPATCH_TIME_NOW, delayInSeconds2 * NSEC_PER_SEC);
   dispatch_after(
       delayInNanoSeconds2, dispatch_get_main_queue(),
-      ^{//      self.refreshTimer =
-        //          [[NSTimer alloc] initWithFireDate:[NSDate date]
-        //                                   interval:kRefreshIntveral
-        //                                     target:self
-        // selector:@selector(checkSwitchStateInTimer)
-        //                                   userInfo:nil
-        //                                    repeats:YES];
-        //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
-        //                                   forMode:NSRunLoopCommonModes];
+      ^{ //      self.refreshTimer =
+         //          [[NSTimer alloc] initWithFireDate:[NSDate date]
+         //                                   interval:kRefreshIntveral
+         //                                     target:self
+         // selector:@selector(checkSwitchStateInTimer)
+         //                                   userInfo:nil
+         //                                    repeats:YES];
+         //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
+         //                                   forMode:NSRunLoopCommonModes];
 
-        //      self.refreshTimer = [NSTimer
-        //          scheduledTimerWithTimeInterval:kRefreshIntveral
-        //                                  target:self
-        // selector:@selector(checkSwitchStateInTimer)
-        //                                userInfo:nil
-        //                                 repeats:YES];
+         //      self.refreshTimer = [NSTimer
+         //          scheduledTimerWithTimeInterval:kRefreshIntveral
+         //                                  target:self
+         // selector:@selector(checkSwitchStateInTimer)
+         //                                userInfo:nil
+         //                                 repeats:YES];
       });
   self.refreshTimer =
       [NSTimer scheduledTimerWithTimeInterval:kRefreshIntveral
@@ -162,7 +164,8 @@
 
 - (void)checkSwitchStateInTimer {
   [[MessageUtil shareInstance] sendMsg0BOr0D:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:ActiveMode];
 }
 
 /*
@@ -248,7 +251,8 @@ preparation before navigation
   //  }
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
-                                  isSwitchOn:self.isSwitchOn];
+                                  isSwitchOn:self.isSwitchOn
+                                    sendMode:ActiveMode];
 }
 
 //倒计时显示，
@@ -418,13 +422,15 @@ preparation before navigation
 - (void)noResponseMsgId12Or14 {
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
-                                  isSwitchOn:self.isSwitchOn];
+                                  isSwitchOn:self.isSwitchOn
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId11Or13 {
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
-                                  isSwitchOn:self.isSwitchOn];
+                                  isSwitchOn:self.isSwitchOn
+                                    sendMode:PassiveMode];
 }
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {
@@ -443,12 +449,14 @@ preparation before navigation
 
 - (void)noResponseMsgId18Or1A {
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId17Or19 {
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 
 - (void)responseMsgId54Or56:(CC3xMessage *)msg {
@@ -462,11 +470,13 @@ preparation before navigation
 
 - (void)noResponseMsgId54Or56 {
   [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId53Or55 {
   [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 @end

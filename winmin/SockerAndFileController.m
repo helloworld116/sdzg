@@ -11,7 +11,7 @@
 #import "DevicesProfileVC.h"
 
 @interface SockerAndFileController ()<UDPDelegate>
-@property(nonatomic, retain) NSIndexPath *selectedIndexPath;  //当前操作的列
+@property (nonatomic, retain) NSIndexPath *selectedIndexPath; //当前操作的列
 @end
 
 @implementation SockerAndFileController
@@ -289,7 +289,7 @@
 - (void)sendStateInquiry {
   NSLog(@"扫描设备状态");
   //先局域网内扫描，1秒后内网没有响应的请求外网，更新设备状态
-  [[MessageUtil shareInstance] sendMsg0B:self.udpSocket];
+  [[MessageUtil shareInstance] sendMsg0B:self.udpSocket sendMode:ActiveMode];
 
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
                  GLOBAL_QUEUE, ^{
@@ -303,7 +303,9 @@
           dispatch_time_t delayInNanoSeconds =
               dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
           dispatch_after(delayInNanoSeconds, GLOBAL_QUEUE, ^{
-              [[MessageUtil shareInstance] sendMsg0D:self.udpSocket mac:mac];
+              [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
+                                                 mac:mac
+                                            sendMode:ActiveMode];
           });
           j++;
         }
@@ -325,7 +327,7 @@
 
 //发送扫描信息
 - (void)sendScanMsg {
-  [[MessageUtil shareInstance] sendMsg09:self.udpSocket];
+  [[MessageUtil shareInstance] sendMsg09:self.udpSocket sendMode:ActiveMode];
 }
 
 //刷新
@@ -479,7 +481,8 @@
 - (void)handleLocate {
   [[MessageUtil shareInstance] sendMsg39Or3B:self.udpSocket
                                      aSwitch:_selectedSwitch
-                                          on:1];
+                                          on:1
+                                    sendMode:ActiveMode];
 }
 
 //- (void)handleLock:(BOOL)isLock {
@@ -594,11 +597,11 @@
 }
 
 - (void)noResponseMsgIdA {
-  [[MessageUtil shareInstance] sendMsg09:self.udpSocket];
+  [[MessageUtil shareInstance] sendMsg09:self.udpSocket sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId9 {
-  [[MessageUtil shareInstance] sendMsg09:self.udpSocket];
+  [[MessageUtil shareInstance] sendMsg09:self.udpSocket sendMode:PassiveMode];
 }
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {

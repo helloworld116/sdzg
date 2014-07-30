@@ -30,9 +30,13 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  if ([UIViewController
+          instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+  }
   //背景
   UIImageView *background_imageView =
-      [[UIImageView alloc] initWithFrame:[self.view frame]];
+      [[UIImageView alloc] initWithFrame:[self.view bounds]];
   background_imageView.image = [UIImage imageNamed:@"background.png"];
   [super.view addSubview:background_imageView];
 
@@ -60,7 +64,7 @@
   leftButton = nil;
   // wifi名，可默认获取
   textfield_wifi =
-      [[UITextField alloc] initWithFrame:CGRectMake(27, 76, 273, 30)];
+      [[UITextField alloc] initWithFrame:CGRectMake(27, 12, 273, 30)];
   textfield_wifi.borderStyle = UITextBorderStyleRoundedRect;
   textfield_wifi.placeholder = @"WIFI:";
   textfield_wifi.clearButtonMode = UITextFieldViewModeAlways;
@@ -69,7 +73,7 @@
 
   //密码
   textfield_password =
-      [[UITextField alloc] initWithFrame:CGRectMake(27, 118, 273, 30)];
+      [[UITextField alloc] initWithFrame:CGRectMake(27, 54, 273, 30)];
   textfield_password.borderStyle = UITextBorderStyleRoundedRect;
   textfield_password.placeholder = @"密码:";
   textfield_password.clearButtonMode = UITextFieldViewModeAlways;
@@ -79,19 +83,19 @@
 
   //是否显示
   label_showpassword =
-      [[UILabel alloc] initWithFrame:CGRectMake(27, 171, 128, 21)];
+      [[UILabel alloc] initWithFrame:CGRectMake(27, 107, 128, 21)];
   label_showpassword.text = @"是否显示密码:";
   label_showpassword.backgroundColor = [UIColor clearColor];
 
   switch_showpassword =
-      [[UISwitch alloc] initWithFrame:CGRectMake(231, 171, 41, 31)];
+      [[UISwitch alloc] initWithFrame:CGRectMake(231, 107, 41, 31)];
   switch_showpassword.on = NO;
   [switch_showpassword addTarget:self
                           action:@selector(switched:)
                 forControlEvents:UIControlEventValueChanged];
   //点击开始连接按钮
   button_startconfig = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-  button_startconfig.frame = CGRectMake(10, 216, 300, 30);
+  button_startconfig.frame = CGRectMake(10, 152, 300, 30);
   [button_startconfig
       setBackgroundImage:[UIImage imageNamed:@"save_button_image"]
                 forState:UIControlStateNormal];
@@ -140,7 +144,7 @@
   [super viewWillAppear:animated];
   //视图出现前，检测网络连接状态   wifi/wan/not
   NetworkStatus netStatus = [wifiReachability currentReachabilityStatus];
-  if (netStatus == NotReachable) {  // No activity if no wifi
+  if (netStatus == NotReachable) { // No activity if no wifi
     [self networkNotReachableAlert];
   } else {
 #if defined(TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR
@@ -211,14 +215,14 @@
 - (void)startTransmitting {
   @try {
     NetworkStatus netStatus = [wifiReachability currentReachabilityStatus];
-    if (netStatus == NotReachable) {  // No activity if no wifi
+    if (netStatus == NotReachable) { // No activity if no wifi
       [self networkNotReachableAlert];
       return;
     }
 
     config = nil;
 
-    if ([textfield_password.text length]) {  // for user enter the password
+    if ([textfield_password.text length]) { // for user enter the password
       self.passwordStr =
           [textfield_password.text length] ? textfield_password.text : nil;
 #if defined(TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR
@@ -253,7 +257,7 @@
   }
   @catch (NSException *exception) {
     LogInfo(@"exception === %@", [exception description]);
-    if (button_startconfig.selected) {  /// start button in sending mode
+    if (button_startconfig.selected) { /// start button in sending mode
       [self touchToAdd:button_startconfig];
     }
   }
@@ -298,7 +302,7 @@
 
   //    _View_config.backgroundColor = [UIColor colorWithPatternImage:[UIImage
   //    imageNamed:@"actionsheet_background"]];
-  self.View_config.layer.cornerRadius = 5.0;  //圆角设定，
+  self.View_config.layer.cornerRadius = 5.0; //圆角设定，
 
   bg = [[UIImageView alloc]
       initWithImage:[UIImage imageNamed:@"actionsheet_background"]];
@@ -321,7 +325,7 @@
                                _View_config.frame.size.width,
                                _View_config.frame.size.height -
                                    label_title.frame.size.height - 60.0)];
-  textView.selectable = NO;
+  //  textView.selectable = NO;
   textView.editable = NO;
   textView.backgroundColor = [UIColor clearColor];
   textView.text = @"  正在对网络进行配置";

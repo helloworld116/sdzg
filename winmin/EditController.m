@@ -12,8 +12,8 @@
 #import "CC3xMessage.h"
 #import "TemplateVC.h"
 @interface EditController ()<UDPDelegate, UIAlertViewDelegate>
-@property(nonatomic, strong) NSString *imageName;  //保存图片设置后的名称
-@property(nonatomic, strong) NSString *deviceName;  //保存修改后的名称
+@property (nonatomic, strong) NSString *imageName; //保存图片设置后的名称
+@property (nonatomic, strong) NSString *deviceName; //保存修改后的名称
 @end
 
 @implementation EditController
@@ -177,7 +177,8 @@
   } else {
     [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
                                        aSwitch:self.aSwitch
-                                          name:self.deviceName];
+                                          name:self.deviceName
+                                      sendMode:ActiveMode];
   }
 }
 
@@ -188,7 +189,8 @@
       if (buttonIndex == 1) {
         [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
                                            aSwitch:self.aSwitch
-                                            isLock:!self.aSwitch.isLocked];
+                                            isLock:!self.aSwitch.isLocked
+                                          sendMode:ActiveMode];
       }
       break;
     case 1001:
@@ -411,8 +413,8 @@
 - (void)responseMsgId40Or42:(CC3xMessage *)msg {
   if (msg.state == 0) {
     dispatch_async(dispatch_get_main_queue(),
-                   ^{  //        [UIView animateWithDuration:0.3
-                       //                         animations:^(void) {
+                   ^{ //        [UIView animateWithDuration:0.3
+                      //                         animations:^(void) {
         //                             self.view.frame = CGRectMake(0,
         //                             DEVICE_HEIGHT, 0, 0);
         //                         }];
@@ -432,13 +434,15 @@
 - (void)noResponseMsgId40Or42 {
   [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
                                      aSwitch:self.aSwitch
-                                        name:self.deviceName];
+                                        name:self.deviceName
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId3FOr41 {
   [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
                                      aSwitch:self.aSwitch
-                                        name:self.deviceName];
+                                        name:self.deviceName
+                                    sendMode:PassiveMode];
 }
 
 - (void)responseMsgId48Or4A:(CC3xMessage *)msg {
@@ -457,12 +461,14 @@
 - (void)noResponseMsgId48Or4A {
   [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
                                      aSwitch:self.aSwitch
-                                      isLock:!self.aSwitch.isLocked];
+                                      isLock:!self.aSwitch.isLocked
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId47Or49 {
   [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
                                      aSwitch:self.aSwitch
-                                      isLock:!self.aSwitch.isLocked];
+                                      isLock:!self.aSwitch.isLocked
+                                    sendMode:PassiveMode];
 }
 @end

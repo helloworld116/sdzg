@@ -12,8 +12,8 @@
 #import "CC3xSwitch.h"
 #import "CC3xMessage.h"
 @interface DelayController ()<UDPDelegate>
-@property(nonatomic, strong) UIButton *
-    btnOfTextfeildSide;  // textfeild旁边的按钮，用于text选中输入时，选中按钮切换到此按钮
+@property (nonatomic, strong) UIButton *
+btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，选中按钮切换到此按钮
 @end
 
 @implementation DelayController
@@ -65,9 +65,9 @@
   content_view.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_view];
   UIImageView *content_bg = [[UIImageView alloc]
-      initWithFrame:CGRectMake(
-                        0, 0, DEVICE_WIDTH,
-                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
+                                                       STATUS_HEIGHT -
+                                                       NAVIGATION_HEIGHT)];
   content_bg.image = [UIImage imageNamed:@"window_background"];
   //    [content_bg setBounds:CGRectMake(0, 0, 260, DEVICE_HEIGHT-STATUS_HEIGHT
   //    - NAVIGATION_HEIGHT)];
@@ -183,7 +183,8 @@
            object:self.view.window];
   [UdpSocketUtil shareInstance].delegate = self;
   [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:ActiveMode];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -358,7 +359,8 @@
   [[MessageUtil shareInstance] sendMsg4DOr4F:self.udpSocket
                                      aSwitch:self.aSwitch
                                    delayTime:delayTime
-                                    switchOn:startSwitch.on];
+                                    switchOn:startSwitch.on
+                                    sendMode:ActiveMode];
 
   //    [self timerOut];
 }
@@ -381,14 +383,16 @@
   [[MessageUtil shareInstance] sendMsg4DOr4F:self.udpSocket
                                      aSwitch:self.aSwitch
                                    delayTime:delayTime
-                                    switchOn:startSwitch.on];
+                                    switchOn:startSwitch.on
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId4DOr4F {
   [[MessageUtil shareInstance] sendMsg4DOr4F:self.udpSocket
                                      aSwitch:self.aSwitch
                                    delayTime:delayTime
-                                    switchOn:startSwitch.on];
+                                    switchOn:startSwitch.on
+                                    sendMode:PassiveMode];
 }
 
 - (void)responseMsgId54Or56:(CC3xMessage *)msg {
@@ -404,11 +408,13 @@
 
 - (void)noResponseMsgId54Or56 {
   [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId53Or55 {
   [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
-                                     aSwitch:self.aSwitch];
+                                     aSwitch:self.aSwitch
+                                    sendMode:PassiveMode];
 }
 @end

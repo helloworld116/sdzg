@@ -14,9 +14,9 @@
 #import "CC3xSwitch.h"
 #import "Reachability.h"
 @interface AddTimerController ()<UDPDelegate>
-@property(nonatomic, strong) NSString *startTime,
-    *endTime;  //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
-@property(nonatomic, strong) NSDateFormatter *dateFormatter;
+@property (nonatomic, strong) NSString *startTime,
+    *endTime; //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
 
 @implementation AddTimerController
@@ -71,9 +71,9 @@
   content_View.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_View];
   UIImageView *content_bg = [[UIImageView alloc]
-      initWithFrame:CGRectMake(
-                        0, 0, DEVICE_WIDTH,
-                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
+                                                       STATUS_HEIGHT -
+                                                       NAVIGATION_HEIGHT)];
   content_bg.image = [UIImage imageNamed:@"window_background"];
   //    //    [content_bg setBounds:CGRectMake(0, 0, 260,
   //    DEVICE_HEIGHT-STATUS_HEIGHT - NAVIGATION_HEIGHT)];
@@ -375,8 +375,8 @@
 //弹出时间选择视图
 - (void)showTimePickerView:(id)sender {
   //创建timePicker视图
-  self.timePickerView =
-      [[UIView alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT-44-162, 320, 44 + 162)];
+  self.timePickerView = [[UIView alloc]
+      initWithFrame:CGRectMake(0, DEVICE_HEIGHT - 44 - 162, 320, 44 + 162)];
   self.timePickerView.layer.cornerRadius = 10.0;
   self.timePickerView.backgroundColor = [UIColor whiteColor];
   //添加主视图到window上
@@ -545,7 +545,8 @@
   }
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
-                                    timeList:self.timerList];
+                                    timeList:self.timerList
+                                    sendMode:ActiveMode];
 }
 
 #pragma mark---action sheet
@@ -574,12 +575,14 @@
 - (void)noResponseMsgId1EOr20 {
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
-                                    timeList:self.timerList];
+                                    timeList:self.timerList
+                                    sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId17Or19 {
   [[MessageUtil shareInstance] sendMsg1DOr1F:self.udpSocket
                                      aSwitch:self.aSwitch
-                                    timeList:self.timerList];
+                                    timeList:self.timerList
+                                    sendMode:PassiveMode];
 }
 @end

@@ -14,45 +14,48 @@
 
 @implementation USERSBookViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+- (id)initWithNibName:(NSString *)nibNameOrNil
+               bundle:(NSBundle *)nibBundleOrNil {
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+  if (self) {
+    // Custom initialization
+  }
+  return self;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    self.navigationItem.title = @"用户手册";
-    UIWebView * web = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
-//    web.scalesPageToFit = YES;
-    web.delegate = self;
-    
-    
-    
-    NSURL * url = [NSURL URLWithString:@"http://server.itouchco.com:18080/mannual.html"];
-    NSURLRequest * request = [NSURLRequest requestWithURL:url];
-    [web loadRequest:request];
-    
-    [self.view addSubview:web];
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  // Do any additional setup after loading the view.
+  if ([UIViewController
+          instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+  }
+  self.navigationItem.title = @"用户手册";
+  UIWebView *web = [[UIWebView alloc]
+      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
+                                                       STATUS_HEIGHT -
+                                                       NAVIGATION_HEIGHT)];
+  //    web.scalesPageToFit = YES;
+  web.delegate = self;
 
-    
+  NSURL *url =
+      [NSURL URLWithString:@"http://server.itouchco.com:18080/mannual.html"];
+  NSURLRequest *request = [NSURLRequest requestWithURL:url];
+  [web loadRequest:request];
+
+  [self.view addSubview:web];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)didReceiveMemoryWarning {
+  [super didReceiveMemoryWarning];
+  // Dispose of any resources that can be recreated.
 }
 
 /*
 #pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
+// In a storyboard-based application, you will often want to do a little
+preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     // Get the new view controller using [segue destinationViewController].
