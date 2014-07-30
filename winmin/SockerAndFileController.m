@@ -98,12 +98,12 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+  [UdpSocketUtil shareInstance].delegate = nil;
   if (self.updateTimer) {
     [self.updateTimer invalidate];
     _updateTimer = nil;
   }
   [self saveXmlWithList:self.switchDict.allValues];
-  [UdpSocketUtil shareInstance].delegate = nil;
   [super viewWillDisappear:animated];
 }
 
@@ -132,6 +132,7 @@
     BOOL local = NO;
     BOOL locked = NO;
     BOOL on = NO;
+    NSString *imageName;
     NSMutableArray *timerList = nil;
     mac = [[aSwitch attributeForName:@"id"] stringValue];
     NSArray *names = [aSwitch elementsForName:@"name"];
@@ -181,6 +182,12 @@
       }
     }
 
+    NSArray *imageNames = [aSwitch elementsForName:@"imageName"];
+    if (imageNames.count > 0) {
+      GDataXMLElement *firstImageName = (GDataXMLElement *)imageNames[0];
+      imageName = firstImageName.stringValue;
+    }
+
     //定时列表，待添加
     //        NSArray *timerLists = [aSwitch elementsForName:@"timerList"];
     //        if (timerLists.count > 0) {
@@ -196,7 +203,8 @@
                                                       port:port
                                                   isLocked:locked
                                                       isOn:on
-                                                 timerList:timerList];
+                                                 timerList:timerList
+                                                 imageName:imageName];
     [switches addObject:bSwitch];
   }
 
@@ -235,6 +243,9 @@
     GDataXMLElement *onElement =
         [GDataXMLElement elementWithName:@"on"
                              stringValue:aSwitch.isOn ? @"true" : @"false"];
+    GDataXMLElement *imageNameElement =
+        [GDataXMLElement elementWithName:@"imageName"
+                             stringValue:aSwitch.imageName];
     GDataXMLElement *timerListElement =
         [GDataXMLElement elementWithName:@"timerList"];
     [switchElement addChild:timerListElement];
@@ -246,6 +257,7 @@
     [switchElement addChild:lockedEelement];
     [switchElement addChild:localElement];
     [switchElement addChild:onElement];
+    [switchElement addChild:imageNameElement];
     [switches addChild:switchElement];
   }
 
@@ -287,12 +299,13 @@
         NSString *mac = [[self.switchDict allKeys] objectAtIndex:i];
         CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
         if (aSwitch.status == SWITCH_UNKNOWN) {
-          double delayInSeconds = 0.05 * j;
+          double delayInSeconds = 0.5 * j;
           dispatch_time_t delayInNanoSeconds =
               dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
           dispatch_after(delayInNanoSeconds, GLOBAL_QUEUE, ^{
               [[MessageUtil shareInstance] sendMsg0D:self.udpSocket mac:mac];
           });
+          j++;
         }
       }
   });
@@ -343,7 +356,15 @@
   NSString *mac = [[self.switchDict allKeys] objectAtIndex:row];
   CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
   cell.name = aSwitch.switchName;
-  cell.devices_image = [UIImage imageNamed:@"icon_plug.png"];
+  if ([aSwitch.imageName isEqualToString:DEFAULT_IMAGENAME]) {
+    cell.devices_image = [UIImage imageNamed:DEFAULT_IMAGENAME];
+  } else {
+    NSString *imagePath =
+        [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+            stringByAppendingPathComponent:@"1406699841.png"];
+    cell.devices_image = [UIImage imageWithContentsOfFile:imagePath];
+  }
+
   switch (aSwitch.status) {
     case SWITCH_LOCAL:
       statusImage = [UIImage imageNamed:@"icon_local.png"];
@@ -524,6 +545,7 @@
   if (aSwitch == nil) {
     return;
   } else {
+    aSwitch.switchName = msg.deviceName;
     aSwitch.ip = msg.ip;
     aSwitch.port = msg.port;
     aSwitch.isLocked = msg.isLocked;
@@ -562,7 +584,8 @@
                                                         port:msg.port
                                                     isLocked:msg.isLocked
                                                         isOn:msg.isOn
-                                                   timerList:msg.timerTaskList];
+                                                   timerList:msg.timerTaskList
+                                                   imageName:nil];
       if (![self.switchDict objectForKey:aSwitch.macAddress]) {
         aSwitch.status = SWITCH_NEW;
       }
@@ -580,7 +603,26 @@
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {
   [self updateSwitchByMsg:msg];
-  dispatch_async(dispatch_get_main_queue(), ^{ [tableView_DL reloadData]; });
+  for (CustomCell *cell in [tableView_DL visibleCells]) {
+    if ([cell.macAddress isEqualToString:msg.mac]) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+          NSIndexPath *indexPath = [tableView_DL indexPathForCell:cell];
+          NSArray *indexPaths = @[ indexPath ];
+          [tableView_DL beginUpdates];
+          [tableView_DL reloadRowsAtIndexPaths:indexPaths
+                              withRowAnimation:UITableViewRowAnimationNone];
+          [tableView_DL endUpdates];
+      });
+    }
+  }
+  //  dispatch_async(dispatch_get_main_queue(), ^{ [tableView_DL reloadData];
+  //  });
+}
+
+- (void)noResponseMsgIdCOrE {
+  //  for (CC3xSwitch *aSwitch in [self.switchDict allValues]) {
+  //    aSwitch.status = SWITCH_UNKNOWN;
+  //  }
 }
 
 - (void)responseMsgId26Or28:(CC3xMessage *)msg {

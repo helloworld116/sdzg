@@ -10,8 +10,10 @@
 #import "CC3xSwitch.h"
 #import "CC3xUtility.h"
 #import "CC3xMessage.h"
-@interface EditController ()<UDPDelegate>
-
+#import "TemplateVC.h"
+@interface EditController ()<UDPDelegate, UIAlertViewDelegate>
+@property(nonatomic, strong) NSString *imageName;  //保存图片设置后的名称
+@property(nonatomic, strong) NSString *deviceName;  //保存修改后的名称
 @end
 
 @implementation EditController
@@ -78,11 +80,13 @@
   [image_btn setFrame:CGRectMake(100, 55, 100, 100)];
   [content_view addSubview:image_btn];
 
+  NSString *deviceStateImgName =
+      self.aSwitch.isLocked ? @"device_lock" : @"device_unlock";
   lock_btn = [UIButton buttonWithType:UIButtonTypeCustom];
   [lock_btn addTarget:self
                 action:@selector(lockDevice)
       forControlEvents:UIControlEventTouchUpInside];
-  [lock_btn setImage:[UIImage imageNamed:@"device_unlock"]
+  [lock_btn setImage:[UIImage imageNamed:deviceStateImgName]
             forState:UIControlStateNormal];
   [lock_btn setFrame:CGRectMake(110, 180, 80, 80)];
   [content_view addSubview:lock_btn];
@@ -136,36 +140,64 @@
 }
 
 - (void)lockDevice {
-  NSString *lockName =
-      !self.aSwitch.isLocked ? @"device_lock" : @"device_unlock";
-  UIImage *image = [UIImage imageNamed:lockName];
-  if (self.aSwitch.isLocked) {
-    self.aSwitch.isLocked = NO;
-  } else {
-    self.aSwitch.isLocked = YES;
-  }
-  [lock_btn setImage:image forState:UIControlStateNormal];
+  NSString *message;
+  NSString *toLockMessage = @"设" @"备"
+      @"锁定之后，未添加该设备的终端将无法搜索到该设备"
+      @"，确定锁定该设备？（确定后保存生效）";
+  NSString *toUnLockMessage = @"设"
+      @"备解锁之后，所有人都可搜索到该设备，可能会存在"
+      @"安全隐患，确定解锁？（确定后保存生效）";
+  self.aSwitch.isLocked ? (message = toUnLockMessage)
+                        : (message = toLockMessage);
+  UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示"
+                                                      message:message
+                                                     delegate:self
+                                            cancelButtonTitle:@"取消"
+                                            otherButtonTitles:@"确定", nil];
+  alertView.tag = 1000;
+  [alertView show];
 }
 
 - (void)save {
-  name_text.text = [name_text.text stringByReplacingOccurrencesOfString:@"\n"
-                                                             withString:@""];
-  if ([name_text.text isEqual:@""]) {
-    self.aSwitch.switchName = name_text.text;
-  } else {
-    self.aSwitch.switchName = name_text.text;
-  }
-  UIImage *image = [UIImage imageWithContentsOfFile:filePath];
-  self.aSwitch.image = image;
-  [image_btn setImage:image forState:UIControlStateNormal];
-  NSLog(@"图片abc的%@", image_btn.imageView.image);
   if (self.view.frame.origin.y < 0) {
     [self setViewMoveUp:NO];
     [name_text resignFirstResponder];
   }
-  [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
-                                     aSwitch:self.aSwitch
-                                        name:name_text.text];
+  self.deviceName = [name_text.text stringByReplacingOccurrencesOfString:@"\n"
+                                                              withString:@""];
+  if ([self.deviceName isEqualToString:@""]) {
+    UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:@"提示"
+                                   message:@"名称不能为空"
+                                  delegate:self
+                         cancelButtonTitle:@"取消"
+                         otherButtonTitles:@"确定", nil];
+    alertView.tag = 1001;
+    [alertView show];
+  } else {
+    [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
+                                       aSwitch:self.aSwitch
+                                          name:self.deviceName];
+  }
+}
+
+- (void)alertView:(UIAlertView *)alertView
+    clickedButtonAtIndex:(NSInteger)buttonIndex {
+  switch (alertView.tag) {
+    case 1000:
+      if (buttonIndex == 1) {
+        [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
+                                           aSwitch:self.aSwitch
+                                            isLock:!self.aSwitch.isLocked];
+      }
+      break;
+    case 1001:
+      if (buttonIndex == 1) {
+        [name_text becomeFirstResponder];
+      }
+    default:
+      break;
+  }
 }
 
 #pragma mark---------- ActionSheetDelegate----
@@ -175,10 +207,11 @@
     return;
   }
   switch (buttonIndex) {
-    case 0:
-      //            self presentModalViewController:<#(UIViewController *)#>
-      //            animated:<#(BOOL)#>
-      break;
+    case 0: {
+      TemplateVC *vc = [kSharedAppliction.mainStoryboard
+          instantiateViewControllerWithIdentifier:@"TemplateVC"];
+      [self.navigationController pushViewController:vc animated:YES];
+    } break;
 
     case 1:
       //调用相机
@@ -253,12 +286,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  //初始化udpsocket，绑定接收端口
-  //    _udpSocket = [[GCDAsyncUdpSocket alloc]
-  //                  initWithDelegate:self
-  //                  delegateQueue:GLOBAL_QUEUE];
-  //    [CC3xUtility setupUdpSocket:self.udpSocket
-  //                           port:APP_PORT];
   [UdpSocketUtil shareInstance].delegate = self;
 }
 
@@ -267,9 +294,6 @@
       removeObserver:self
                 name:UIKeyboardWillShowNotification
               object:nil];
-  //    if (self.udpSocket){
-  //        [self.udpSocket close];
-  //    }
   [UdpSocketUtil shareInstance].delegate = nil;
   [super viewWillDisappear:animated];
 }
@@ -332,6 +356,12 @@
   NSString *name = [[[str componentsSeparatedByString:@"."] objectAtIndex:0]
       stringByAppendingString:@".png"];
   [self saveImage:theImage withName:name];
+  self.imageName = name;
+  NSString *imagePath =
+      [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+          stringByAppendingPathComponent:name];
+  [image_btn setImage:[UIImage imageWithContentsOfFile:imagePath]
+             forState:UIControlStateNormal];
   [self dismissModalViewControllerAnimated:YES];
 }
 
@@ -379,5 +409,60 @@
 
 #pragma mark--------udp delegate
 - (void)responseMsgId40Or42:(CC3xMessage *)msg {
+  if (msg.state == 0) {
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{  //        [UIView animateWithDuration:0.3
+                       //                         animations:^(void) {
+        //                             self.view.frame = CGRectMake(0,
+        //                             DEVICE_HEIGHT, 0, 0);
+        //                         }];
+        //        dispatch_after(
+        //            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 *
+        //            NSEC_PER_SEC)),
+        //            dispatch_get_main_queue(),
+        //            ^{ [self.navigationController
+        //            popViewControllerAnimated:NO]; });
+        UIViewController *vc =
+            [self.navigationController popViewControllerAnimated:YES];
+        vc.navigationItem.title = self.deviceName;
+    });
+  }
+}
+
+- (void)noResponseMsgId40Or42 {
+  [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                        name:self.deviceName];
+}
+
+- (void)noSendMsgId3FOr41 {
+  [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                        name:self.deviceName];
+}
+
+- (void)responseMsgId48Or4A:(CC3xMessage *)msg {
+  if (msg.state == 0) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //加锁或解锁成功
+        self.aSwitch.isLocked = !self.aSwitch.isLocked;
+        NSString *lockName =
+            self.aSwitch.isLocked ? @"device_lock" : @"device_unlock";
+        UIImage *image = [UIImage imageNamed:lockName];
+        [lock_btn setImage:image forState:UIControlStateNormal];
+    });
+  }
+}
+
+- (void)noResponseMsgId48Or4A {
+  [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                      isLock:!self.aSwitch.isLocked];
+}
+
+- (void)noSendMsgId47Or49 {
+  [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
+                                     aSwitch:self.aSwitch
+                                      isLock:!self.aSwitch.isLocked];
 }
 @end

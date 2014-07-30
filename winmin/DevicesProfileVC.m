@@ -197,12 +197,12 @@ preparation before navigation
 }
 
 - (IBAction)changeState:(id)sender {
-  //如果没有网络
-  if (![CC3xUtility checkNetworkStatus]) {
-    return;
-  }
-  //检测设备状态
-  [self checkSwitchStatus];
+  //  //如果没有网络
+  //  if (![CC3xUtility checkNetworkStatus]) {
+  //    return;
+  //  }
+  //  //检测设备状态
+  //  [self checkSwitchStatus];
   //发送控制消息包
   [self sendMsg11];
 
@@ -232,20 +232,20 @@ preparation before navigation
 
 //发送控制消息包
 - (void)sendMsg11 {
-  //发送消息之前检测网络状态
-  NetworkStatus reach = [[Reachability
-          reachabilityForInternetConnection] currentReachabilityStatus];
-  //如果网络状态为没有链接，弹出提示框
-  if (reach == NotReachable) {
-    UIAlertView *alert = [[UIAlertView alloc]
-            initWithTitle:NSLocalizedString(@"Error", nil)
-                  message:NSLocalizedString(@"The switch is offline", nil)
-                 delegate:self
-        cancelButtonTitle:NSLocalizedString(@"OK", nil)
-        otherButtonTitles:nil, nil];
-    [alert show];
-    return;
-  }
+  //  //发送消息之前检测网络状态
+  //  NetworkStatus reach = [[Reachability
+  //          reachabilityForInternetConnection] currentReachabilityStatus];
+  //  //如果网络状态为没有链接，弹出提示框
+  //  if (reach == NotReachable) {
+  //    UIAlertView *alert = [[UIAlertView alloc]
+  //            initWithTitle:NSLocalizedString(@"Error", nil)
+  //                  message:NSLocalizedString(@"The switch is offline", nil)
+  //                 delegate:self
+  //        cancelButtonTitle:NSLocalizedString(@"OK", nil)
+  //        otherButtonTitles:nil, nil];
+  //    [alert show];
+  //    return;
+  //  }
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
                                   isSwitchOn:self.isSwitchOn];
@@ -428,7 +428,10 @@ preparation before navigation
 }
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {
-  [self changeOutwardBySwitchState:msg.isOn];
+  //列表页面请求响应后，代理已更改为此vc
+  if ([self.aSwitch.macAddress isEqualToString:msg.mac]) {
+    [self changeOutwardBySwitchState:msg.isOn];
+  }
 }
 
 - (void)responseMsgId18Or1A:(CC3xMessage *)msg {

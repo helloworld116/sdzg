@@ -297,6 +297,14 @@
           [self.delegate responseMsgId40Or42:msg];
         }
         break;
+      case 0x48:
+      case 0x4a:
+        [SendResponseHandler shareInstance].responseData48Or4A = data;
+        if ([self.delegate
+                respondsToSelector:@selector(responseMsgId48Or4A:)]) {
+          [self.delegate responseMsgId48Or4A:msg];
+        }
+        break;
       case 0x4e:
       case 0x50:
         [SendResponseHandler shareInstance].responseData4EOr50 = data;

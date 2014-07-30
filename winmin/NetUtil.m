@@ -37,12 +37,15 @@
   switch (status) {
     case NotReachable:
       kSharedAppliction.networkStatus = NotReachable;
+      NSLog(@"网络不可用");
       break;
     case ReachableViaWiFi:
       kSharedAppliction.networkStatus = ReachableViaWiFi;
+      NSLog(@"网络改变为WIFI");
       break;
     case ReachableViaWWAN:
       kSharedAppliction.networkStatus = ReachableViaWWAN;
+      NSLog(@"网络为蜂窝网络");
       break;
     default:
       kSharedAppliction.networkStatus = NotReachable;

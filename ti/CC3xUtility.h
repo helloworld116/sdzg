@@ -38,6 +38,7 @@
 #define REFRESH_DEV_TIME 15
 
 #define DEFAULT_NAME NSLocalizedString(@"Smart switch", nil)
+#define DEFAULT_IMAGENAME @"icon_plug.png"
 
 #define BROADCAST_ADDRESS @"255.255.255.255"
 

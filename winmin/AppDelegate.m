@@ -104,6 +104,7 @@
       [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
   self.mainStoryboard = storyboard;
   kSharedAppliction.networkStatus = ReachableViaWiFi;
+  //  [[NetUtil sharedInstance] addNetWorkChangeNotification];
   return YES;
 }
 

@@ -41,6 +41,8 @@
 		150F4622192922DD000E5527 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F4621192922DD000E5527 /* libxml2.dylib */; };
 		153A338619876C5600016890 /* libFTC_DEBUG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F45F21928FF30000E5527 /* libFTC_DEBUG.a */; };
 		153A338719876C5600016890 /* libFTC_RELEASE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F45F31928FF30000E5527 /* libFTC_RELEASE.a */; };
+		153A33891988889F00016890 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 153A33881988889F00016890 /* MessageUI.framework */; };
+		153A338C1988A4C100016890 /* TemplateVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 153A338B1988A4C100016890 /* TemplateVC.m */; };
 		153D4E02194B06C200E056A2 /* FAQViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E01194B06C200E056A2 /* FAQViewController.m */; };
 		153D4E05194B06E800E056A2 /* APPQrcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E04194B06E800E056A2 /* APPQrcodeViewController.m */; };
 		153D4E08194B070D00E056A2 /* USERSBookViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E07194B070D00E056A2 /* USERSBookViewController.m */; };
@@ -144,6 +146,9 @@
 		150F46171928FF95000E5527 /* CC3xTimerTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CC3xTimerTask.h; sourceTree = "<group>"; };
 		150F46181928FF95000E5527 /* CC3xTimerTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CC3xTimerTask.m; sourceTree = "<group>"; };
 		150F4621192922DD000E5527 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		153A33881988889F00016890 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		153A338A1988A4C100016890 /* TemplateVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateVC.h; sourceTree = "<group>"; };
+		153A338B1988A4C100016890 /* TemplateVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TemplateVC.m; sourceTree = "<group>"; };
 		153D4E00194B06C200E056A2 /* FAQViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAQViewController.h; sourceTree = "<group>"; };
 		153D4E01194B06C200E056A2 /* FAQViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAQViewController.m; sourceTree = "<group>"; };
 		153D4E03194B06E800E056A2 /* APPQrcodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APPQrcodeViewController.h; sourceTree = "<group>"; };
@@ -208,6 +213,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				153A33891988889F00016890 /* MessageUI.framework in Frameworks */,
 				153A338619876C5600016890 /* libFTC_DEBUG.a in Frameworks */,
 				153A338719876C5600016890 /* libFTC_RELEASE.a in Frameworks */,
 				150F4622192922DD000E5527 /* libxml2.dylib in Frameworks */,
@@ -357,6 +363,7 @@
 		154E3D351920C25F00D05EA0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				153A33881988889F00016890 /* MessageUI.framework */,
 				150F4621192922DD000E5527 /* libxml2.dylib */,
 				150F046A1924ED14000398BB /* AudioToolbox.framework */,
 				150F047C1924ED87000398BB /* AVFoundation.framework */,
@@ -440,6 +447,8 @@
 				154906D11932D72500CA80CC /* AddTimerController.m */,
 				1568F15519244F1F00BCA667 /* EditController.h */,
 				1568F15619244F1F00BCA667 /* EditController.m */,
+				153A338A1988A4C100016890 /* TemplateVC.h */,
+				153A338B1988A4C100016890 /* TemplateVC.m */,
 				15C1E88419342C8D003B7231 /* DelayController.h */,
 				15C1E88519342C8D003B7231 /* DelayController.m */,
 				15B6195A192D1B3E00B5F2E4 /* CustomCell.h */,
@@ -612,6 +621,7 @@
 				15F20F92192378A400EE6D83 /* DevicesProfileController.m in Sources */,
 				150F461D1928FF95000E5527 /* CC3xTimerTask.m in Sources */,
 				150F46021928FF3B000E5527 /* GCDAsyncUdpSocket.m in Sources */,
+				153A338C1988A4C100016890 /* TemplateVC.m in Sources */,
 				1568F15719244F1F00BCA667 /* EditController.m in Sources */,
 				150F46011928FF3B000E5527 /* GCDAsyncSocket.m in Sources */,
 				15B9313B192F2E4800452301 /* TimerTableViewCell.m in Sources */,
@@ -763,6 +773,7 @@
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -793,6 +804,7 @@
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

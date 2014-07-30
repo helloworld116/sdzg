@@ -8,10 +8,10 @@
 
 #import "SendResponseHandler.h"
 
-#define kCheckPrivatePrivateResponseInterval                                   \
-  0.1 //发送UDP内网请求后，检查是否有响应数据的间隔，单位为秒
-#define kCheckPublicPrivateResponseInterval                                    \
-  0.5 //发送UDP外网请求后，检查是否有响应数据的间隔，单位为秒
+#define kCheckPrivatePrivateResponseInterval \
+  0.1  //发送UDP内网请求后，检查是否有响应数据的间隔，单位为秒
+#define kCheckPublicPrivateResponseInterval \
+  0.5  //发送UDP外网请求后，检查是否有响应数据的间隔，单位为秒
 
 @implementation SendResponseHandler
 + (instancetype)shareInstance {
@@ -79,14 +79,13 @@
       break;
     case P2D_STATE_INQUIRY_0B:
     case P2S_STATE_INQUIRY_0D:
-      //轮询设备的开关状态，即使丢包也不用处理
-      //      if (!self.responseDataCOrE) {
-      //        NSLog(@"tag %ld 重新发送", tag);
-      //        if ([[UdpSocketUtil shareInstance].delegate
-      //                respondsToSelector:@selector(noResponseMsgIdCOrE)]) {
-      //          [[UdpSocketUtil shareInstance].delegate noResponseMsgIdCOrE];
-      //        }
-      //      }
+      if (!self.responseDataCOrE) {
+        NSLog(@"tag %ld 重新发送", tag);
+        if ([[UdpSocketUtil shareInstance].delegate
+                respondsToSelector:@selector(noResponseMsgIdCOrE)]) {
+          [[UdpSocketUtil shareInstance].delegate noResponseMsgIdCOrE];
+        }
+      }
       break;
     case P2D_CONTROL_REQ_11:
     case P2S_CONTROL_REQ_13:

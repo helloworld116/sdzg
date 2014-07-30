@@ -191,6 +191,10 @@
   }
   // APP下载链接
   if (row == 2) {
+    APPQrcodeViewController *qrcodeVC = [kSharedAppliction.mainStoryboard
+        instantiateViewControllerWithIdentifier:@"APPQrcodeViewController"];
+    qrcodeVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:qrcodeVC animated:YES];
   }
   // FAQ
   if (row == 3) {
