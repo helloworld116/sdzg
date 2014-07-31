@@ -32,6 +32,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Do any additional setup after loading the view.
+  [self.navigationController.navigationBar setTranslucent:NO];
   if ([UIViewController
           instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -49,9 +50,9 @@
 
   // tableView列表显示
   _tableView = [[UITableView alloc]
-      initWithFrame:CGRectMake(
-                        0, 0, DEVICE_WIDTH,
-                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT - 49)
+      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
+                                                       STATUS_HEIGHT -
+                                                       NAVIGATION_HEIGHT - 49)
               style:UITableViewStylePlain];
   _tableView.delegate = self;
   _tableView.dataSource = self;
@@ -78,7 +79,7 @@
 
 #pragma mark-----------------------tableview datasource
 - (NSInteger)tableView:(UITableView *)tableView
-    numberOfRowsInSection:(NSInteger)section {  // 8个cell
+    numberOfRowsInSection:(NSInteger)section { // 8个cell
   return [cell_name_array count];
 }
 
@@ -88,7 +89,7 @@
 //}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath {  // cell样式
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath { // cell样式
   static NSString *identify = @"_cell";
   UITableViewCell *cell =
       [tableView dequeueReusableCellWithIdentifier:identify];

@@ -395,12 +395,12 @@
   //    add.delegate = self;
   add.timerList = self.timerList;
 
-  CATransition *animation = [CATransition animation];
-  animation.duration = 0.7f;
-  animation.delegate = self;
-  animation.type = @"rippleEffect";
-  animation.timingFunction = UIViewAnimationCurveEaseInOut;
-  [self.navigationController.view.layer addAnimation:animation forKey:nil];
+//  CATransition *animation = [CATransition animation];
+//  animation.duration = 0.7f;
+//  animation.delegate = self;
+//  animation.type = @"rippleEffect";
+//  animation.timingFunction = UIViewAnimationCurveEaseInOut;
+//  [self.navigationController.view.layer addAnimation:animation forKey:nil];
 
   [self.navigationController pushViewController:add animated:YES];
 }

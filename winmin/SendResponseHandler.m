@@ -76,21 +76,22 @@
       break;
     case P2D_STATE_INQUIRY_0B:
       if (!self.responseDataC) {
-        NSLog(@"tag %ld 重新发送%d次", tag,
-              [MessageUtil shareInstance].msgBSendCount + 1);
         if ([MessageUtil shareInstance].msgBSendCount < kTryCount &&
             [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgIdC)]) {
+          NSLog(@"tag %ld 重新发送%d次", tag,
+                [MessageUtil shareInstance].msgBSendCount + 1);
           [[UdpSocketUtil shareInstance].delegate noResponseMsgIdC];
         }
       }
     case P2S_STATE_INQUIRY_0D:
       if (!self.responseDataE) {
-        NSLog(@"tag %ld 重新发送%d次", tag,
-              [MessageUtil shareInstance].msgDSendCount + 1);
         if ([MessageUtil shareInstance].msgDSendCount < kTryCount &&
             [[UdpSocketUtil shareInstance].delegate
                 respondsToSelector:@selector(noResponseMsgIdE)]) {
+          NSLog(@"tag %ld 重新发送%d次", tag,
+                [MessageUtil shareInstance].msgDSendCount + 1);
+
           [[UdpSocketUtil shareInstance].delegate noResponseMsgIdE];
         }
       }

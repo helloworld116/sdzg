@@ -12,16 +12,16 @@
 #import "MoreSettingsViewController.h"
 //判断设备是否4寸屏幕
 
-#define iPhone5                                                      \
-  ([UIScreen instancesRespondToSelector:@selector(currentMode)]      \
-       ? CGSizeEqualToSize(CGSizeMake(640, 1136),                    \
-                           [[UIScreen mainScreen] currentMode].size) \
+#define iPhone5                                                                \
+  ([UIScreen instancesRespondToSelector:@selector(currentMode)]                \
+       ? CGSizeEqualToSize(CGSizeMake(640, 1136),                              \
+                           [[UIScreen mainScreen] currentMode].size)           \
        : NO)
 
 //判断设备是否iOS7
 
-#define IOS7                                                    \
-  ([[[UIDevice currentDevice] systemVersion] compare:@"7.0"] != \
+#define IOS7                                                                   \
+  ([[[UIDevice currentDevice] systemVersion] compare:@"7.0"] !=                \
    NSOrderedAscending)
 @implementation AppDelegate
 @synthesize window;
@@ -90,10 +90,12 @@
   //    alpha:1.0];//改变navigation的背景颜色
   //状态栏显示
 
-  //设置导航栏背景图片
-  //  [[UINavigationBar appearance]
-  //      setBackgroundImage:[UIImage imageNamed:@"navigation_background.png"]
-  //           forBarMetrics:UIBarMetricsDefault];
+  //  设置导航栏背景图片
+  [[UINavigationBar appearance]
+      setBackgroundImage:[UIImage imageNamed:@"navigation_background"]
+           forBarMetrics:UIBarMetricsDefault];
+
+  //  [[UINavigationBar appearance] setBarTintColor:[UIColor whiteColor]];
 
   self.window.rootViewController = tabBar;
 

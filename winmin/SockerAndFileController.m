@@ -11,7 +11,7 @@
 #import "DevicesProfileVC.h"
 
 @interface SockerAndFileController ()<UDPDelegate, PassValueDelegate>
-@property(nonatomic, retain) NSIndexPath *selectedIndexPath;  //当前操作的列
+@property (nonatomic, retain) NSIndexPath *selectedIndexPath; //当前操作的列
 @end
 
 @implementation SockerAndFileController
@@ -30,6 +30,8 @@
           instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
+
+  [self.navigationController.navigationBar setTranslucent:NO];
   //从本地文件中获得设备列表
   NSArray *switchArray = [[XMLUtil sharedInstance] loadSwitches];
   _switchDict = [[NSMutableDictionary alloc] init];
