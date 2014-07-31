@@ -31,10 +31,20 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
   self.navigationItem.title = @"用户手册";
+  UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
+  [left setFrame:CGRectMake(0, 2, 28, 28)];
+  [left setImage:[UIImage imageNamed:@"back_button"]
+        forState:UIControlStateNormal];
+  [left addTarget:self
+                action:@selector(goTopVC)
+      forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *leftButton =
+      [[UIBarButtonItem alloc] initWithCustomView:left];
+  self.navigationItem.leftBarButtonItem = leftButton;
   UIWebView *web = [[UIWebView alloc]
-      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
-                                                       STATUS_HEIGHT -
-                                                       NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(
+                        0, 0, DEVICE_WIDTH,
+                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT)];
   //    web.scalesPageToFit = YES;
   web.delegate = self;
 
@@ -51,16 +61,8 @@
   // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little
-preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)goTopVC {
+  [self.navigationController popViewControllerAnimated:YES];
 }
-*/
 
 @end

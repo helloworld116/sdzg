@@ -10,18 +10,20 @@
 
 @interface MessageUtil : NSObject
 typedef enum { ActiveMode, PassiveMode } SENDMODE;
-@property (atomic, assign) NSUInteger msg9SendCount;
-@property (atomic, assign) NSUInteger msgBOrDSendCount;
-@property (atomic, assign) NSUInteger msg11Or13SendCount;
-@property (atomic, assign) NSUInteger msg17Or19SendCount;
-@property (atomic, assign) NSUInteger msg1DOr1FSendCount;
-@property (atomic, assign) NSUInteger msg25Or27SendCount;
-@property (atomic, assign) NSUInteger msg39Or3BSendCount;
-@property (atomic, assign) NSUInteger msg3FOr41SendCount;
-@property (atomic, assign) NSUInteger msg47Or49SendCount;
-@property (atomic, assign) NSUInteger msg4DOr4FSendCount;
-@property (atomic, assign) NSUInteger msg53Or55SendCount;
-@property (atomic, assign) NSUInteger msg59SendCount;
+@property(atomic, assign) NSUInteger msg9SendCount;
+@property(atomic, assign) NSUInteger msgBSendCount;
+@property(atomic, assign) NSUInteger msgDSendCount;
+@property(atomic, assign) NSUInteger msgBOrDSendCount;
+@property(atomic, assign) NSUInteger msg11Or13SendCount;
+@property(atomic, assign) NSUInteger msg17Or19SendCount;
+@property(atomic, assign) NSUInteger msg1DOr1FSendCount;
+@property(atomic, assign) NSUInteger msg25Or27SendCount;
+@property(atomic, assign) NSUInteger msg39Or3BSendCount;
+@property(atomic, assign) NSUInteger msg3FOr41SendCount;
+@property(atomic, assign) NSUInteger msg47Or49SendCount;
+@property(atomic, assign) NSUInteger msg4DOr4FSendCount;
+@property(atomic, assign) NSUInteger msg53Or55SendCount;
+@property(atomic, assign) NSUInteger msg59SendCount;
 
 + (instancetype)shareInstance;
 

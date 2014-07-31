@@ -25,7 +25,7 @@
       name = DEFAULT_NAME;
     }
     if (!imageName || [@"" isEqualToString:imageName]) {
-      self.imageName = DEFAULT_IMAGENAME;
+      imageName = DEFAULT_IMAGENAME;
     }
     self.switchName = name;
     self.macAddress = aMacAddress;
@@ -35,6 +35,7 @@
     self.isLocked = isLocked;
     self.isOn = isOn;
     self.timerList = aTimerList;
+    self.imageName = imageName;
   }
   return self;
 }
@@ -51,6 +52,26 @@
                        isOn:YES
                   timerList:nil
                   imageName:nil];
+}
+
+- (UIImage *)getImageByImageName:(NSString *)imageName {
+  UIImage *image;
+  NSArray *imageNames = [kTemplatePicDict allValues];
+  for (NSString *name in imageNames) {
+    if ([imageName isEqualToString:name]) {
+      image = [UIImage imageNamed:name];
+      break;
+    }
+  }
+  if (image) {
+    return image;
+  } else {
+    NSString *imagePath =
+        [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+            stringByAppendingPathComponent:imageName];
+    image = [UIImage imageWithContentsOfFile:imagePath];
+    return image;
+  }
 }
 
 @end

@@ -43,4 +43,5 @@ typedef NS_OPTIONS(NSUInteger, switchStatus) {
                   macAddress:(NSString *)aMacAddress
                       status:(switchStatus)aStatus;
 
+- (UIImage *)getImageByImageName:(NSString *)imageName;
 @end

@@ -37,6 +37,16 @@
           instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
+  UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
+  [left setFrame:CGRectMake(0, 2, 28, 28)];
+  [left setImage:[UIImage imageNamed:@"back_button"]
+        forState:UIControlStateNormal];
+  [left addTarget:self
+                action:@selector(goTopVC)
+      forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *leftButton =
+      [[UIBarButtonItem alloc] initWithCustomView:left];
+  self.navigationItem.leftBarButtonItem = leftButton;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -166,5 +176,9 @@
             (MFMessageComposeViewController *)controller
                  didFinishWithResult:(MessageComposeResult)result {
   [self dismissModalViewControllerAnimated:YES];
+}
+
+- (void)goTopVC {
+  [self.navigationController popViewControllerAnimated:YES];
 }
 @end

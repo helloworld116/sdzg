@@ -11,9 +11,10 @@
 #import "CC3xUtility.h"
 #import "CC3xMessage.h"
 #import "TemplateVC.h"
-@interface EditController ()<UDPDelegate, UIAlertViewDelegate>
-@property (nonatomic, strong) NSString *imageName; //保存图片设置后的名称
-@property (nonatomic, strong) NSString *deviceName; //保存修改后的名称
+@interface EditController ()<UDPDelegate, UIAlertViewDelegate,
+                             PassValueDelegate>
+@property(nonatomic, strong) NSString *imageName;  //保存图片设置后的名称
+@property(nonatomic, strong) NSString *deviceName;  //保存修改后的名称
 @end
 
 @implementation EditController
@@ -73,10 +74,8 @@
   [image_btn addTarget:self
                 action:@selector(changeImage)
       forControlEvents:UIControlEventTouchUpInside];
-  //  [image_btn setBackgroundImage:self.aSwitch.image
-  //                       forState:UIControlStateNormal];
-  [image_btn setImage:[UIImage imageNamed:@"icon_plug"]
-             forState:UIControlStateNormal];
+  UIImage *image = [self.aSwitch getImageByImageName:self.aSwitch.imageName];
+  [image_btn setImage:image forState:UIControlStateNormal];
   [image_btn setFrame:CGRectMake(100, 55, 100, 100)];
   [content_view addSubview:image_btn];
 
@@ -105,6 +104,7 @@
   name_text = [[UITextField alloc] initWithFrame:CGRectMake(110, 272, 150, 25)];
   name_text.delegate = self;
   name_text.text = self.aSwitch.switchName;
+  name_text.clearButtonMode = UITextFieldViewModeAlways;
   name_text.borderStyle = UITextBorderStyleRoundedRect;
   [content_view addSubview:name_text];
 
@@ -175,6 +175,21 @@
     alertView.tag = 1001;
     [alertView show];
   } else {
+    if (self.imageName) {
+      NSArray *switchs = [[XMLUtil sharedInstance] loadSwitches];
+      NSMutableArray *newSwitchs = [NSMutableArray arrayWithArray:switchs];
+      for (int i = 0; i < newSwitchs.count; i++) {
+        CC3xSwitch *aSwitch = [newSwitchs objectAtIndex:i];
+        if ([aSwitch.macAddress isEqualToString:self.aSwitch.macAddress]) {
+          aSwitch.imageName = self.imageName;
+          aSwitch.switchName = self.deviceName;
+        }
+        [newSwitchs replaceObjectAtIndex:i withObject:aSwitch];
+      }
+      [[XMLUtil sharedInstance] saveXmlWithList:newSwitchs];
+    } else {
+      self.imageName = self.aSwitch.imageName;
+    }
     [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
                                        aSwitch:self.aSwitch
                                           name:self.deviceName
@@ -212,6 +227,7 @@
     case 0: {
       TemplateVC *vc = [kSharedAppliction.mainStoryboard
           instantiateViewControllerWithIdentifier:@"TemplateVC"];
+      vc.delegate = self;
       [self.navigationController pushViewController:vc animated:YES];
     } break;
 
@@ -400,6 +416,12 @@
   return newImage;
 }
 
+#pragma mark 传值delegate
+- (void)passValue:(id)value {
+  self.imageName = (NSString *)value;
+  [image_btn setImage:[UIImage imageNamed:value] forState:UIControlStateNormal];
+}
+
 - (void)back {
   [self.navigationController popViewControllerAnimated:YES];
 }
@@ -412,22 +434,31 @@
 #pragma mark--------udp delegate
 - (void)responseMsgId40Or42:(CC3xMessage *)msg {
   if (msg.state == 0) {
-    dispatch_async(dispatch_get_main_queue(),
-                   ^{ //        [UIView animateWithDuration:0.3
-                      //                         animations:^(void) {
-        //                             self.view.frame = CGRectMake(0,
-        //                             DEVICE_HEIGHT, 0, 0);
-        //                         }];
-        //        dispatch_after(
-        //            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 *
-        //            NSEC_PER_SEC)),
-        //            dispatch_get_main_queue(),
-        //            ^{ [self.navigationController
-        //            popViewControllerAnimated:NO]; });
-        UIViewController *vc =
-            [self.navigationController popViewControllerAnimated:YES];
-        vc.navigationItem.title = self.deviceName;
+    NSDictionary *switchInfo = @{
+      @"name" : self.deviceName,
+      @"imageName" : self.imageName,
+      @"mac" : self.aSwitch.macAddress
+    };
+    [self.passValueDelegate passValue:switchInfo];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.navigationController popViewControllerAnimated:YES];
     });
+    //    dispatch_async(dispatch_get_main_queue(),
+    //                   ^{  //        [UIView animateWithDuration:0.3
+    //                       //                         animations:^(void) {
+    //        //                             self.view.frame = CGRectMake(0,
+    //        //                             DEVICE_HEIGHT, 0, 0);
+    //        //                         }];
+    //        //        dispatch_after(
+    //        //            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 *
+    //        //            NSEC_PER_SEC)),
+    //        //            dispatch_get_main_queue(),
+    //        //            ^{ [self.navigationController
+    //        //            popViewControllerAnimated:NO]; });
+    //        UIViewController *vc =
+    //            [self.navigationController popViewControllerAnimated:YES];
+    //        vc.navigationItem.title = self.deviceName;
+    //    });
   }
 }
 

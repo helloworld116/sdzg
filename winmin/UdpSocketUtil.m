@@ -75,8 +75,10 @@
       [SendResponseHandler shareInstance].responseDataA = nil;
       break;
     case P2D_STATE_INQUIRY_0B:
+      [SendResponseHandler shareInstance].responseDataC = nil;
+      break;
     case P2S_STATE_INQUIRY_0D:
-      [SendResponseHandler shareInstance].responseDataCOrE = nil;
+      [SendResponseHandler shareInstance].responseDataE = nil;
       break;
     case P2D_CONTROL_REQ_11:
     case P2S_CONTROL_REQ_13:
@@ -149,9 +151,13 @@
       }
       break;
     case P2D_STATE_INQUIRY_0B:
+      if ([self.delegate respondsToSelector:@selector(noSendMsgIdB)]) {
+        [self.delegate noSendMsgIdB];
+      }
+      break;
     case P2S_STATE_INQUIRY_0D:
-      if ([self.delegate respondsToSelector:@selector(noSendMsgIdBOrD)]) {
-        [self.delegate noSendMsgIdBOrD];
+      if ([self.delegate respondsToSelector:@selector(noSendMsgIdD)]) {
+        [self.delegate noSendMsgIdD];
       }
       break;
     case P2D_CONTROL_REQ_11:
@@ -243,10 +249,15 @@
         }
         break;
       case 0xc:
+        [SendResponseHandler shareInstance].responseDataC = data;
+        if ([self.delegate respondsToSelector:@selector(responseMsgIdC:)]) {
+          [self.delegate responseMsgIdC:msg];
+        }
+        break;
       case 0xe:
-        [SendResponseHandler shareInstance].responseDataCOrE = data;
-        if ([self.delegate respondsToSelector:@selector(responseMsgIdCOrE:)]) {
-          [self.delegate responseMsgIdCOrE:msg];
+        [SendResponseHandler shareInstance].responseDataE = data;
+        if ([self.delegate respondsToSelector:@selector(responseMsgIdE:)]) {
+          [self.delegate responseMsgIdE:msg];
         }
         break;
       case 0x12:

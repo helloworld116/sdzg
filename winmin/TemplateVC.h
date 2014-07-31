@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-
 @interface TemplateVC : UIViewController
-
+@property(nonatomic, assign) id<PassValueDelegate> delegate;
 @end

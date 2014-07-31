@@ -49,15 +49,16 @@
 
   // tableView列表显示
   _tableView = [[UITableView alloc]
-      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
-                                                       STATUS_HEIGHT -
-                                                       NAVIGATION_HEIGHT - 49)
+      initWithFrame:CGRectMake(
+                        0, 0, DEVICE_WIDTH,
+                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT - 49)
               style:UITableViewStylePlain];
   _tableView.delegate = self;
   _tableView.dataSource = self;
+  _tableView.rowHeight = 65.f;
   [self.view addSubview:_tableView];
-//  _tableView.backgroundColor = [UIColor clearColor];
-//  [_tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+  //  _tableView.backgroundColor = [UIColor clearColor];
+  //  [_tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
   _tableView.opaque = 0.8;
   //给定固定cell名和图标，存在数组中
   //    , @"导出数据", @"导入数据"
@@ -77,17 +78,17 @@
 
 #pragma mark-----------------------tableview datasource
 - (NSInteger)tableView:(UITableView *)tableView
-    numberOfRowsInSection:(NSInteger)section { // 8个cell
+    numberOfRowsInSection:(NSInteger)section {  // 8个cell
   return [cell_name_array count];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView
-    heightForRowAtIndexPath:(NSIndexPath *)indexPath { //高度65
-  return 65;
-}
+//- (CGFloat)tableView:(UITableView *)tableView
+//    heightForRowAtIndexPath:(NSIndexPath *)indexPath {  //高度65
+//  return 65;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath { // cell样式
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {  // cell样式
   static NSString *identify = @"_cell";
   UITableViewCell *cell =
       [tableView dequeueReusableCellWithIdentifier:identify];

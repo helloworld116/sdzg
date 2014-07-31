@@ -13,37 +13,40 @@
 #import <AudioToolbox/AudioToolbox.h>
 #define kRefreshIntveral 5
 
-@interface DevicesProfileVC ()<UDPDelegate>
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewLight;
+@interface DevicesProfileVC ()<UDPDelegate, PassValueDelegate>
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewLight;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
-@property (strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
+@property(strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
-@property (strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
+@property(strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
 
-@property (strong, atomic) GCDAsyncUdpSocket *udpSocket;
-@property (assign, nonatomic) BOOL isSwitchOn; //设备是否打开
-@property (assign, atomic) BOOL isLockOK;
+@property(strong, atomic) GCDAsyncUdpSocket *udpSocket;
+@property(assign, nonatomic) BOOL isSwitchOn;  //设备是否打开
+@property(assign, atomic) BOOL isLockOK;
 
 //延迟相关量
-@property (strong, nonatomic) NSTimer *delayTimer; //延迟操作
-@property (nonatomic, assign) NSInteger delayTime; //延迟时间，单位分钟
-@property (nonatomic, assign) BOOL delayIsOn;      //延迟操作是开还是关
+@property(strong, nonatomic) NSTimer *delayTimer;  //延迟操作
+@property(nonatomic, assign) NSInteger delayTime;  //延迟时间，单位分钟
+@property(nonatomic, assign) BOOL delayIsOn;       //延迟操作是开还是关
 
 //定时列表相关量
-@property (nonatomic, strong) NSArray *timeTaskList;
+@property(nonatomic, strong) NSArray *timeTaskList;
 
-@property (strong, nonatomic) NSTimer *refreshTimer; //开关状态timer
+@property(strong, nonatomic) NSTimer *refreshTimer;  //开关状态timer
+
+@property(nonatomic, strong)
+    NSDictionary *updateSwitchInfo;  //修改图片后传递到列表页面，修改图片和名称
 
 - (IBAction)showPreExecPage:(id)sender;
 - (IBAction)showDelayPage:(id)sender;
@@ -106,22 +109,22 @@
       dispatch_time(DISPATCH_TIME_NOW, delayInSeconds2 * NSEC_PER_SEC);
   dispatch_after(
       delayInNanoSeconds2, dispatch_get_main_queue(),
-      ^{ //      self.refreshTimer =
-         //          [[NSTimer alloc] initWithFireDate:[NSDate date]
-         //                                   interval:kRefreshIntveral
-         //                                     target:self
-         // selector:@selector(checkSwitchStateInTimer)
-         //                                   userInfo:nil
-         //                                    repeats:YES];
-         //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
-         //                                   forMode:NSRunLoopCommonModes];
+      ^{//      self.refreshTimer =
+        //          [[NSTimer alloc] initWithFireDate:[NSDate date]
+        //                                   interval:kRefreshIntveral
+        //                                     target:self
+        // selector:@selector(checkSwitchStateInTimer)
+        //                                   userInfo:nil
+        //                                    repeats:YES];
+        //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
+        //                                   forMode:NSRunLoopCommonModes];
 
-         //      self.refreshTimer = [NSTimer
-         //          scheduledTimerWithTimeInterval:kRefreshIntveral
-         //                                  target:self
-         // selector:@selector(checkSwitchStateInTimer)
-         //                                userInfo:nil
-         //                                 repeats:YES];
+        //      self.refreshTimer = [NSTimer
+        //          scheduledTimerWithTimeInterval:kRefreshIntveral
+        //                                  target:self
+        // selector:@selector(checkSwitchStateInTimer)
+        //                                userInfo:nil
+        //                                 repeats:YES];
       });
   self.refreshTimer =
       [NSTimer scheduledTimerWithTimeInterval:kRefreshIntveral
@@ -196,7 +199,15 @@ preparation before navigation
 - (IBAction)showEditPage:(id)sender {
   EditController *nextVC = [[EditController alloc] init];
   nextVC.aSwitch = self.aSwitch;
+  nextVC.passValueDelegate = self;
   [self.navigationController pushViewController:nextVC animated:YES];
+}
+
+#pragma mark 修改名字后用到的Delegate
+- (void)passValue:(id)value {
+  NSDictionary *switchInfo = (NSDictionary *)value;
+  self.updateSwitchInfo = switchInfo;
+  self.navigationItem.title = switchInfo[@"name"];
 }
 
 - (IBAction)changeState:(id)sender {
@@ -220,6 +231,9 @@ preparation before navigation
 }
 
 - (IBAction)back:(id)sender {
+  if (self.updateSwitchInfo) {
+    [self.passValueDelegate passValue:self.updateSwitchInfo];
+  }
   [self.navigationController popViewControllerAnimated:YES];
 }
 - (IBAction)refresh:(id)sender {
@@ -438,6 +452,30 @@ preparation before navigation
   if ([self.aSwitch.macAddress isEqualToString:msg.mac]) {
     [self changeOutwardBySwitchState:msg.isOn];
   }
+}
+
+- (void)responseMsgIdC:(CC3xMessage *)msg {
+  //列表页面请求响应后，代理已更改为此vc
+  if ([self.aSwitch.macAddress isEqualToString:msg.mac]) {
+    [self changeOutwardBySwitchState:msg.isOn];
+  }
+}
+
+- (void)noResponseMsgIdC {
+  [[MessageUtil shareInstance] sendMsg0B:self.udpSocket sendMode:PassiveMode];
+}
+
+- (void)responseMsgIdE:(CC3xMessage *)msg {
+  //列表页面请求响应后，代理已更改为此vc
+  if ([self.aSwitch.macAddress isEqualToString:msg.mac]) {
+    [self changeOutwardBySwitchState:msg.isOn];
+  }
+}
+
+- (void)noResponseMsgIdE {
+  [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
+                                     mac:self.aSwitch.macAddress
+                                sendMode:PassiveMode];
 }
 
 - (void)responseMsgId18Or1A:(CC3xMessage *)msg {

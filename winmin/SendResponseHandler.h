@@ -10,6 +10,8 @@
 
 @interface SendResponseHandler : NSObject
 @property(atomic, strong) NSData *responseDataA;
+@property(atomic, strong) NSData *responseDataC;
+@property(atomic, strong) NSData *responseDataE;
 @property(atomic, strong) NSData *responseDataCOrE;
 @property(atomic, strong) NSData *responseData12Or14;
 @property(atomic, strong) NSData *responseData18Or1A;

@@ -10,5 +10,6 @@
 #import "CC3xSwitch.h"
 
 @interface DevicesProfileVC : UIViewController
-@property (strong, nonatomic) CC3xSwitch *aSwitch;
+@property(strong, nonatomic) CC3xSwitch *aSwitch;
+@property(nonatomic, assign) id<PassValueDelegate> passValueDelegate;
 @end

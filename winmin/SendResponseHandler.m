@@ -8,12 +8,6 @@
 
 #import "SendResponseHandler.h"
 
-#define kCheckPrivatePrivateResponseInterval                                   \
-  0.1 //发送UDP内网请求后，检查是否有响应数据的间隔，单位为秒
-#define kCheckPublicPrivateResponseInterval                                    \
-  0.5 //发送UDP外网请求后，检查是否有响应数据的间隔，单位为秒
-#define kTryCount 3 //请求失败后自动尝试次数
-
 @implementation SendResponseHandler
 + (instancetype)shareInstance {
   static SendResponseHandler *responseHandler;
@@ -81,14 +75,23 @@
       }
       break;
     case P2D_STATE_INQUIRY_0B:
-    case P2S_STATE_INQUIRY_0D:
-      if (!self.responseDataCOrE) {
+      if (!self.responseDataC) {
         NSLog(@"tag %ld 重新发送%d次", tag,
-              [MessageUtil shareInstance].msgBOrDSendCount + 1);
-        if ([MessageUtil shareInstance].msgBOrDSendCount < kTryCount &&
+              [MessageUtil shareInstance].msgBSendCount + 1);
+        if ([MessageUtil shareInstance].msgBSendCount < kTryCount &&
             [[UdpSocketUtil shareInstance].delegate
-                respondsToSelector:@selector(noResponseMsgIdCOrE)]) {
-          [[UdpSocketUtil shareInstance].delegate noResponseMsgIdCOrE];
+                respondsToSelector:@selector(noResponseMsgIdC)]) {
+          [[UdpSocketUtil shareInstance].delegate noResponseMsgIdC];
+        }
+      }
+    case P2S_STATE_INQUIRY_0D:
+      if (!self.responseDataE) {
+        NSLog(@"tag %ld 重新发送%d次", tag,
+              [MessageUtil shareInstance].msgDSendCount + 1);
+        if ([MessageUtil shareInstance].msgDSendCount < kTryCount &&
+            [[UdpSocketUtil shareInstance].delegate
+                respondsToSelector:@selector(noResponseMsgIdE)]) {
+          [[UdpSocketUtil shareInstance].delegate noResponseMsgIdE];
         }
       }
       break;

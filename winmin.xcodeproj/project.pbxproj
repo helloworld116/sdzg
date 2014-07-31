@@ -43,6 +43,8 @@
 		153A338719876C5600016890 /* libFTC_RELEASE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 150F45F31928FF30000E5527 /* libFTC_RELEASE.a */; };
 		153A33891988889F00016890 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 153A33881988889F00016890 /* MessageUI.framework */; };
 		153A338C1988A4C100016890 /* TemplateVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 153A338B1988A4C100016890 /* TemplateVC.m */; };
+		153A338F198A0F0F00016890 /* XMLUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 153A338E198A0F0F00016890 /* XMLUtil.m */; };
+		153A3393198A377100016890 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 153A3392198A377100016890 /* Images.xcassets */; };
 		153D4E02194B06C200E056A2 /* FAQViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E01194B06C200E056A2 /* FAQViewController.m */; };
 		153D4E05194B06E800E056A2 /* APPQrcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E04194B06E800E056A2 /* APPQrcodeViewController.m */; };
 		153D4E08194B070D00E056A2 /* USERSBookViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 153D4E07194B070D00E056A2 /* USERSBookViewController.m */; };
@@ -54,7 +56,6 @@
 		154E3D411920C25F00D05EA0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 154E3D3F1920C25F00D05EA0 /* InfoPlist.strings */; };
 		154E3D431920C25F00D05EA0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 154E3D421920C25F00D05EA0 /* main.m */; };
 		154E3D471920C25F00D05EA0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 154E3D461920C25F00D05EA0 /* AppDelegate.m */; };
-		154E3D491920C25F00D05EA0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 154E3D481920C25F00D05EA0 /* Images.xcassets */; };
 		154E3D501920C25F00D05EA0 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 154E3D4F1920C25F00D05EA0 /* XCTest.framework */; };
 		154E3D511920C25F00D05EA0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 154E3D361920C25F00D05EA0 /* Foundation.framework */; };
 		154E3D521920C25F00D05EA0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 154E3D3A1920C25F00D05EA0 /* UIKit.framework */; };
@@ -149,6 +150,10 @@
 		153A33881988889F00016890 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		153A338A1988A4C100016890 /* TemplateVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateVC.h; sourceTree = "<group>"; };
 		153A338B1988A4C100016890 /* TemplateVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TemplateVC.m; sourceTree = "<group>"; };
+		153A338D198A0F0F00016890 /* XMLUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLUtil.h; sourceTree = "<group>"; };
+		153A338E198A0F0F00016890 /* XMLUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLUtil.m; sourceTree = "<group>"; };
+		153A3391198A1EEC00016890 /* PassValueDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PassValueDelegate.h; sourceTree = "<group>"; };
+		153A3392198A377100016890 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		153D4E00194B06C200E056A2 /* FAQViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAQViewController.h; sourceTree = "<group>"; };
 		153D4E01194B06C200E056A2 /* FAQViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAQViewController.m; sourceTree = "<group>"; };
 		153D4E03194B06E800E056A2 /* APPQrcodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APPQrcodeViewController.h; sourceTree = "<group>"; };
@@ -159,7 +164,7 @@
 		153D4E0A194B072500E056A2 /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
 		154906D01932D72500CA80CC /* AddTimerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddTimerController.h; sourceTree = "<group>"; };
 		154906D11932D72500CA80CC /* AddTimerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddTimerController.m; sourceTree = "<group>"; };
-		154E3D331920C25F00D05EA0 /* winmin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = winmin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		154E3D331920C25F00D05EA0 /* 无线开关.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "无线开关.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		154E3D361920C25F00D05EA0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		154E3D381920C25F00D05EA0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		154E3D3A1920C25F00D05EA0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -169,7 +174,6 @@
 		154E3D441920C25F00D05EA0 /* winmin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "winmin-Prefix.pch"; sourceTree = "<group>"; };
 		154E3D451920C25F00D05EA0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		154E3D461920C25F00D05EA0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		154E3D481920C25F00D05EA0 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		154E3D4E1920C25F00D05EA0 /* winminTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = winminTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		154E3D4F1920C25F00D05EA0 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		154E3D571920C25F00D05EA0 /* winminTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "winminTests-Info.plist"; sourceTree = "<group>"; };
@@ -335,6 +339,14 @@
 			path = model;
 			sourceTree = "<group>";
 		};
+		153A3390198A1E9900016890 /* protocol */ = {
+			isa = PBXGroup;
+			children = (
+				153A3391198A1EEC00016890 /* PassValueDelegate.h */,
+			);
+			name = protocol;
+			sourceTree = "<group>";
+		};
 		154E3D2A1920C25E00D05EA0 = {
 			isa = PBXGroup;
 			children = (
@@ -354,7 +366,7 @@
 		154E3D341920C25F00D05EA0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				154E3D331920C25F00D05EA0 /* winmin.app */,
+				154E3D331920C25F00D05EA0 /* 无线开关.app */,
 				154E3D4E1920C25F00D05EA0 /* winminTests.xctest */,
 			);
 			name = Products;
@@ -386,6 +398,8 @@
 		154E3D3C1920C25F00D05EA0 /* winmin */ = {
 			isa = PBXGroup;
 			children = (
+				153A3392198A377100016890 /* Images.xcassets */,
+				153A3390198A1E9900016890 /* protocol */,
 				15BEA9EE1985FF11003F8AE8 /* SendResponseHandler.h */,
 				15BEA9EF1985FF11003F8AE8 /* SendResponseHandler.m */,
 				470F98541983845300EF65F8 /* UdpSocketUtil.h */,
@@ -394,11 +408,12 @@
 				4747C61E1982B0D2001F8A24 /* NetUtil.m */,
 				159283C61982441500E2196E /* MessageUtil.h */,
 				159283C71982441500E2196E /* MessageUtil.m */,
+				153A338D198A0F0F00016890 /* XMLUtil.h */,
+				153A338E198A0F0F00016890 /* XMLUtil.m */,
 				154E3D451920C25F00D05EA0 /* AppDelegate.h */,
 				154E3D461920C25F00D05EA0 /* AppDelegate.m */,
 				155A726E19230A6D00695EAE /* devices */,
 				155A726F19230A8000695EAE /* more */,
-				154E3D481920C25F00D05EA0 /* Images.xcassets */,
 				154E3D3D1920C25F00D05EA0 /* Supporting Files */,
 				15B81D911977C68A00AD80B7 /* MainStoryboard.storyboard */,
 			);
@@ -506,7 +521,7 @@
 			);
 			name = winmin;
 			productName = winmin;
-			productReference = 154E3D331920C25F00D05EA0 /* winmin.app */;
+			productReference = 154E3D331920C25F00D05EA0 /* 无线开关.app */;
 			productType = "com.apple.product-type.application";
 		};
 		154E3D4D1920C25F00D05EA0 /* winminTests */ = {
@@ -568,9 +583,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				154E3D411920C25F00D05EA0 /* InfoPlist.strings in Resources */,
+				153A3393198A377100016890 /* Images.xcassets in Resources */,
 				150F45EF1928FF23000E5527 /* README.txt in Resources */,
 				15B81D921977C68A00AD80B7 /* MainStoryboard.storyboard in Resources */,
-				154E3D491920C25F00D05EA0 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,6 +635,7 @@
 				15B6195D192D1B3E00B5F2E4 /* CustomCell.m in Sources */,
 				15F20F92192378A400EE6D83 /* DevicesProfileController.m in Sources */,
 				150F461D1928FF95000E5527 /* CC3xTimerTask.m in Sources */,
+				153A338F198A0F0F00016890 /* XMLUtil.m in Sources */,
 				150F46021928FF3B000E5527 /* GCDAsyncUdpSocket.m in Sources */,
 				153A338C1988A4C100016890 /* TemplateVC.m in Sources */,
 				1568F15719244F1F00BCA667 /* EditController.m in Sources */,
@@ -771,7 +787,7 @@
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_LDFLAGS = "-lxml2";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "无线开关";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s";
@@ -803,7 +819,7 @@
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_LDFLAGS = "-lxml2";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "无线开关";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s";

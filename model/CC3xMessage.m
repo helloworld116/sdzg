@@ -968,8 +968,8 @@ typedef struct {
       [deviceName stringByTrimmingCharactersInSet:
                       [NSCharacterSet whitespaceAndNewlineCharacterSet]];
   message.deviceName = deviceName;
-  NSLog(@"长度为%d，message.deviceName的内容为%@........,",
-        [message.deviceName length], message.deviceName);
+  //  NSLog(@"长度为%d，message.deviceName的内容为%@........,",
+  //        [message.deviceName length], message.deviceName);
   message.version = msg.FWVersion;
   message.isLocked = msg.deviceLockState & (1 << 0);
   message.isOn = msg.deviceLockState & (1 << 1);

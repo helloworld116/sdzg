@@ -35,6 +35,16 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
   self.navigationItem.title = @"关于";
+  UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
+  [left setFrame:CGRectMake(0, 2, 28, 28)];
+  [left setImage:[UIImage imageNamed:@"back_button"]
+        forState:UIControlStateNormal];
+  [left addTarget:self
+                action:@selector(goTopVC)
+      forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *leftButton =
+      [[UIBarButtonItem alloc] initWithCustomView:left];
+  self.navigationItem.leftBarButtonItem = leftButton;
   //  [[UIApplication sharedApplication]
   //      openURL:[NSURL URLWithString:self.lblPhone.text]];
   //  NSString *appVersion =
@@ -68,5 +78,9 @@
   UIButton *btn = (UIButton *)sender;
   [[UIApplication sharedApplication]
       openURL:[NSURL URLWithString:btn.currentTitle]];
+}
+
+- (void)goTopVC {
+  [self.navigationController popViewControllerAnimated:YES];
 }
 @end

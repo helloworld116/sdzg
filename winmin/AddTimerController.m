@@ -14,9 +14,9 @@
 #import "CC3xSwitch.h"
 #import "Reachability.h"
 @interface AddTimerController ()<UDPDelegate>
-@property (nonatomic, strong) NSString *startTime,
-    *endTime; //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
-@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+@property(nonatomic, strong) NSString *startTime,
+    *endTime;  //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
+@property(nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
 
 @implementation AddTimerController
@@ -41,47 +41,37 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
   self.navigationItem.title = @"定时任务";
-
-  // background 背景图片
-  UIImageView *background_imageView =
-      [[UIImageView alloc] initWithFrame:[self.view frame]];
-  background_imageView.image = [UIImage imageNamed:@"background.png"];
-  [super.view addSubview:background_imageView];
-
   // navi 导航栏左按钮，
   UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
-
   [left setFrame:CGRectMake(0, 2, 28, 28)];
-
   [left setImage:[UIImage imageNamed:@"back_button"]
         forState:UIControlStateNormal];
   //按钮触发back方法返回上一页面
   [left addTarget:self
                 action:@selector(back)
       forControlEvents:UIControlEventTouchUpInside];
-
   UIBarButtonItem *leftButton =
       [[UIBarButtonItem alloc] initWithCustomView:left];
-
   self.navigationItem.leftBarButtonItem = leftButton;
 
+  // background 背景图片
+  UIImageView *background_imageView =
+      [[UIImageView alloc] initWithFrame:[self.view bounds]];
+  background_imageView.image = [UIImage imageNamed:@"background.png"];
+  [self.view addSubview:background_imageView];
   //任务列表背景图片，及范围
   CGRect frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
   content_View = [[UIView alloc] initWithFrame:frame];
   content_View.backgroundColor = [UIColor clearColor];
   [self.view addSubview:content_View];
   UIImageView *content_bg = [[UIImageView alloc]
-      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
-                                                       STATUS_HEIGHT -
-                                                       NAVIGATION_HEIGHT)];
+      initWithFrame:CGRectMake(0, 10, DEVICE_WIDTH,
+                               DEVICE_HEIGHT - STATUS_HEIGHT -
+                                   NAVIGATION_HEIGHT - 20)];
   content_bg.image = [UIImage imageNamed:@"window_background"];
-  //    //    [content_bg setBounds:CGRectMake(0, 0, 260,
-  //    DEVICE_HEIGHT-STATUS_HEIGHT - NAVIGATION_HEIGHT)];
   [content_View addSubview:content_bg];
-  content_View.layer.cornerRadius = 5.0;
-
   //定时任务label的创建，文字格式等，
-  UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(80, 13, 160, 20)];
+  UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(80, 18, 160, 20)];
   label.backgroundColor = [UIColor clearColor];
   label.text = @"编辑任务";
   label.textAlignment = NSTextAlignmentCenter;
@@ -250,7 +240,7 @@
 
   //保存按钮，触发保存时间列表，发送udp
   saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [saveButton setFrame:CGRectMake(40, 363, 240, 30)];
+  [saveButton setFrame:CGRectMake(40, 340, 240, 30)];
   [saveButton addTarget:self
                  action:@selector(saveTimer:)
        forControlEvents:UIControlEventTouchUpInside];
@@ -374,14 +364,18 @@
 }
 //弹出时间选择视图
 - (void)showTimePickerView:(id)sender {
-  //创建timePicker视图
-  self.timePickerView = [[UIView alloc]
-      initWithFrame:CGRectMake(0, DEVICE_HEIGHT - 44 - 162, 320, 44 + 162)];
-  self.timePickerView.layer.cornerRadius = 10.0;
-  self.timePickerView.backgroundColor = [UIColor whiteColor];
-  //添加主视图到window上
-  UIApplication *app = [UIApplication sharedApplication];
-  [app.keyWindow addSubview:self.timePickerView];
+  if (!self.timePickerView) {
+    //创建timePicker视图
+    self.timePickerView = [[UIView alloc]
+        initWithFrame:CGRectMake(0, DEVICE_HEIGHT - (44 + 162)-115, 320, 44 + 162)];
+    self.timePickerView.layer.cornerRadius = 10.0;
+    self.timePickerView.backgroundColor = [UIColor whiteColor];
+    //添加主视图到window上
+    //    UIApplication *app = [UIApplication sharedApplication];
+    //    [app.keyWindow addSubview:self.timePickerView];
+    [self.view addSubview:self.timePickerView];
+  }
+
   //添加toolbar 用来确定选择时间和取消视图
   UIToolbar *toolBar =
       [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
@@ -423,11 +417,11 @@
     NSDate *defaultDate = [self.dateFormatter dateFromString:self.endTime];
     _datePicker.date = defaultDate;
   }
-  CGRect frame = self.timePickerView.frame;
-  frame.origin.y =
-      self.view.frame.size.height - self.timePickerView.frame.size.height;
-  [UIView animateWithDuration:0.3
-                   animations:^{ self.timePickerView.frame = frame; }];
+  //  CGRect frame = self.timePickerView.frame;
+  //  frame.origin.y =
+  //      self.view.frame.size.height - self.timePickerView.frame.size.height;
+  //  [UIView animateWithDuration:0.3
+  //                   animations:^{ self.timePickerView.frame = frame; }];
 }
 //开启 / 关闭图片选择显示
 - (void)timeButtonSelected:(id)sender {
@@ -445,9 +439,11 @@
 //取消
 - (void)timePickerCancel:(id)sender {
   CGRect frame = self.timePickerView.frame;
-  frame.origin.y = self.view.frame.size.height;
+  frame.origin.y =
+      self.view.frame.size.height + STATUS_HEIGHT + NAVIGATION_HEIGHT;
   [UIView animateWithDuration:0.3
                    animations:^{ self.timePickerView.frame = frame; }];
+  self.timePickerView = nil;
   NSLog(@"取消视图");
 }
 //确定
@@ -562,6 +558,8 @@
 }
 
 - (void)back {
+  [self.timePickerView removeFromSuperview];
+  self.timePickerView = nil;
   [self.navigationController popViewControllerAnimated:YES];
 }
 

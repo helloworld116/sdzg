@@ -8,11 +8,11 @@
 
 #import "MessageUtil.h"
 @interface MessageUtil ()
-@property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
-@property (atomic, strong) NSData *msg;
-@property (atomic, strong) NSString *host;
-@property (atomic, assign) uint16_t port;
-@property (atomic, assign) long tag;
+@property(nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
+@property(atomic, strong) NSData *msg;
+@property(atomic, strong) NSString *host;
+@property(atomic, assign) uint16_t port;
+@property(atomic, assign) long tag;
 @end
 
 @implementation MessageUtil
@@ -64,9 +64,9 @@
 - (void)sendMsg0B:(GCDAsyncUdpSocket *)udpSocket sendMode:(SENDMODE)mode {
   dispatch_async(GLOBAL_QUEUE, ^{
       if (mode == ActiveMode) {
-        self.msgBOrDSendCount = 0;
+        self.msgBSendCount = 0;
       } else if (mode == PassiveMode) {
-        self.msgBOrDSendCount++;
+        self.msgBSendCount++;
       }
       self.udpSocket = udpSocket;
       self.msg = [CC3xMessageUtil getP2dMsg0B];
@@ -82,9 +82,9 @@
          sendMode:(SENDMODE)mode {
   dispatch_async(GLOBAL_QUEUE, ^{
       if (mode == ActiveMode) {
-        self.msgBOrDSendCount = 0;
+        self.msgDSendCount = 0;
       } else if (mode == PassiveMode) {
-        self.msgBOrDSendCount++;
+        self.msgDSendCount++;
       }
       self.udpSocket = udpSocket;
       self.msg = [CC3xMessageUtil getP2SMsg0D:mac];

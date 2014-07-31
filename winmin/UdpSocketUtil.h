@@ -20,6 +20,18 @@
  */
 - (void)responseMsgIdA:(CC3xMessage *)msg;
 /**
+ *  手机内网查询开关状态响应后的处理
+ *
+ *  @param msg 响应报文经过包装后的对象
+ */
+- (void)responseMsgIdC:(CC3xMessage *)msg;
+/**
+ *  手机外网查询开关状态响应后的处理
+ *
+ *  @param msg 响应报文经过包装后的对象
+ */
+- (void)responseMsgIdE:(CC3xMessage *)msg;
+/**
  *  手机查询开关状态响应后的处理
  *
  *  @param msg 响应报文经过包装后的对象
@@ -96,6 +108,14 @@
  */
 - (void)noResponseMsgIdCOrE;
 /**
+ *  手机内网查询开关状态请求无响应处理
+ */
+- (void)noResponseMsgIdC;
+/**
+ *  手机外网查询开关状态请求无响应处理
+ */
+- (void)noResponseMsgIdE;
+/**
  *  手机控制开关“开或关”请求无响应处理
  */
 - (void)noResponseMsgId12Or14;
@@ -145,6 +165,14 @@
  *  手机添加设备UDP请求发送失败后的处理
  */
 - (void)noSendMsgId9;
+/**
+ *  手机内网查询开关状态UDP请求发送失败后的处理
+ */
+- (void)noSendMsgIdB;
+/**
+ *  手机外网查询开关状态UDP请求发送失败后的处理
+ */
+- (void)noSendMsgIdD;
 /**
  *  手机查询开关状态UDP请求发送失败后的处理
  */

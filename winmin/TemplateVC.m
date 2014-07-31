@@ -9,6 +9,10 @@
 #import "TemplateVC.h"
 
 @interface TemplateVC ()
+@property(nonatomic, assign) NSUInteger lastSelectTag;
+@property(nonatomic, strong) NSDictionary *imgDict;
+- (IBAction)touchUpInside:(id)sender;
+- (IBAction)save:(id)sender;
 
 @end
 
@@ -31,6 +35,15 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
   self.navigationItem.title = @"无线开关";
+  self.imgDict = @{
+    @"902" : @"icon_ac",
+    @"904" : @"icon_light",
+    @"906" : @"icon_stb",
+    @"908" : @"icon_plug",
+    @"910" : @"icon_tv",
+    @"912" : @"icon_v",
+    @"914" : @"icon_ir"
+  };
 }
 
 - (void)didReceiveMemoryWarning {
@@ -50,4 +63,36 @@ preparation before navigation
 }
 */
 
+- (IBAction)touchUpInside:(id)sender {
+  UIButton *btn = (UIButton *)sender;
+  NSUInteger imgTag;
+  UIImageView *imgView;
+  if (self.lastSelectTag == 0 || self.lastSelectTag == btn.tag) {
+    imgTag = btn.tag + 1;
+    imgView = (UIImageView *)[self.view viewWithTag:imgTag];
+    if (imgView.hidden) {
+      imgView.hidden = NO;
+    }
+  } else {
+    imgTag = self.lastSelectTag + 1;
+    imgView = (UIImageView *)[self.view viewWithTag:imgTag];
+    if (!imgView.hidden) {
+      imgView.hidden = YES;
+    }
+    imgTag = btn.tag + 1;
+    imgView = (UIImageView *)[self.view viewWithTag:imgTag];
+    imgView.hidden = !imgView.hidden;
+  }
+  self.lastSelectTag = btn.tag;
+}
+
+- (IBAction)save:(id)sender {
+  if (self.lastSelectTag != 0) {
+    NSString *tagKey =
+        [NSString stringWithFormat:@"%d", self.lastSelectTag + 1];
+    NSString *imgName = [self.imgDict objectForKey:tagKey];
+    [self.delegate passValue:imgName];
+  }
+  [self.navigationController popViewControllerAnimated:YES];
+}
 @end

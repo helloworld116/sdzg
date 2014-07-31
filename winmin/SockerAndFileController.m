@@ -10,8 +10,8 @@
 #import "DevicesProfileController.h"
 #import "DevicesProfileVC.h"
 
-@interface SockerAndFileController ()<UDPDelegate>
-@property (nonatomic, retain) NSIndexPath *selectedIndexPath; //当前操作的列
+@interface SockerAndFileController ()<UDPDelegate, PassValueDelegate>
+@property(nonatomic, retain) NSIndexPath *selectedIndexPath;  //当前操作的列
 @end
 
 @implementation SockerAndFileController
@@ -31,7 +31,7 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
   //从本地文件中获得设备列表
-  NSArray *switchArray = [self loadSwitches];
+  NSArray *switchArray = [[XMLUtil sharedInstance] loadSwitches];
   _switchDict = [[NSMutableDictionary alloc] init];
   for (CC3xSwitch *aSwitch in switchArray) {
     if (aSwitch.macAddress) {
@@ -103,169 +103,8 @@
     [self.updateTimer invalidate];
     _updateTimer = nil;
   }
-  [self saveXmlWithList:self.switchDict.allValues];
+  [[XMLUtil sharedInstance] saveXmlWithList:self.switchDict.allValues];
   [super viewWillDisappear:animated];
-}
-
-#pragma mark - xml file dealing
-
-- (NSArray *)loadSwitches {
-  NSString *xmlPath = [CC3xUtility xmlFilePath];
-  NSData *xmlData = [[NSMutableData alloc] initWithContentsOfFile:xmlPath];
-  NSError *error;
-  GDataXMLDocument *doc =
-      [[GDataXMLDocument alloc] initWithData:xmlData options:0 error:&error];
-  if (doc == nil) {
-    return nil;
-  }
-
-  NSArray *switchArray = [doc.rootElement elementsForName:@"switch"];
-  NSMutableArray *switches =
-      [NSMutableArray arrayWithCapacity:switchArray.count];
-  NSLog(@"xml读出设备数:%lu", (unsigned long)[switchArray count]);
-  for (GDataXMLElement *aSwitch in switchArray) {
-    NSString *mac = nil;
-    NSString *name = nil;
-    NSString *ip = nil;
-    unsigned short port = 0;
-    switchStatus state = SWITCH_UNKNOWN;
-    BOOL local = NO;
-    BOOL locked = NO;
-    BOOL on = NO;
-    NSString *imageName;
-    NSMutableArray *timerList = nil;
-    mac = [[aSwitch attributeForName:@"id"] stringValue];
-    NSArray *names = [aSwitch elementsForName:@"name"];
-    if (names.count > 0) {
-      GDataXMLElement *firstName = (GDataXMLElement *)names[0];
-      name = firstName.stringValue;
-    }
-
-    NSArray *ips = [aSwitch elementsForName:@"ip"];
-    if (ips.count > 0) {
-      GDataXMLElement *firstIp = (GDataXMLElement *)ips[0];
-      ip = firstIp.stringValue;
-    }
-
-    NSArray *ports = [aSwitch elementsForName:@"port"];
-    if (ports.count > 0) {
-      GDataXMLElement *firstPort = (GDataXMLElement *)ports[0];
-      port = [firstPort.stringValue intValue];
-    }
-
-    NSArray *states = [aSwitch elementsForName:@"state"];
-    if (states.count > 0) {
-      GDataXMLElement *firstState = (GDataXMLElement *)states[0];
-      state = firstState.stringValue.boolValue;
-    }
-
-    NSArray *locks = [aSwitch elementsForName:@"locked"];
-    if (locks.count > 0) {
-      GDataXMLElement *firstLocked = (GDataXMLElement *)locks[0];
-      locked = firstLocked.stringValue.boolValue;
-    }
-
-    NSArray *locals = [aSwitch elementsForName:@"local"];
-    if (locals.count > 0) {
-      GDataXMLElement *firstLocal = (GDataXMLElement *)locals[0];
-      local = firstLocal.stringValue.boolValue;
-    }
-
-    NSArray *ons = [aSwitch elementsForName:@"on"];
-    if (ons.count > 0) {
-      GDataXMLElement *firstOn = (GDataXMLElement *)ons[0];
-      NSString *onValue = firstOn.stringValue;
-      if ([onValue isEqualToString:@"true"]) {
-        on = YES;
-      } else {
-        on = NO;
-      }
-    }
-
-    NSArray *imageNames = [aSwitch elementsForName:@"imageName"];
-    if (imageNames.count > 0) {
-      GDataXMLElement *firstImageName = (GDataXMLElement *)imageNames[0];
-      imageName = firstImageName.stringValue;
-    }
-
-    //定时列表，待添加
-    //        NSArray *timerLists = [aSwitch elementsForName:@"timerList"];
-    //        if (timerLists.count > 0) {
-    //            GDataXMLElement *firstTimerList = (GDataXMLElement
-    //            *)timerLists[0];
-    //            timerList = firstTimerList ;
-    //        }
-
-    CC3xSwitch *bSwitch = [[CC3xSwitch alloc] initWithName:name
-                                                macAddress:mac
-                                                    status:state
-                                                        ip:ip
-                                                      port:port
-                                                  isLocked:locked
-                                                      isOn:on
-                                                 timerList:timerList
-                                                 imageName:imageName];
-    [switches addObject:bSwitch];
-  }
-
-  return switches;
-}
-
-- (void)saveXmlWithList:(NSArray *)switchArray {
-  GDataXMLElement *switches = [GDataXMLNode elementWithName:@"switches"];
-  for (CC3xSwitch *aSwitch in switchArray) {
-    NSString *mac = aSwitch.macAddress;
-    NSString *portString = [NSString stringWithFormat:@"%d", aSwitch.port];
-    GDataXMLElement *switchElement = [GDataXMLNode elementWithName:@"switch"];
-    GDataXMLElement *idAttribute =
-        [GDataXMLElement attributeWithName:@"id" stringValue:mac];
-    [switchElement addAttribute:idAttribute];
-    GDataXMLElement *nameEelement =
-        [GDataXMLElement elementWithName:@"name"
-                             stringValue:aSwitch.switchName];
-    GDataXMLElement *ipEelement =
-        [GDataXMLElement elementWithName:@"ip" stringValue:aSwitch.ip];
-    GDataXMLElement *portElement =
-        [GDataXMLElement elementWithName:@"port" stringValue:portString];
-    GDataXMLElement *stateElement =
-        [GDataXMLElement elementWithName:@"state" stringValue:@"0"];
-    GDataXMLElement *lockedEelement =
-        [GDataXMLElement elementWithName:@"locked"
-                             stringValue:aSwitch.isLocked ? @"true" : @"false"];
-    NSString *localStr = nil;
-    if (aSwitch.status == SWITCH_LOCAL || aSwitch.status == SWITCH_LOCAL_LOCK) {
-      localStr = @"true";
-    } else {
-      localStr = @"false";
-    }
-    GDataXMLElement *localElement =
-        [GDataXMLElement elementWithName:@"local" stringValue:localStr];
-    GDataXMLElement *onElement =
-        [GDataXMLElement elementWithName:@"on"
-                             stringValue:aSwitch.isOn ? @"true" : @"false"];
-    GDataXMLElement *imageNameElement =
-        [GDataXMLElement elementWithName:@"imageName"
-                             stringValue:aSwitch.imageName];
-    GDataXMLElement *timerListElement =
-        [GDataXMLElement elementWithName:@"timerList"];
-    [switchElement addChild:timerListElement];
-
-    [switchElement addChild:nameEelement];
-    [switchElement addChild:ipEelement];
-    [switchElement addChild:portElement];
-    [switchElement addChild:stateElement];
-    [switchElement addChild:lockedEelement];
-    [switchElement addChild:localElement];
-    [switchElement addChild:onElement];
-    [switchElement addChild:imageNameElement];
-    [switches addChild:switchElement];
-  }
-
-  GDataXMLDocument *document =
-      [[GDataXMLDocument alloc] initWithRootElement:switches];
-  NSData *xmlData = document.XMLData;
-  NSString *xmlPath = [CC3xUtility xmlFilePath];
-  [xmlData writeToFile:xmlPath atomically:YES];
 }
 
 //更新设备状态
@@ -298,8 +137,10 @@
       for (int i = 0; i < macs.count; i++) {
         NSString *mac = [[self.switchDict allKeys] objectAtIndex:i];
         CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
-        if (aSwitch.status == SWITCH_UNKNOWN) {
+        if (aSwitch.status != SWITCH_LOCAL ||
+            aSwitch.status != SWITCH_LOCAL_LOCK) {
           double delayInSeconds = 0.5 * j;
+          //外网每个延迟0.5秒发送请求
           dispatch_time_t delayInNanoSeconds =
               dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
           dispatch_after(delayInNanoSeconds, GLOBAL_QUEUE, ^{
@@ -358,14 +199,15 @@
   NSString *mac = [[self.switchDict allKeys] objectAtIndex:row];
   CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
   cell.name = aSwitch.switchName;
-  if ([aSwitch.imageName isEqualToString:DEFAULT_IMAGENAME]) {
-    cell.devices_image = [UIImage imageNamed:DEFAULT_IMAGENAME];
-  } else {
-    NSString *imagePath =
-        [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
-            stringByAppendingPathComponent:@"1406699841.png"];
-    cell.devices_image = [UIImage imageWithContentsOfFile:imagePath];
-  }
+  cell.device_imageV.image = [aSwitch getImageByImageName:aSwitch.imageName];
+  //  if ([aSwitch.imageName isEqualToString:DEFAULT_IMAGENAME]) {
+  //    cell.devices_image = [UIImage imageNamed:DEFAULT_IMAGENAME];
+  //  } else {
+  //    NSString *imagePath =
+  //        [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+  //            stringByAppendingPathComponent:@"1406699841.png"];
+  //    cell.devices_image = [UIImage imageWithContentsOfFile:imagePath];
+  //  }
 
   switch (aSwitch.status) {
     case SWITCH_LOCAL:
@@ -422,9 +264,11 @@
   self.selectedSwitch = [self.switchDict allValues][indexPath.row];
   NSString *mac = [[self.switchDict allKeys] objectAtIndex:indexPath.row];
   CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
+  aSwitch.status = SWITCH_LOCAL;
   DevicesProfileVC *nextVC = [kSharedAppliction.mainStoryboard
       instantiateViewControllerWithIdentifier:@"DevicesProfileVC"];
   nextVC.aSwitch = aSwitch;
+  nextVC.passValueDelegate = self;
   nextVC.hidesBottomBarWhenPushed = YES;
   [self.navigationController pushViewController:nextVC animated:YES];
 }
@@ -577,6 +421,41 @@
   [tableView_DL reloadData];
 }
 
+#pragma mark 修改设备信息后处理的Delegate
+- (void)passValue:(id)value {
+  NSDictionary *switchInfo = (NSDictionary *)value;
+  NSString *mac = switchInfo[@"mac"];
+  CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
+  aSwitch.imageName = switchInfo[@"imageName"];
+  aSwitch.switchName = switchInfo[@"name"];
+  NSIndexPath *editIndexPath =
+      [tableView_DL indexPathForCell:self.selectedCell];
+  NSArray *indexPaths = @[ editIndexPath ];
+  [tableView_DL beginUpdates];
+  [tableView_DL reloadRowsAtIndexPaths:indexPaths
+                      withRowAnimation:UITableViewRowAnimationNone];
+  [tableView_DL endUpdates];
+}
+
+#pragma mark 处理内外网开关状态响应
+- (void)handleResponseCOrE:(CC3xMessage *)msg {
+  [self updateSwitchByMsg:msg];
+  for (CustomCell *cell in [tableView_DL visibleCells]) {
+    if ([cell.macAddress isEqualToString:msg.mac]) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+          NSIndexPath *indexPath = [tableView_DL indexPathForCell:cell];
+          if (indexPath) {
+            NSArray *indexPaths = @[ indexPath ];
+            [tableView_DL beginUpdates];
+            [tableView_DL reloadRowsAtIndexPaths:indexPaths
+                                withRowAnimation:UITableViewRowAnimationNone];
+            [tableView_DL endUpdates];
+          }
+      });
+    }
+  }
+}
+
 #pragma mark UDPDelegate
 - (void)responseMsgIdA:(CC3xMessage *)msg {
   dispatch_sync(GLOBAL_QUEUE, ^{
@@ -604,25 +483,30 @@
   [[MessageUtil shareInstance] sendMsg09:self.udpSocket sendMode:PassiveMode];
 }
 
-- (void)responseMsgIdCOrE:(CC3xMessage *)msg {
-  [self updateSwitchByMsg:msg];
-  for (CustomCell *cell in [tableView_DL visibleCells]) {
-    if ([cell.macAddress isEqualToString:msg.mac]) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-          NSIndexPath *indexPath = [tableView_DL indexPathForCell:cell];
-          NSArray *indexPaths = @[ indexPath ];
-          [tableView_DL beginUpdates];
-          [tableView_DL reloadRowsAtIndexPaths:indexPaths
-                              withRowAnimation:UITableViewRowAnimationNone];
-          [tableView_DL endUpdates];
-      });
-    }
-  }
-  //  dispatch_async(dispatch_get_main_queue(), ^{ [tableView_DL reloadData];
-  //  });
+- (void)responseMsgIdC:(CC3xMessage *)msg {
+  [self handleResponseCOrE:msg];
 }
 
-- (void)noResponseMsgIdCOrE {
+- (void)noResponseMsgIdC {
+  [[MessageUtil shareInstance] sendMsg0B:self.udpSocket sendMode:PassiveMode];
+  if ([MessageUtil shareInstance].msgBSendCount == kTryCount - 1) {
+    for (CC3xSwitch *aSwitch in [self.switchDict allValues]) {
+      if (aSwitch.status == SWITCH_LOCAL ||
+          aSwitch.status == SWITCH_LOCAL_LOCK) {
+        aSwitch.status = SWITCH_REMOTE;
+      }
+    }
+  }
+}
+
+- (void)responseMsgIdE:(CC3xMessage *)msg {
+  [self handleResponseCOrE:msg];
+}
+
+- (void)noResponseMsgIdE {
+  //  [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
+  //                                     mac:mac
+  //                                sendMode:ActiveMode];
   //  for (CC3xSwitch *aSwitch in [self.switchDict allValues]) {
   //    aSwitch.status = SWITCH_UNKNOWN;
   //  }
