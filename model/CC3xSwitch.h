@@ -29,6 +29,27 @@ typedef NS_OPTIONS(NSUInteger, switchStatus) {
 @property(nonatomic, assign) NSInteger delayTimer;
 //!!!:只添加了属性，没有写set
 
+@property(nonatomic, assign) NSInteger pmTwoPointFive;
+@property(nonatomic, assign) float temperature;
+@property(nonatomic, assign) NSInteger humidity;  //湿度
+@property(nonatomic, assign) float power;         //功率
+@property(nonatomic, strong) NSString *airDesc;   //空气质量说明
+
+- (instancetype)initWithName:(NSString *)name
+                  macAddress:(NSString *)aMacAddress
+                      status:(switchStatus)aStatus
+                          ip:(NSString *)aIp
+                        port:(unsigned short)aPort
+                    isLocked:(BOOL)isLocked
+                        isOn:(BOOL)isOn
+                   timerList:(NSMutableArray *)aTimerList
+                   imageName:(NSString *)imageName
+              pmTwoPointFive:(NSInteger)pmTwoPointFive
+                 temperature:(float)temperature
+                    humidity:(NSInteger)humidity
+                       power:(float)power
+                      airTag:(NSString *)airDesc;
+
 - (instancetype)initWithName:(NSString *)name
                   macAddress:(NSString *)aMacAddress
                       status:(switchStatus)aStatus

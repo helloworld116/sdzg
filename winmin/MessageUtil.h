@@ -13,6 +13,7 @@ typedef enum { ActiveMode, PassiveMode } SENDMODE;
 @property(atomic, assign) NSUInteger msg9SendCount;
 @property(atomic, assign) NSUInteger msgBSendCount;
 @property(atomic, assign) NSUInteger msgDSendCount;
+//@property(atomic, strong) NSMutableDictionary *msgDSendCountDict;
 @property(atomic, assign) NSUInteger msgBOrDSendCount;
 @property(atomic, assign) NSUInteger msg11Or13SendCount;
 @property(atomic, assign) NSUInteger msg17Or19SendCount;

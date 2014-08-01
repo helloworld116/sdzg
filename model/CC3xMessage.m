@@ -104,7 +104,12 @@ typedef struct {
   char deviceName[32];
   unsigned char deviceLockState;
   unsigned char FWVersion;
+  unsigned short pm;
+  unsigned char temperatureHigh;
+  unsigned char temperatureLow;
+  unsigned char humidity;  //湿度
   unsigned short power;
+  unsigned char airTag;  //空气质量代号
   unsigned short crc;
 } d2pMsg0C;
 
@@ -968,13 +973,25 @@ typedef struct {
       [deviceName stringByTrimmingCharactersInSet:
                       [NSCharacterSet whitespaceAndNewlineCharacterSet]];
   message.deviceName = deviceName;
-  //  NSLog(@"长度为%d，message.deviceName的内容为%@........,",
-  //        [message.deviceName length], message.deviceName);
   message.version = msg.FWVersion;
   message.isLocked = msg.deviceLockState & (1 << 0);
   message.isOn = msg.deviceLockState & (1 << 1);
   message.state = msg.state;
-  message.power = msg.power;
+
+  //有电量、空气质量数据才处理
+  if ([aData length] == 61) {
+    //赋值过程中，高低位互换了，后续查明原因
+    message.pmTwoPointFive = (msg.pm >> 8 | msg.pm << 8);
+    message.temperature =
+        ((msg.temperatureHigh & 0x7f) * 256 + msg.temperatureLow) / 10.0f;
+    if (msg.temperatureHigh & (1 << 7)) {
+      message.temperature = -message.temperature;
+    }
+    message.humidity = msg.humidity;
+    unsigned short power = (msg.power >> 8 | msg.power << 8);
+    message.power = power == 0 ? 0.f : 53035.5f / power;
+    message.airTag = msg.airTag;
+  }
   message.crc = msg.crc;
   return message;
 }
@@ -1306,4 +1323,24 @@ digit around %ld)", i);
   return self;
 }
 
+- (void)setAirTag:(unsigned char)airTag {
+  //  self.airTag = airTag;
+  switch (airTag) {
+    case 1:
+      self.airDesc = @"优";
+      break;
+    case 2:
+      self.airDesc = @"良";
+      break;
+    case 3:
+      self.airDesc = @"轻度污染";
+      break;
+    case 4:
+      self.airDesc = @"中度污染";
+      break;
+    default:
+      self.airDesc = @"优";
+      break;
+  }
+}
 @end

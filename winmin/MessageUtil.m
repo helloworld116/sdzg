@@ -82,9 +82,14 @@
          sendMode:(SENDMODE)mode {
   dispatch_async(GLOBAL_QUEUE, ^{
       if (mode == ActiveMode) {
+        //        [self.msgDSendCountDict setObject:@(0) forKey:mac];
         self.msgDSendCount = 0;
       } else if (mode == PassiveMode) {
         self.msgDSendCount++;
+        //        int count = [[self.msgDSendCountDict objectForKey:mac]
+        //        intValue];
+        //        count++;
+        //        [self.msgDSendCountDict setObject:@(count) forKey:mac];
       }
       self.udpSocket = udpSocket;
       self.msg = [CC3xMessageUtil getP2SMsg0D:mac];

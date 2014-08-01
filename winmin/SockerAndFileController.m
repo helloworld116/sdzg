@@ -11,7 +11,7 @@
 #import "DevicesProfileVC.h"
 
 @interface SockerAndFileController ()<UDPDelegate, PassValueDelegate>
-@property (nonatomic, retain) NSIndexPath *selectedIndexPath; //当前操作的列
+@property(nonatomic, retain) NSIndexPath *selectedIndexPath;  //当前操作的列
 @end
 
 @implementation SockerAndFileController
@@ -61,8 +61,6 @@
   tableView_DL = [[UITableView alloc]
       initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)
               style:UITableViewStylePlain];
-  NSLog(@"设备列表 x=%f,y=%f", tableView_DL.frame.origin.x,
-        tableView_DL.frame.origin.y);
   tableView_DL.dataSource = self;
   tableView_DL.delegate = self;
   tableView_DL.rowHeight = 65.f;
@@ -139,9 +137,12 @@
       for (int i = 0; i < macs.count; i++) {
         NSString *mac = [[self.switchDict allKeys] objectAtIndex:i];
         CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
-        if (aSwitch.status != SWITCH_LOCAL ||
+        if (aSwitch.status != SWITCH_LOCAL &&
             aSwitch.status != SWITCH_LOCAL_LOCK) {
-          double delayInSeconds = 0.5 * j;
+          [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
+                                             mac:mac
+                                        sendMode:ActiveMode];
+          double delayInSeconds = 0.5 * j + kCheckPublicPrivateResponseInterval;
           //外网每个延迟0.5秒发送请求
           dispatch_time_t delayInNanoSeconds =
               dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
@@ -202,14 +203,6 @@
   CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
   cell.name = aSwitch.switchName;
   cell.device_imageV.image = [aSwitch getImageByImageName:aSwitch.imageName];
-  //  if ([aSwitch.imageName isEqualToString:DEFAULT_IMAGENAME]) {
-  //    cell.devices_image = [UIImage imageNamed:DEFAULT_IMAGENAME];
-  //  } else {
-  //    NSString *imagePath =
-  //        [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
-  //            stringByAppendingPathComponent:@"1406699841.png"];
-  //    cell.devices_image = [UIImage imageWithContentsOfFile:imagePath];
-  //  }
 
   switch (aSwitch.status) {
     case SWITCH_LOCAL:
@@ -266,7 +259,9 @@
   self.selectedSwitch = [self.switchDict allValues][indexPath.row];
   NSString *mac = [[self.switchDict allKeys] objectAtIndex:indexPath.row];
   CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
-  aSwitch.status = SWITCH_LOCAL;
+  if (aSwitch.status == SWITCH_NEW) {
+    aSwitch.status = SWITCH_LOCAL;
+  }
   DevicesProfileVC *nextVC = [kSharedAppliction.mainStoryboard
       instantiateViewControllerWithIdentifier:@"DevicesProfileVC"];
   nextVC.aSwitch = aSwitch;
@@ -331,44 +326,6 @@
                                     sendMode:ActiveMode];
 }
 
-//- (void)handleLock:(BOOL)isLock {
-//  [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
-//                                     aSwitch:_selectedSwitch
-//                                      isLock:isLock];
-//}
-//- (void)handleRename {
-//  if (![CC3xUtility checkNetworkStatus]) {
-//    return;
-//  }
-//  UIAlertView *alert = [[UIAlertView alloc]
-//          initWithTitle:_selectedSwitch.switchName
-//                message:nil
-//               delegate:self
-//      cancelButtonTitle:NSLocalizedString(@"取消", nil)
-//      otherButtonTitles:NSLocalizedString(@"确定", nil), nil];
-//  [alert setAlertViewStyle:UIAlertViewStylePlainTextInput];
-//  [alert show];
-//}
-//
-//#pragma mark - UIAlertViewDelegate method
-//
-//- (void)alertView:(UIAlertView *)alertView
-//    clickedButtonAtIndex:(NSInteger)buttonIndex {
-//  NSString *name = [alertView textFieldAtIndex:0].text;
-//  if (buttonIndex == alertView.cancelButtonIndex) {
-//    return;
-//  } else {
-//    if (name.length) {
-//      [[MessageUtil shareInstance] sendMsg3FOr41:self.udpSocket
-//                                         aSwitch:_selectedSwitch
-//                                            name:name];
-//    }
-//  }
-//  [[alertView textFieldAtIndex:0] resignFirstResponder];
-//  self.selectedSwitch.switchName = name;
-//  [tableView_DL reloadData];
-//}
-
 #pragma mark - Navigation
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier
@@ -399,6 +356,11 @@
     aSwitch.port = msg.port;
     aSwitch.isLocked = msg.isLocked;
     aSwitch.isOn = msg.isOn;
+    aSwitch.power = msg.power;
+    aSwitch.pmTwoPointFive = msg.pmTwoPointFive;
+    aSwitch.humidity = msg.humidity;
+    aSwitch.airDesc = msg.airDesc;
+    aSwitch.temperature = msg.temperature;
     if (msg.msgId == 0xc && aSwitch.status != SWITCH_NEW) {
       if (aSwitch.isLocked) {
         aSwitch.status = SWITCH_LOCAL_LOCK;
@@ -495,7 +457,9 @@
     for (CC3xSwitch *aSwitch in [self.switchDict allValues]) {
       if (aSwitch.status == SWITCH_LOCAL ||
           aSwitch.status == SWITCH_LOCAL_LOCK) {
-        aSwitch.status = SWITCH_REMOTE;
+        //内网发送三次没有响应，状态修改为未知
+        aSwitch.status = SWITCH_UNKNOWN;
+        [self.switchDict setObject:aSwitch forKey:aSwitch.macAddress];
       }
     }
   }
@@ -506,11 +470,31 @@
 }
 
 - (void)noResponseMsgIdE {
-  //  [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
-  //                                     mac:mac
-  //                                sendMode:ActiveMode];
-  //  for (CC3xSwitch *aSwitch in [self.switchDict allValues]) {
-  //    aSwitch.status = SWITCH_UNKNOWN;
+  NSArray *macs = [self.switchDict allKeys];
+  //  int j = 0;
+  for (int i = 0; i < macs.count; i++) {
+    NSString *mac = [[self.switchDict allKeys] objectAtIndex:i];
+    CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
+    if (aSwitch.status != SWITCH_LOCAL && aSwitch.status != SWITCH_LOCAL_LOCK &&
+        aSwitch.status != SWITCH_REMOTE &&
+        aSwitch.status != SWITCH_REMOTE_LOCK) {
+      [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
+                                         mac:mac
+                                    sendMode:PassiveMode];
+      //      double delayInSeconds = 0.5 * j;
+      //      //外网每个延迟0.5秒发送请求
+      //      dispatch_time_t delayInNanoSeconds =
+      //          dispatch_time(DISPATCH_TIME_NOW, delayInSeconds *
+      //          NSEC_PER_SEC);
+      //      dispatch_after(delayInNanoSeconds, GLOBAL_QUEUE, ^{
+      //          [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
+      //                                             mac:mac
+      //                                        sendMode:PassiveMode];
+      //      });
+      //      j++;
+    }
+  }
+  //  if ([MessageUtil shareInstance].msgDSendCount == kTryCount - 1) {
   //  }
 }
 
@@ -520,32 +504,4 @@
     dispatch_async(dispatch_get_main_queue(), ^{});
   }
 }
-
-//- (void)responseMsgId48Or4A:(CC3xMessage *)msg {
-//  [self updateSwitchByMsg:msg];
-//  if (!msg.state) {
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        if (self.selectedIndexPath) {
-//          NSArray *indexPaths = @[ self.selectedIndexPath ];
-//          [tableView_DL beginUpdates];
-//          [tableView_DL reloadRowsAtIndexPaths:indexPaths
-//                              withRowAnimation:UITableViewRowAnimationNone];
-//          [tableView_DL endUpdates];
-//          self.selectedIndexPath = nil;
-//        }
-//    });
-//  }
-//}
-//
-//- (void)noResponseMsgId48Or4A {
-//  //    [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
-//  //                                       aSwitch:_selectedSwitch
-//  //                                        isLock:isLock];
-//}
-//
-//- (void)noSendMsgId47Or49 {
-//  //    [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
-//  //                                       aSwitch:_selectedSwitch
-//  //                                        isLock:isLock];
-//}
 @end

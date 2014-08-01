@@ -19,6 +19,37 @@
                     isLocked:(BOOL)isLocked
                         isOn:(BOOL)isOn
                    timerList:(NSMutableArray *)aTimerList
+                   imageName:(NSString *)imageName
+              pmTwoPointFive:(NSInteger)pmTwoPointFive
+                 temperature:(float)temperature
+                    humidity:(NSInteger)humidity
+                       power:(float)power
+                     airDesc:(NSString *)airDesc {
+  self = [self initWithName:name
+                 macAddress:aMacAddress
+                     status:aStatus
+                         ip:aIp
+                       port:aPort
+                   isLocked:isLocked
+                       isOn:isOn
+                  timerList:aTimerList
+                  imageName:imageName];
+  self.pmTwoPointFive = pmTwoPointFive;
+  self.temperature = temperature;
+  self.humidity = humidity;
+  self.power = power;
+  self.airDesc = airDesc;
+  return self;
+}
+
+- (instancetype)initWithName:(NSString *)name
+                  macAddress:(NSString *)aMacAddress
+                      status:(switchStatus)aStatus
+                          ip:(NSString *)aIp
+                        port:(unsigned short)aPort
+                    isLocked:(BOOL)isLocked
+                        isOn:(BOOL)isOn
+                   timerList:(NSMutableArray *)aTimerList
                    imageName:(NSString *)imageName {
   if ((self = [super init])) {
     if ([name isEqualToString:@""]) {

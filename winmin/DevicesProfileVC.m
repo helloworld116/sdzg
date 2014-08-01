@@ -14,39 +14,44 @@
 #define kRefreshIntveral 5
 
 @interface DevicesProfileVC ()<UDPDelegate, PassValueDelegate>
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewLight;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewLight;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
-@property (strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
+@property(strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
-@property (strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
+@property(strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
 
-@property (strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
+@property(strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
+@property(strong, nonatomic) IBOutlet UILabel *lblPower;
+@property(strong, nonatomic) IBOutlet UILabel *lblPM;
+@property(strong, nonatomic) IBOutlet UILabel *lblTemp;
+@property(strong, nonatomic) IBOutlet UILabel *lblAir;
+@property(strong, nonatomic) IBOutlet UILabel *lblHumidity;
 
-@property (strong, atomic) GCDAsyncUdpSocket *udpSocket;
-@property (assign, nonatomic) BOOL isSwitchOn; //设备是否打开
-@property (assign, atomic) BOOL isLockOK;
+@property(strong, atomic) GCDAsyncUdpSocket *udpSocket;
+@property(assign, nonatomic) BOOL isSwitchOn;  //设备是否打开
+@property(assign, atomic) BOOL isLockOK;
 
 //延迟相关量
-@property (strong, nonatomic) NSTimer *delayTimer; //延迟操作
-@property (nonatomic, assign) NSInteger delayTime; //延迟时间，单位分钟
-@property (nonatomic, assign) BOOL delayIsOn;      //延迟操作是开还是关
+@property(strong, nonatomic) NSTimer *delayTimer;  //延迟操作
+@property(nonatomic, assign) NSInteger delayTime;  //延迟时间，单位分钟
+@property(nonatomic, assign) BOOL delayIsOn;       //延迟操作是开还是关
 
 //定时列表相关量
-@property (nonatomic, strong) NSArray *timeTaskList;
+@property(nonatomic, strong) NSArray *timeTaskList;
 
-@property (strong, nonatomic) NSTimer *refreshTimer; //开关状态timer
+@property(strong, nonatomic) NSTimer *refreshTimer;  //开关状态timer
 
-@property (nonatomic, strong)
-    NSDictionary *updateSwitchInfo; //修改图片后传递到列表页面，修改图片和名称
+@property(nonatomic, strong)
+    NSDictionary *updateSwitchInfo;  //修改图片后传递到列表页面，修改图片和名称
 
 - (IBAction)showPreExecPage:(id)sender;
 - (IBAction)showDelayPage:(id)sender;
@@ -87,7 +92,7 @@
       [[UIBarButtonItem alloc] initWithCustomView:backBtn];
 
   self.isSwitchOn = self.aSwitch.isOn;
-  [self changeOutwardBySwitchState:self.isSwitchOn];
+  [self changeOutwardBySwitchState:self.aSwitch];
   self.udpSocket = [UdpSocketUtil shareInstance].udpSocket;
 }
 
@@ -113,22 +118,22 @@
       dispatch_time(DISPATCH_TIME_NOW, delayInSeconds2 * NSEC_PER_SEC);
   dispatch_after(
       delayInNanoSeconds2, dispatch_get_main_queue(),
-      ^{ //      self.refreshTimer =
-         //          [[NSTimer alloc] initWithFireDate:[NSDate date]
-         //                                   interval:kRefreshIntveral
-         //                                     target:self
-         // selector:@selector(checkSwitchStateInTimer)
-         //                                   userInfo:nil
-         //                                    repeats:YES];
-         //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
-         //                                   forMode:NSRunLoopCommonModes];
+      ^{//      self.refreshTimer =
+        //          [[NSTimer alloc] initWithFireDate:[NSDate date]
+        //                                   interval:kRefreshIntveral
+        //                                     target:self
+        // selector:@selector(checkSwitchStateInTimer)
+        //                                   userInfo:nil
+        //                                    repeats:YES];
+        //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
+        //                                   forMode:NSRunLoopCommonModes];
 
-         //      self.refreshTimer = [NSTimer
-         //          scheduledTimerWithTimeInterval:kRefreshIntveral
-         //                                  target:self
-         // selector:@selector(checkSwitchStateInTimer)
-         //                                userInfo:nil
-         //                                 repeats:YES];
+        //      self.refreshTimer = [NSTimer
+        //          scheduledTimerWithTimeInterval:kRefreshIntveral
+        //                                  target:self
+        // selector:@selector(checkSwitchStateInTimer)
+        //                                userInfo:nil
+        //                                 repeats:YES];
       });
   self.refreshTimer =
       [NSTimer scheduledTimerWithTimeInterval:kRefreshIntveral
@@ -153,9 +158,9 @@
 }
 
 //根据设备开关状态改变相应的背景背景图片
-- (void)changeOutwardBySwitchState:(BOOL)isOn {
+- (void)changeOutwardBySwitchState:(CC3xSwitch *)aSwitch {
   dispatch_async(dispatch_get_main_queue(), ^{
-      if (isOn) {
+      if (aSwitch.isOn) {
         self.imgViewBackground.image = [UIImage imageNamed:@"background"];
         self.imgViewLight.image = [UIImage imageNamed:@"lamp_light"];
         self.imgViewOperation.image =
@@ -166,6 +171,18 @@
         self.imgViewOperation.image =
             [UIImage imageNamed:@"smartplug_close_button"];
       }
+      self.lblPower.text =
+          [NSString stringWithFormat:@"%.2f", self.aSwitch.power];
+      self.lblPM.text =
+          [NSString stringWithFormat:@"%d", self.aSwitch.pmTwoPointFive];
+      if (self.aSwitch.airDesc) {
+        self.lblAir.text =
+            [NSString stringWithFormat:@"%@", self.aSwitch.airDesc];
+      }
+      self.lblTemp.text =
+          [NSString stringWithFormat:@"%.1f", self.aSwitch.temperature];
+      self.lblHumidity.text =
+          [NSString stringWithFormat:@"%d", self.aSwitch.humidity];
   });
 }
 
@@ -269,7 +286,7 @@ preparation before navigation
   //  }
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
-                                  isSwitchOn:self.isSwitchOn
+                                  isSwitchOn:self.aSwitch.isOn
                                     sendMode:ActiveMode];
 }
 
@@ -427,41 +444,73 @@ preparation before navigation
   }
 }
 
+- (void)updateSwitchByMsg:(CC3xMessage *)msg {
+  CC3xSwitch *aSwitch = self.aSwitch;
+  aSwitch.switchName = msg.deviceName;
+  aSwitch.ip = msg.ip;
+  aSwitch.port = msg.port;
+  aSwitch.isLocked = msg.isLocked;
+  aSwitch.isOn = msg.isOn;
+  aSwitch.power = msg.power;
+  aSwitch.pmTwoPointFive = msg.pmTwoPointFive;
+  aSwitch.humidity = msg.humidity;
+  aSwitch.airDesc = msg.airDesc;
+  aSwitch.temperature = msg.temperature;
+  if (msg.msgId == 0xc && aSwitch.status != SWITCH_NEW) {
+    if (aSwitch.isLocked) {
+      aSwitch.status = SWITCH_LOCAL_LOCK;
+    } else {
+      aSwitch.status = SWITCH_LOCAL;
+    }
+  } else if (msg.msgId == 0xe && aSwitch.status != SWITCH_NEW &&
+             aSwitch.status == SWITCH_UNKNOWN) {
+    if (aSwitch.isLocked) {
+      aSwitch.status = SWITCH_REMOTE_LOCK;
+    } else {
+      aSwitch.status = SWITCH_REMOTE;
+    }
+  } else if (aSwitch.status == SWITCH_UNKNOWN) {
+    aSwitch.status = SWITCH_OFFLINE;
+  }
+  self.aSwitch = aSwitch;
+}
+
 #pragma mark UDPDelegate
 - (void)responseMsgId12Or14:(CC3xMessage *)msg {
   if (msg.state == 0 && !self.isLockOK) {
     self.isLockOK = YES;
-    self.isSwitchOn = !self.isSwitchOn;
-    self.aSwitch.isOn = self.isSwitchOn;
-    [self changeOutwardBySwitchState:self.isSwitchOn];
+    self.aSwitch.isOn = !self.aSwitch.isOn;
+    [self changeOutwardBySwitchState:self.aSwitch];
   }
 }
 
 - (void)noResponseMsgId12Or14 {
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
-                                  isSwitchOn:self.isSwitchOn
+                                  isSwitchOn:self.aSwitch.isOn
                                     sendMode:PassiveMode];
 }
 
 - (void)noSendMsgId11Or13 {
   [[MessageUtil shareInstance] sendMsg11Or13:self.udpSocket
                                      aSwitch:self.aSwitch
-                                  isSwitchOn:self.isSwitchOn
+                                  isSwitchOn:self.aSwitch.isOn
                                     sendMode:PassiveMode];
 }
 
 - (void)responseMsgIdCOrE:(CC3xMessage *)msg {
   //列表页面请求响应后，代理已更改为此vc
   if ([self.aSwitch.macAddress isEqualToString:msg.mac]) {
-    [self changeOutwardBySwitchState:msg.isOn];
+    [self updateSwitchByMsg:msg];
+    [self changeOutwardBySwitchState:self.aSwitch];
   }
 }
 
 - (void)responseMsgIdC:(CC3xMessage *)msg {
   //列表页面请求响应后，代理已更改为此vc
   if ([self.aSwitch.macAddress isEqualToString:msg.mac]) {
-    [self changeOutwardBySwitchState:msg.isOn];
+    [self updateSwitchByMsg:msg];
+    [self changeOutwardBySwitchState:self.aSwitch];
   }
 }
 
@@ -472,7 +521,8 @@ preparation before navigation
 - (void)responseMsgIdE:(CC3xMessage *)msg {
   //列表页面请求响应后，代理已更改为此vc
   if ([self.aSwitch.macAddress isEqualToString:msg.mac]) {
-    [self changeOutwardBySwitchState:msg.isOn];
+    [self updateSwitchByMsg:msg];
+    [self changeOutwardBySwitchState:self.aSwitch];
   }
 }
 
