@@ -130,7 +130,7 @@
     longPressGesture.minimumPressDuration = 0.5;
     [self addGestureRecognizer:longPressGesture];
 
-    NSLog(@"叫你开始画cell了");
+    //    NSLog(@"叫你开始画cell了");
   }
   return self;
 }

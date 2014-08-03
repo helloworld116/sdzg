@@ -13,8 +13,8 @@
 #import "TemplateVC.h"
 @interface EditController ()<UDPDelegate, UIAlertViewDelegate,
                              PassValueDelegate>
-@property(nonatomic, strong) NSString *imageName;  //保存图片设置后的名称
-@property(nonatomic, strong) NSString *deviceName;  //保存修改后的名称
+@property (nonatomic, strong) NSString *imageName; //保存图片设置后的名称
+@property (nonatomic, strong) NSString *deviceName; //保存修改后的名称
 @end
 
 @implementation EditController
@@ -467,6 +467,11 @@
                                      aSwitch:self.aSwitch
                                         name:self.deviceName
                                     sendMode:PassiveMode];
+  if ([MessageUtil shareInstance].msg3FOr41SendCount == kTryCount - 1) {
+    [[ViewUtil sharedInstance]
+        showMessageInViewController:
+            self message:@"修改失败，请检查设备网络是否正常"];
+  }
 }
 
 - (void)noSendMsgId3FOr41 {
@@ -494,6 +499,18 @@
                                      aSwitch:self.aSwitch
                                       isLock:!self.aSwitch.isLocked
                                     sendMode:PassiveMode];
+  if ([MessageUtil shareInstance].msg47Or49SendCount == kTryCount - 1) {
+    NSString *message;
+    if (self.aSwitch.isLocked) {
+      message = @"解锁失败，";
+    } else {
+      message = @"加锁失败，";
+    }
+    message = [message
+        stringByAppendingString:@"请" @"检" @"查设备网络是否正常"];
+    [[ViewUtil sharedInstance] showMessageInViewController:self
+                                                   message:message];
+  }
 }
 
 - (void)noSendMsgId47Or49 {

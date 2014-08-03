@@ -63,7 +63,7 @@
  * Called when the datagram with the given tag has been sent.
  **/
 - (void)udpSocket:(GCDAsyncUdpSocket*)sock didSendDataWithTag:(long)tag {
-  NSLog(@"didSendDataWithTag :%ld", tag);
+  //  NSLog(@"didSendDataWithTag :%ld", tag);
   //需要执行的操作：
   // 1、清空响应数据
   // 2、指定时间后检查数据是否为空，为空说明未响应，触发请求重发
@@ -138,7 +138,7 @@
 - (void)udpSocket:(GCDAsyncUdpSocket*)sock
     didNotSendDataWithTag:(long)tag
                dueToError:(NSError*)error {
-  NSLog(@"didNotSendDataWithTag :%ld", tag);
+  //  NSLog(@"didNotSendDataWithTag :%ld", tag);
   switch (tag) {
     case P2D_SERVER_INFO_05:
       if ([self.delegate respondsToSelector:@selector(noSendMsgId5)]) {
@@ -238,7 +238,7 @@
        didReceiveData:(NSData*)data
           fromAddress:(NSData*)address
     withFilterContext:(id)filterContext {
-  NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
+  //  NSLog(@"receiveData is %@", [CC3xMessageUtil hexString:data]);
   if (data) {
     CC3xMessage* msg = (CC3xMessage*)filterContext;
     switch (msg.msgId) {

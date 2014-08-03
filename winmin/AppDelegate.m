@@ -23,6 +23,11 @@
 #define IOS7                                                                   \
   ([[[UIDevice currentDevice] systemVersion] compare:@"7.0"] !=                \
    NSOrderedAscending)
+
+@interface AppDelegate ()
+@property (nonatomic, strong) NetUtil *netUtil;
+@end
+
 @implementation AppDelegate
 @synthesize window;
 
@@ -105,8 +110,9 @@
   UIStoryboard *storyboard =
       [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
   self.mainStoryboard = storyboard;
-  kSharedAppliction.networkStatus = ReachableViaWiFi;
-  //  [[NetUtil sharedInstance] addNetWorkChangeNotification];
+
+  self.netUtil = [NetUtil sharedInstance];
+  [self.netUtil addNetWorkChangeNotification];
   return YES;
 }
 
@@ -152,5 +158,4 @@
   // Called when the application is about to terminate. Save data if
   // appropriate. See also applicationDidEnterBackground:.
 }
-
 @end

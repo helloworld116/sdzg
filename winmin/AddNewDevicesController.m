@@ -34,14 +34,6 @@
           instancesRespondToSelector:@selector(edgesForExtendedLayout)]) {
     self.edgesForExtendedLayout = UIRectEdgeNone;
   }
-  //背景
-  UIImageView *background_imageView =
-      [[UIImageView alloc] initWithFrame:[self.view bounds]];
-  background_imageView.image = [UIImage imageNamed:@"background.png"];
-  [super.view addSubview:background_imageView];
-
-  background_imageView = nil;
-
   self.navigationItem.hidesBackButton = YES;
   self.navigationItem.title = @"添加新设备";
   //返回按钮
@@ -60,8 +52,11 @@
       [[UIBarButtonItem alloc] initWithCustomView:left];
 
   self.navigationItem.leftBarButtonItem = leftButton;
-
-  leftButton = nil;
+  //背景
+  UIImageView *background_imageView =
+      [[UIImageView alloc] initWithFrame:[self.view bounds]];
+  background_imageView.image = [UIImage imageNamed:@"background.png"];
+  [super.view addSubview:background_imageView];
   // wifi名，可默认获取
   textfield_wifi =
       [[UITextField alloc] initWithFrame:CGRectMake(27, 12, 273, 30)];
@@ -293,15 +288,11 @@
 
 //开始配置,自定义actionsheet
 - (void)startConfig {
-  NSLog(@"//开始配置,自定义actionsheet");
   //设置主视图，半透明，
-  CGRect frame = self.view.frame;
+  CGRect frame = self.view.bounds;
   _View_config = [[UIView alloc]
       initWithFrame:CGRectMake(0.0, CGRectGetMidY(frame), frame.size.width,
                                frame.size.height / 2.0)];
-
-  //    _View_config.backgroundColor = [UIColor colorWithPatternImage:[UIImage
-  //    imageNamed:@"actionsheet_background"]];
   self.View_config.layer.cornerRadius = 5.0; //圆角设定，
 
   bg = [[UIImageView alloc]
@@ -311,7 +302,9 @@
 
   //标题设置
   UILabel *label_title = [[UILabel alloc]
-      initWithFrame:CGRectMake(0, 2, CGRectGetWidth(_View_config.frame), 32.0)];
+      initWithFrame:CGRectMake(0, 5, CGRectGetWidth(_View_config.bounds),
+                               32.0)];
+  label_title.backgroundColor = [UIColor clearColor];
   label_title.font = [UIFont systemFontOfSize:17.0];
   label_title.text = @"网络配置";
   label_title.textAlignment = NSTextAlignmentCenter;
@@ -320,15 +313,11 @@
   label_title = nil;
 
   //设置完成时显示文本
-  UITextView *textView = [[UITextView alloc]
-      initWithFrame:CGRectMake(0, label_title.frame.size.height + 2.0,
-                               _View_config.frame.size.width,
-                               _View_config.frame.size.height -
-                                   label_title.frame.size.height - 60.0)];
+  UITextView *textView =
+      [[UITextView alloc] initWithFrame:CGRectMake(0, 7.0, 80, 20)];
   //  textView.selectable = NO;
-  textView.editable = NO;
   textView.backgroundColor = [UIColor clearColor];
-  textView.text = @"  正在对网络进行配置";
+  textView.text = @"  配置中";
   [_View_config addSubview:textView];
 
   //取消按钮
@@ -338,12 +327,44 @@
   [button_cancel
       setBackgroundImage:[UIImage imageNamed:@"alertview_cancel_button"]
                 forState:UIControlStateNormal];
-  [button_cancel setTitle:@"取消配置" forState:UIControlStateNormal];
+  [button_cancel setTitle:@"关闭" forState:UIControlStateNormal];
   [button_cancel addTarget:self
                     action:@selector(dismissConfigView)
           forControlEvents:UIControlEventTouchUpInside];
   [_View_config addSubview:button_cancel];
   button_cancel.hidden = YES;
+
+  UILabel *lbl1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 35, 300, 20)];
+  lbl1.backgroundColor = [UIColor clearColor];
+  lbl1.font = [UIFont systemFontOfSize:13.f];
+  lbl1.text = @"配置结束。请检查设备黄灯状态。";
+  [self.View_config addSubview:lbl1];
+
+  UILabel *lbl2 = [[UILabel alloc] initWithFrame:CGRectMake(10, 55, 300, 20)];
+  lbl2.backgroundColor = [UIColor clearColor];
+  lbl2.font = [UIFont systemFontOfSize:13.f];
+  lbl2.text = @"常亮：配置成功，请回到系统页刷新查看。";
+  [self.View_config addSubview:lbl2];
+
+  UILabel *lbl3 = [[UILabel alloc] initWithFrame:CGRectMake(10, 75, 300, 40)];
+  lbl3.backgroundColor = [UIColor clearColor];
+  lbl3.numberOfLines = 2;
+  lbl3.font = [UIFont systemFontOfSize:13.f];
+  lbl3.text = @"慢" @"闪" @"：" @"设"
+      @"备无法配置到路由，请检查密码后重启设备并"
+      @"设置。";
+  [self.View_config addSubview:lbl3];
+
+  UILabel *lbl4 = [[UILabel alloc] initWithFrame:CGRectMake(10, 115, 300, 20)];
+  lbl4.backgroundColor = [UIColor clearColor];
+  lbl4.font = [UIFont systemFontOfSize:13.f];
+  lbl4.text = @"快" @"闪" @"：" @"设" @"备"
+      @"未收到配置请求，请重启设备并配置" @"。";
+  [self.View_config addSubview:lbl4];
+  lbl1.hidden = YES;
+  lbl2.hidden = YES;
+  lbl3.hidden = YES;
+  lbl4.hidden = YES;
 
   //添加进度条动画
   _hud = [[MBProgressHUD alloc] initWithView:self.View_config];
@@ -351,12 +372,16 @@
       CGRectMake(0, textView.frame.origin.y + textView.frame.size.height + 10.0,
                  frame.size.width, CGRectGetHeight(self.hud.frame));
 
-  textView = nil;
   [_View_config addSubview:self.hud];
 
   self.hud.mode = MBProgressHUDModeDeterminateHorizontalBar;
   self.hud.delegate = self;
   __block UIButton *button = button_cancel;
+  __block UITextView *tv = textView;
+  __block UILabel *_lbl1 = lbl1;
+  __block UILabel *_lbl2 = lbl2;
+  __block UILabel *_lbl3 = lbl3;
+  __block UILabel *_lbl4 = lbl4;
   [self.hud showAnimated:YES
       whileExecutingBlock:^{
           button.hidden = YES;
@@ -364,19 +389,24 @@
           while (progress < 1.0f) {
             progress += 0.01f;
             self.hud.progress = progress;
-            usleep(100000);
+            usleep(100000 * 6);
           }
       }
       completionBlock:^{
           button.hidden = NO;
           [self stopAction];
           [_hud removeFromSuperview];
-          _hud = nil;
+          tv.text = @"";
+          _lbl1.hidden = NO;
+          _lbl2.hidden = NO;
+          _lbl3.hidden = NO;
+          _lbl4.hidden = NO;
       }];
 
   //添加主视图到window上
-  UIApplication *app = [UIApplication sharedApplication];
-  [app.keyWindow addSubview:_View_config];
+  //  UIApplication *app = [UIApplication sharedApplication];
+  //  [app.keyWindow addSubview:_View_config];
+  [self.view addSubview:self.View_config];
 
   //视图出现动画持续
   CGPoint center = _View_config.center;
@@ -416,6 +446,7 @@
 
   _View_config = nil;
 }
+
 - (void)enableUIAccess:(BOOL)isEnable {
   button_startconfig.selected = !isEnable;
   button_startconfig.userInteractionEnabled = isEnable;
@@ -426,6 +457,7 @@
 
 // wifi状态改变
 - (void)wifiStatusChanged:(NSNotification *)notification {
+  //  NSLog(@"网络状况改变了++++++++++++");
 }
 - (void)didReceiveMemoryWarning {
   [super didReceiveMemoryWarning];
@@ -439,7 +471,6 @@
 }
 //键盘响应
 #pragma mark keyboard delegate
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
   if (textField == textfield_wifi) {
     [textfield_password becomeFirstResponder];
@@ -488,23 +519,13 @@
 - (void)back {
   //取消按钮从视图中移除、释放
   [button_cancel removeFromSuperview];
-
-  button_cancel = nil;
-
   //停止、将动画条释放、赋空
   [self stopAction];
   [self.udpSocket close];
   [self.hud removeFromSuperview];
   [bg removeFromSuperview];
-
-  _hud = nil;
-
   [_View_config removeFromSuperview];
-
   [self enableUIAccess:YES];
-
-  _View_config = nil;
-
-  [self.navigationController popToRootViewControllerAnimated:YES];
+  [self.navigationController popViewControllerAnimated:YES];
 }
 @end

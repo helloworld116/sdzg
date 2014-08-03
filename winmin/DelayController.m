@@ -385,6 +385,13 @@ btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，�
                                    delayTime:delayTime
                                     switchOn:startSwitch.on
                                     sendMode:PassiveMode];
+
+  if ([MessageUtil shareInstance].msg4DOr4FSendCount == kTryCount - 1) {
+    [[ViewUtil sharedInstance]
+        showMessageInViewController:
+            self message:@"设"
+                 @"置定时任务失败，请检查设备网络是否正常"];
+  }
 }
 
 - (void)noSendMsgId4DOr4F {
@@ -410,6 +417,12 @@ btnOfTextfeildSide; // textfeild旁边的按钮，用于text选中输入时，�
   [[MessageUtil shareInstance] sendMsg53Or55:self.udpSocket
                                      aSwitch:self.aSwitch
                                     sendMode:PassiveMode];
+  if ([MessageUtil shareInstance].msg53Or55SendCount == kTryCount - 1) {
+    [[ViewUtil sharedInstance]
+        showMessageInViewController:
+            self message:@"获"
+                 @"取定时任务失败，请检查设备网络是否正常"];
+  }
 }
 
 - (void)noSendMsgId53Or55 {

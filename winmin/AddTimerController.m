@@ -14,9 +14,9 @@
 #import "CC3xSwitch.h"
 #import "Reachability.h"
 @interface AddTimerController ()<UDPDelegate>
-@property(nonatomic, strong) NSString *startTime,
-    *endTime;  //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
-@property(nonatomic, strong) NSDateFormatter *dateFormatter;
+@property (nonatomic, strong) NSString *startTime,
+    *endTime; //保存开始时间和结束时间，以便弹出时间选择器时选中该时间
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
 
 @implementation AddTimerController
@@ -367,61 +367,62 @@
   if (!self.timePickerView) {
     //创建timePicker视图
     self.timePickerView = [[UIView alloc]
-        initWithFrame:CGRectMake(0, DEVICE_HEIGHT - (44 + 162)-115, 320, 44 + 162)];
-    self.timePickerView.layer.cornerRadius = 10.0;
+        initWithFrame:CGRectMake(0, DEVICE_HEIGHT - (44 + 162) - 115, 320,
+                                 44 + 216)];
+//    self.timePickerView.layer.cornerRadius = 10.0;
     self.timePickerView.backgroundColor = [UIColor whiteColor];
     //添加主视图到window上
     //    UIApplication *app = [UIApplication sharedApplication];
     //    [app.keyWindow addSubview:self.timePickerView];
     [self.view addSubview:self.timePickerView];
+
+    //添加toolbar 用来确定选择时间和取消视图
+    UIToolbar *toolBar =
+        [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+
+    toolBar.barStyle = UIBarStyleBlackOpaque;
+
+    // toolbar上得按钮及分别触发的方法
+    UIBarButtonItem *doneButton =
+        [[UIBarButtonItem alloc] initWithTitle:@"确定"
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(timePickerDone:)];
+
+    UIBarButtonItem *cancelButton =
+        [[UIBarButtonItem alloc] initWithTitle:@"取消"
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(timePickerCancel:)];
+
+    NSArray *tool_array =
+        [[NSArray alloc] initWithObjects:doneButton, cancelButton, nil];
+    [toolBar setItems:tool_array];
+    [self.timePickerView addSubview:toolBar];
+
+    //时间选择
+    _datePicker = [[UIDatePicker alloc]
+        initWithFrame:CGRectMake(0, 44, DEVICE_WIDTH, 216)];
+//    _datePicker.autoresizingMask =
+//        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    _datePicker.datePickerMode = UIDatePickerModeTime;
+    [self.timePickerView addSubview:_datePicker];
+
+    if (sender == self.startTimeButton) {
+      self.datePicker.tag = 1;
+      NSDate *defaultDate = [self.dateFormatter dateFromString:self.startTime];
+      _datePicker.date = defaultDate;
+    } else {
+      self.datePicker.tag = 2;
+      NSDate *defaultDate = [self.dateFormatter dateFromString:self.endTime];
+      _datePicker.date = defaultDate;
+    }
+    //  CGRect frame = self.timePickerView.frame;
+    //  frame.origin.y =
+    //      self.view.frame.size.height - self.timePickerView.frame.size.height;
+    //  [UIView animateWithDuration:0.3
+    //                   animations:^{ self.timePickerView.frame = frame; }];
   }
-
-  //添加toolbar 用来确定选择时间和取消视图
-  UIToolbar *toolBar =
-      [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-
-  toolBar.barStyle = UIBarStyleBlackOpaque;
-
-  // toolbar上得按钮及分别触发的方法
-  UIBarButtonItem *doneButton =
-      [[UIBarButtonItem alloc] initWithTitle:@"确定"
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(timePickerDone:)];
-
-  UIBarButtonItem *cancelButton =
-      [[UIBarButtonItem alloc] initWithTitle:@"取消"
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(timePickerCancel:)];
-
-  NSArray *tool_array =
-      [[NSArray alloc] initWithObjects:doneButton, cancelButton, nil];
-  [toolBar setItems:tool_array];
-  [self.timePickerView addSubview:toolBar];
-
-  //时间选择
-  _datePicker =
-      [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 44, DEVICE_WIDTH, 162)];
-  _datePicker.autoresizingMask =
-      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-  _datePicker.datePickerMode = UIDatePickerModeTime;
-  [self.timePickerView addSubview:_datePicker];
-
-  if (sender == self.startTimeButton) {
-    self.datePicker.tag = 1;
-    NSDate *defaultDate = [self.dateFormatter dateFromString:self.startTime];
-    _datePicker.date = defaultDate;
-  } else {
-    self.datePicker.tag = 2;
-    NSDate *defaultDate = [self.dateFormatter dateFromString:self.endTime];
-    _datePicker.date = defaultDate;
-  }
-  //  CGRect frame = self.timePickerView.frame;
-  //  frame.origin.y =
-  //      self.view.frame.size.height - self.timePickerView.frame.size.height;
-  //  [UIView animateWithDuration:0.3
-  //                   animations:^{ self.timePickerView.frame = frame; }];
 }
 //开启 / 关闭图片选择显示
 - (void)timeButtonSelected:(id)sender {
@@ -444,11 +445,9 @@
   [UIView animateWithDuration:0.3
                    animations:^{ self.timePickerView.frame = frame; }];
   self.timePickerView = nil;
-  NSLog(@"取消视图");
 }
 //确定
 - (void)timePickerDone:(id)sender {
-  NSLog(@"开始算时间");
   //时间选择时，输出格式
   NSString *dateString =
       [self.dateFormatter stringFromDate:self.datePicker.date];
@@ -475,10 +474,10 @@
   //在定时器列表>=8的时候弹出警示框提示“最大定时数量为8”
   if (self.timerList.count >= 8 && !self.timerTask) {
     UIAlertView *alert = [[UIAlertView alloc]
-            initWithTitle:NSLocalizedString(@"Warning", nil)
-                  message:NSLocalizedString(@"Max timer number is 8", nil)
+            initWithTitle:NSLocalizedString(@"警告", nil)
+                  message:NSLocalizedString(@"定时任务最大为8条", nil)
                  delegate:nil
-        cancelButtonTitle:NSLocalizedString(@"OK", nil)
+        cancelButtonTitle:NSLocalizedString(@"确定", nil)
         otherButtonTitles:nil, nil];
     [alert show];
 
@@ -575,6 +574,18 @@
                                      aSwitch:self.aSwitch
                                     timeList:self.timerList
                                     sendMode:PassiveMode];
+  if ([MessageUtil shareInstance].msg1DOr1FSendCount == kTryCount - 1) {
+    NSString *message;
+    if (self.timerTask) {
+      message = @"修改定时任务失败，";
+    } else {
+      message = @"添加定时任务失败，";
+    }
+    message = [message
+        stringByAppendingString:@"请" @"检" @"查设备网络是否正常"];
+    [[ViewUtil sharedInstance] showMessageInViewController:self
+                                                   message:message];
+  }
 }
 
 - (void)noSendMsgId17Or19 {

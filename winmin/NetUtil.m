@@ -9,7 +9,9 @@
 #import "NetUtil.h"
 #import "Reachability.h"
 
-#define kCheckNetworkWebsite @"www.baidu.com"
+@interface NetUtil ()
+@property (nonatomic, strong) Reachability *hostReach;
+@end
 
 @implementation NetUtil
 + (instancetype)sharedInstance {
@@ -25,9 +27,8 @@
          selector:@selector(reachabilityChanged:)
              name:kReachabilityChangedNotification
            object:nil];
-  Reachability *hostReach =
-      [Reachability reachabilityWithHostName:kCheckNetworkWebsite];
-  [hostReach startNotifier];
+  self.hostReach = [Reachability reachabilityWithHostName:kCheckNetworkWebsite];
+  [self.hostReach startNotifier];
 }
 
 - (void)reachabilityChanged:(NSNotification *)note {

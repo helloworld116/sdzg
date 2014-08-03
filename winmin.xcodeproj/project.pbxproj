@@ -76,6 +76,7 @@
 		15F20F92192378A400EE6D83 /* DevicesProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15F20F91192378A400EE6D83 /* DevicesProfileController.m */; };
 		470F98561983845300EF65F8 /* UdpSocketUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 470F98551983845300EF65F8 /* UdpSocketUtil.m */; };
 		4747C61F1982B0D2001F8A24 /* NetUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 4747C61E1982B0D2001F8A24 /* NetUtil.m */; };
+		479F02FD198BE47A002F0AA8 /* ViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 479F02FC198BE47A002F0AA8 /* ViewUtil.m */; };
 		560586A61963D9D3004BCAC6 /* CRC.c in Sources */ = {isa = PBXBuildFile; fileRef = 560586A51963D9D3004BCAC6 /* CRC.c */; };
 /* End PBXBuildFile section */
 
@@ -208,6 +209,8 @@
 		470F98551983845300EF65F8 /* UdpSocketUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpSocketUtil.m; sourceTree = "<group>"; };
 		4747C61D1982B0D2001F8A24 /* NetUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetUtil.h; sourceTree = "<group>"; };
 		4747C61E1982B0D2001F8A24 /* NetUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetUtil.m; sourceTree = "<group>"; };
+		479F02FB198BE47A002F0AA8 /* ViewUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewUtil.h; sourceTree = "<group>"; };
+		479F02FC198BE47A002F0AA8 /* ViewUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewUtil.m; sourceTree = "<group>"; };
 		560586A41963D9C1004BCAC6 /* CRC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRC.h; sourceTree = "<group>"; };
 		560586A51963D9D3004BCAC6 /* CRC.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CRC.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -410,6 +413,8 @@
 				159283C71982441500E2196E /* MessageUtil.m */,
 				153A338D198A0F0F00016890 /* XMLUtil.h */,
 				153A338E198A0F0F00016890 /* XMLUtil.m */,
+				479F02FB198BE47A002F0AA8 /* ViewUtil.h */,
+				479F02FC198BE47A002F0AA8 /* ViewUtil.m */,
 				154E3D451920C25F00D05EA0 /* AppDelegate.h */,
 				154E3D461920C25F00D05EA0 /* AppDelegate.m */,
 				155A726E19230A6D00695EAE /* devices */,
@@ -626,6 +631,7 @@
 				150F461A1928FF95000E5527 /* CC3xMoreAction.m in Sources */,
 				1568F15419244EE100BCA667 /* TimerController.m in Sources */,
 				15B81D951977D32600AD80B7 /* DevicesProfileVC.m in Sources */,
+				479F02FD198BE47A002F0AA8 /* ViewUtil.m in Sources */,
 				154E3D6A1920C96B00D05EA0 /* MoreSettingsViewController.m in Sources */,
 				153D4E0B194B072500E056A2 /* AboutViewController.m in Sources */,
 				150F46041928FF3B000E5527 /* MBProgressHUD.m in Sources */,
@@ -705,7 +711,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -721,11 +728,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
+				PROVISIONING_PROFILE = "33A0934E-4ABF-450F-926C-32DA878AC50C";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
 		};
@@ -745,7 +754,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -755,11 +765,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "";
+				PROVISIONING_PROFILE = "33A0934E-4ABF-450F-926C-32DA878AC50C";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;
 		};
@@ -769,8 +781,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/winmin",
@@ -788,7 +800,7 @@
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "无线开关";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "33A0934E-4ABF-450F-926C-32DA878AC50C";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
@@ -801,8 +813,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: SHENZHEN ITOUCH CO., LTD (SDSBY6DGDQ)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/winmin",
@@ -820,7 +832,7 @@
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "无线开关";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "33A0934E-4ABF-450F-926C-32DA878AC50C";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;

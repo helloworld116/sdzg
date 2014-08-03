@@ -11,7 +11,7 @@
 #import "DevicesProfileVC.h"
 
 @interface SockerAndFileController ()<UDPDelegate, PassValueDelegate>
-@property(nonatomic, retain) NSIndexPath *selectedIndexPath;  //当前操作的列
+@property (nonatomic, retain) NSIndexPath *selectedIndexPath; //当前操作的列
 @end
 
 @implementation SockerAndFileController
@@ -48,14 +48,25 @@
   background_imageView.image = [UIImage imageNamed:@"background.png"];
   [super.view addSubview:background_imageView];
 
-  //右刷新
-  UIBarButtonItem *refreshBtn =
-      [[UIBarButtonItem alloc] initWithTitle:@"刷新"
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(refreshViewControl:)];
+  //  //右刷新
+  //  UIBarButtonItem *refreshBtn =
+  //      [[UIBarButtonItem alloc] initWithTitle:@"刷新"
+  //                                       style:UIBarButtonItemStylePlain
+  //                                      target:self
+  //                                      action:@selector(refreshViewControl:)];
+  //
+  //  self.navigationItem.rightBarButtonItem = refreshBtn;
 
-  self.navigationItem.rightBarButtonItem = refreshBtn;
+  UIButton *right = [UIButton buttonWithType:UIButtonTypeCustom];
+  [right setFrame:CGRectMake(290, 2, 28, 28)];
+  [right setImage:[UIImage imageNamed:@"refresh_button"]
+         forState:UIControlStateNormal];
+  [right addTarget:self
+                action:@selector(refreshViewControl:)
+      forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *rightButton =
+      [[UIBarButtonItem alloc] initWithCustomView:right];
+  self.navigationItem.rightBarButtonItem = rightButton;
 
   // tableview，设备列表
   tableView_DL = [[UITableView alloc]
@@ -126,7 +137,6 @@
 }
 //扫描设备
 - (void)sendStateInquiry {
-  NSLog(@"扫描设备状态");
   //先局域网内扫描，1秒后内网没有响应的请求外网，更新设备状态
   [[MessageUtil shareInstance] sendMsg0B:self.udpSocket sendMode:ActiveMode];
 
@@ -259,6 +269,14 @@
   self.selectedSwitch = [self.switchDict allValues][indexPath.row];
   NSString *mac = [[self.switchDict allKeys] objectAtIndex:indexPath.row];
   CC3xSwitch *aSwitch = [self.switchDict objectForKey:mac];
+  if (aSwitch.status == SWITCH_OFFLINE || aSwitch.status == SWITCH_UNKNOWN) {
+    [[ViewUtil sharedInstance]
+        showMessageInViewController:
+            self message:@"设"
+                 @"备不在线，请检查设备网络是否正常"];
+    return;
+  }
+
   if (aSwitch.status == SWITCH_NEW) {
     aSwitch.status = SWITCH_LOCAL;
   }

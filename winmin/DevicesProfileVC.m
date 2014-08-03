@@ -14,44 +14,44 @@
 #define kRefreshIntveral 5
 
 @interface DevicesProfileVC ()<UDPDelegate, PassValueDelegate>
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewLight;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewBackground;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewLight;
 
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
-@property(strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec1;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec2;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec3;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewPreExec4;
+@property (strong, nonatomic) IBOutlet UILabel *lblPreExecInfo;
 
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
-@property(strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay1;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay2;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay3;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewDelay4;
+@property (strong, nonatomic) IBOutlet UILabel *lblDelayInfo;
 
-@property(strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
-@property(strong, nonatomic) IBOutlet UILabel *lblPower;
-@property(strong, nonatomic) IBOutlet UILabel *lblPM;
-@property(strong, nonatomic) IBOutlet UILabel *lblTemp;
-@property(strong, nonatomic) IBOutlet UILabel *lblAir;
-@property(strong, nonatomic) IBOutlet UILabel *lblHumidity;
+@property (strong, nonatomic) IBOutlet UIImageView *imgViewOperation;
+@property (strong, nonatomic) IBOutlet UILabel *lblPower;
+@property (strong, nonatomic) IBOutlet UILabel *lblPM;
+@property (strong, nonatomic) IBOutlet UILabel *lblTemp;
+@property (strong, nonatomic) IBOutlet UILabel *lblAir;
+@property (strong, nonatomic) IBOutlet UILabel *lblHumidity;
 
-@property(strong, atomic) GCDAsyncUdpSocket *udpSocket;
-@property(assign, nonatomic) BOOL isSwitchOn;  //设备是否打开
-@property(assign, atomic) BOOL isLockOK;
+@property (strong, atomic) GCDAsyncUdpSocket *udpSocket;
+@property (assign, nonatomic) BOOL isSwitchOn; //设备是否打开
+@property (assign, atomic) BOOL isLockOK;
 
 //延迟相关量
-@property(strong, nonatomic) NSTimer *delayTimer;  //延迟操作
-@property(nonatomic, assign) NSInteger delayTime;  //延迟时间，单位分钟
-@property(nonatomic, assign) BOOL delayIsOn;       //延迟操作是开还是关
+@property (strong, nonatomic) NSTimer *delayTimer; //延迟操作
+@property (nonatomic, assign) NSInteger delayTime; //延迟时间，单位分钟
+@property (nonatomic, assign) BOOL delayIsOn;      //延迟操作是开还是关
 
 //定时列表相关量
-@property(nonatomic, strong) NSArray *timeTaskList;
+@property (nonatomic, strong) NSArray *timeTaskList;
 
-@property(strong, nonatomic) NSTimer *refreshTimer;  //开关状态timer
+@property (strong, nonatomic) NSTimer *refreshTimer; //开关状态timer
 
-@property(nonatomic, strong)
-    NSDictionary *updateSwitchInfo;  //修改图片后传递到列表页面，修改图片和名称
+@property (nonatomic, strong)
+    NSDictionary *updateSwitchInfo; //修改图片后传递到列表页面，修改图片和名称
 
 - (IBAction)showPreExecPage:(id)sender;
 - (IBAction)showDelayPage:(id)sender;
@@ -118,22 +118,22 @@
       dispatch_time(DISPATCH_TIME_NOW, delayInSeconds2 * NSEC_PER_SEC);
   dispatch_after(
       delayInNanoSeconds2, dispatch_get_main_queue(),
-      ^{//      self.refreshTimer =
-        //          [[NSTimer alloc] initWithFireDate:[NSDate date]
-        //                                   interval:kRefreshIntveral
-        //                                     target:self
-        // selector:@selector(checkSwitchStateInTimer)
-        //                                   userInfo:nil
-        //                                    repeats:YES];
-        //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
-        //                                   forMode:NSRunLoopCommonModes];
+      ^{ //      self.refreshTimer =
+         //          [[NSTimer alloc] initWithFireDate:[NSDate date]
+         //                                   interval:kRefreshIntveral
+         //                                     target:self
+         // selector:@selector(checkSwitchStateInTimer)
+         //                                   userInfo:nil
+         //                                    repeats:YES];
+         //      [[NSRunLoop currentRunLoop] addTimer:self.refreshTimer
+         //                                   forMode:NSRunLoopCommonModes];
 
-        //      self.refreshTimer = [NSTimer
-        //          scheduledTimerWithTimeInterval:kRefreshIntveral
-        //                                  target:self
-        // selector:@selector(checkSwitchStateInTimer)
-        //                                userInfo:nil
-        //                                 repeats:YES];
+         //      self.refreshTimer = [NSTimer
+         //          scheduledTimerWithTimeInterval:kRefreshIntveral
+         //                                  target:self
+         // selector:@selector(checkSwitchStateInTimer)
+         //                                userInfo:nil
+         //                                 repeats:YES];
       });
   self.refreshTimer =
       [NSTimer scheduledTimerWithTimeInterval:kRefreshIntveral
@@ -489,6 +489,18 @@ preparation before navigation
                                      aSwitch:self.aSwitch
                                   isSwitchOn:self.aSwitch.isOn
                                     sendMode:PassiveMode];
+  NSString *message;
+  if (self.aSwitch.isOn) {
+    message = @"关闭设备失败，";
+  } else {
+    message = @"打开设备失败，";
+  }
+  message = [message stringByAppendingString:@"请" @"检" @"查"
+                     @"设备网络是否正" @"常"];
+  if ([MessageUtil shareInstance].msg11Or13SendCount == kTryCount - 1) {
+    [[ViewUtil sharedInstance] showMessageInViewController:self
+                                                   message:message];
+  }
 }
 
 - (void)noSendMsgId11Or13 {

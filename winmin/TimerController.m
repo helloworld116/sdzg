@@ -390,19 +390,24 @@
 
 //进入定时编辑页面
 - (void)addTimer {
-  AddTimerController *add = [[AddTimerController alloc] init];
-  add.aSwitch = self.aSwitch;
-  //    add.delegate = self;
-  add.timerList = self.timerList;
-
-//  CATransition *animation = [CATransition animation];
-//  animation.duration = 0.7f;
-//  animation.delegate = self;
-//  animation.type = @"rippleEffect";
-//  animation.timingFunction = UIViewAnimationCurveEaseInOut;
-//  [self.navigationController.view.layer addAnimation:animation forKey:nil];
-
-  [self.navigationController pushViewController:add animated:YES];
+  if ([self.timerList count] == 8) {
+    [[ViewUtil sharedInstance]
+        showMessageInViewController:self
+                            message:@"最多只能设置8条任务"];
+  } else {
+    AddTimerController *add = [[AddTimerController alloc] init];
+    add.aSwitch = self.aSwitch;
+    //    add.delegate = self;
+    add.timerList = self.timerList;
+    //  CATransition *animation = [CATransition animation];
+    //  animation.duration = 0.7f;
+    //  animation.delegate = self;
+    //  animation.type = @"rippleEffect";
+    //  animation.timingFunction = UIViewAnimationCurveEaseInOut;
+    //  [self.navigationController.view.layer addAnimation:animation
+    //  forKey:nil];
+    [self.navigationController pushViewController:add animated:YES];
+  }
 }
 - (void)backToDevicesWithTimer {
   //    if (self.delegate && [self.delegate
@@ -448,6 +453,13 @@
   [[MessageUtil shareInstance] sendMsg17Or19:self.udpSocket
                                      aSwitch:self.aSwitch
                                     sendMode:PassiveMode];
+  if ([MessageUtil shareInstance].msg17Or19SendCount == kTryCount - 1) {
+    [[ViewUtil sharedInstance]
+        showMessageInViewController:self
+                            message:@"获" @"取"
+                            @"定时任务列表失败，请检查设备网络"
+                            @"是否正常"];
+  }
 }
 
 - (void)noSendMsgId17Or19 {
@@ -468,6 +480,13 @@
                                      aSwitch:self.aSwitch
                                     timeList:self.timerList
                                     sendMode:PassiveMode];
+  if ([MessageUtil shareInstance].msg1DOr1FSendCount == kTryCount - 1) {
+    [[ViewUtil sharedInstance]
+        showMessageInViewController:self
+                            message:@"设" @"置"
+                            @"定时任务列表失败，请检查设备网络"
+                            @"是否正常"];
+  }
 }
 
 - (void)noSendMsgId1DOr1F {
