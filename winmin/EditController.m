@@ -13,8 +13,8 @@
 #import "TemplateVC.h"
 @interface EditController ()<UDPDelegate, UIAlertViewDelegate,
                              PassValueDelegate>
-@property (nonatomic, strong) NSString *imageName; //保存图片设置后的名称
-@property (nonatomic, strong) NSString *deviceName; //保存修改后的名称
+@property(nonatomic, strong) NSString *imageName;  //保存图片设置后的名称
+@property(nonatomic, strong) NSString *deviceName;  //保存修改后的名称
 @end
 
 @implementation EditController
@@ -204,7 +204,7 @@
       if (buttonIndex == 1) {
         [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
                                            aSwitch:self.aSwitch
-                                            isLock:!self.aSwitch.isLocked
+                                            isLock:self.aSwitch.isLocked
                                           sendMode:ActiveMode];
       }
       break;
@@ -497,7 +497,7 @@
 - (void)noResponseMsgId48Or4A {
   [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
                                      aSwitch:self.aSwitch
-                                      isLock:!self.aSwitch.isLocked
+                                      isLock:self.aSwitch.isLocked
                                     sendMode:PassiveMode];
   if ([MessageUtil shareInstance].msg47Or49SendCount == kTryCount - 1) {
     NSString *message;
@@ -516,7 +516,7 @@
 - (void)noSendMsgId47Or49 {
   [[MessageUtil shareInstance] sendMsg47Or49:self.udpSocket
                                      aSwitch:self.aSwitch
-                                      isLock:!self.aSwitch.isLocked
+                                      isLock:self.aSwitch.isLocked
                                     sendMode:PassiveMode];
 }
 @end

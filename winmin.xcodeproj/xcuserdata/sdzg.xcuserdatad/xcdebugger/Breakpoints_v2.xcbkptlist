@@ -137,22 +137,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "winmin/AppDelegate.m"
-            timestampString = "428407773.655428"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
-            landmarkName = "-application:didFinishLaunchingWithOptions:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "model/CC3xMessage.m"
             timestampString = "428562334.535541"
             startingColumnNumber = "9223372036854775807"
@@ -160,22 +144,6 @@
             startingLineNumber = "946"
             endingLineNumber = "946"
             landmarkName = "+parseD2P0A:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "model/CC3xSwitch.m"
-            timestampString = "428568422.177523"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
-            landmarkName = "-initWithName:macAddress:status:ip:port:isLocked:isOn:timerList:imageName:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -201,13 +169,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "winmin/MessageUtil.m"
-            timestampString = "428580418.044776"
+            filePath = "winmin/SockerAndFileController.m"
+            timestampString = "428829379.399603"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "139"
-            endingLineNumber = "139"
-            landmarkName = "-sendMsg11:aSwitch:isSwitchOn:sendMode:"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
+            landmarkName = "-sendStateInquiry"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -217,13 +185,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "winmin/SockerAndFileController.m"
-            timestampString = "428577030.017003"
+            filePath = "model/CC3xMessage.m"
+            timestampString = "428834999.10571"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
-            landmarkName = "-sendStateInquiry"
+            startingLineNumber = "1094"
+            endingLineNumber = "1094"
+            landmarkName = "+parseD2P54:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

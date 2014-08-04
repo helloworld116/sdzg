@@ -1091,6 +1091,7 @@ typedef struct {
   message.mac = [NSString stringWithFormat:@"%02x-%02x-%02x-%02x-%02x-%02x",
                                            msg.mac[0], msg.mac[1], msg.mac[2],
                                            msg.mac[3], msg.mac[4], msg.mac[5]];
+  //高低字节互换了
   message.delay =
       msg.delay / 256;  //这个地方不知道什么原因导致左移两位，放大了256倍
   message.isOn = msg.on;

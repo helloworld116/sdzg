@@ -139,7 +139,7 @@
   [super viewWillAppear:animated];
   //视图出现前，检测网络连接状态   wifi/wan/not
   NetworkStatus netStatus = [wifiReachability currentReachabilityStatus];
-  if (netStatus == NotReachable) { // No activity if no wifi
+  if (netStatus == NotReachable) {  // No activity if no wifi
     [self networkNotReachableAlert];
   } else {
 #if defined(TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR
@@ -210,14 +210,14 @@
 - (void)startTransmitting {
   @try {
     NetworkStatus netStatus = [wifiReachability currentReachabilityStatus];
-    if (netStatus == NotReachable) { // No activity if no wifi
+    if (netStatus == NotReachable) {  // No activity if no wifi
       [self networkNotReachableAlert];
       return;
     }
 
     config = nil;
 
-    if ([textfield_password.text length]) { // for user enter the password
+    if ([textfield_password.text length]) {  // for user enter the password
       self.passwordStr =
           [textfield_password.text length] ? textfield_password.text : nil;
 #if defined(TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR
@@ -252,7 +252,7 @@
   }
   @catch (NSException *exception) {
     LogInfo(@"exception === %@", [exception description]);
-    if (button_startconfig.selected) { /// start button in sending mode
+    if (button_startconfig.selected) {  /// start button in sending mode
       [self touchToAdd:button_startconfig];
     }
   }
@@ -293,7 +293,7 @@
   _View_config = [[UIView alloc]
       initWithFrame:CGRectMake(0.0, CGRectGetMidY(frame), frame.size.width,
                                frame.size.height / 2.0)];
-  self.View_config.layer.cornerRadius = 5.0; //圆角设定，
+  self.View_config.layer.cornerRadius = 5.0;  //圆角设定，
 
   bg = [[UIImageView alloc]
       initWithImage:[UIImage imageNamed:@"actionsheet_background"]];

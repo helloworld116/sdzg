@@ -12,20 +12,20 @@
 #import "MoreSettingsViewController.h"
 //判断设备是否4寸屏幕
 
-#define iPhone5                                                                \
-  ([UIScreen instancesRespondToSelector:@selector(currentMode)]                \
-       ? CGSizeEqualToSize(CGSizeMake(640, 1136),                              \
-                           [[UIScreen mainScreen] currentMode].size)           \
+#define iPhone5                                                      \
+  ([UIScreen instancesRespondToSelector:@selector(currentMode)]      \
+       ? CGSizeEqualToSize(CGSizeMake(640, 1136),                    \
+                           [[UIScreen mainScreen] currentMode].size) \
        : NO)
 
 //判断设备是否iOS7
 
-#define IOS7                                                                   \
-  ([[[UIDevice currentDevice] systemVersion] compare:@"7.0"] !=                \
+#define IOS7                                                    \
+  ([[[UIDevice currentDevice] systemVersion] compare:@"7.0"] != \
    NSOrderedAscending)
 
 @interface AppDelegate ()
-@property (nonatomic, strong) NetUtil *netUtil;
+@property(nonatomic, strong) NetUtil *netUtil;
 @end
 
 @implementation AppDelegate
@@ -33,6 +33,10 @@
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  self.networkStatus = ReachableViaWiFi;  //这里必不可少,必须在view展现前执行
+  self.netUtil = [NetUtil sharedInstance];
+  [self.netUtil addNetWorkChangeNotification];
+
   self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
   SockerAndFileController *device_c = [[SockerAndFileController alloc] init];
   UINavigationController *device_nc =
@@ -111,8 +115,6 @@
       [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
   self.mainStoryboard = storyboard;
 
-  self.netUtil = [NetUtil sharedInstance];
-  [self.netUtil addNetWorkChangeNotification];
   return YES;
 }
 

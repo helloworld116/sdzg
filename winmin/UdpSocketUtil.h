@@ -116,6 +116,12 @@
  */
 - (void)noResponseMsgIdE;
 /**
+ *  手机外网查询开关状态请求无响应处理
+ *
+ *  @param mac 开关的mac值
+ */
+- (void)noResponseMsgIdE:(NSString *)mac;
+/**
  *  手机控制开关“开或关”请求无响应处理
  */
 - (void)noResponseMsgId12Or14;
@@ -177,6 +183,12 @@
  *  手机查询开关状态UDP请求发送失败后的处理
  */
 - (void)noSendMsgIdBOrD;
+/**
+ *  手机查询开关状态UDP请求发送失败后的处理
+ *
+ *  @param mac 开关的mac值
+ */
+- (void)noSendMsgIdBOrD:(NSString *)mac;
 /**
  *  手机控制开关“开或关”UDP请求发送失败后的处理
  */

@@ -35,6 +35,8 @@ typedef NS_OPTIONS(NSUInteger, switchStatus) {
 @property(nonatomic, assign) float power;         //功率
 @property(nonatomic, strong) NSString *airDesc;   //空气质量说明
 
+@property(nonatomic, assign) long tag;  //记录udp请求发送时的tag
+
 - (instancetype)initWithName:(NSString *)name
                   macAddress:(NSString *)aMacAddress
                       status:(switchStatus)aStatus
@@ -48,7 +50,7 @@ typedef NS_OPTIONS(NSUInteger, switchStatus) {
                  temperature:(float)temperature
                     humidity:(NSInteger)humidity
                        power:(float)power
-                      airTag:(NSString *)airDesc;
+                     airDesc:(NSString *)airDesc;
 
 - (instancetype)initWithName:(NSString *)name
                   macAddress:(NSString *)aMacAddress

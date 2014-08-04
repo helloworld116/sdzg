@@ -53,10 +53,10 @@
 //UDP过期时间,单位秒
 #define kUDPTimeOut -1
 #define kCheckPrivatePrivateResponseInterval \
-0.1  //发送UDP内网请求后，检查是否有响应数据的间隔，单位为秒
+0.2  //发送UDP内网请求后，检查是否有响应数据的间隔，单位为秒
 #define kCheckPublicPrivateResponseInterval \
-0.5  //发送UDP外网请求后，检查是否有响应数据的间隔，单位为秒
-#define kTryCount 1  //请求失败后自动尝试次数
+0.8  //发送UDP外网请求后，检查是否有响应数据的间隔，单位为秒
+#define kTryCount 3  //请求失败后自动尝试次数
 
 #define kTemplatePicDict @{@"902" : @"icon_ac",@"904" : @"icon_light",@"906" : @"icon_stb",@"908" : @"icon_plug",@"910" : @"icon_tv",@"912" : @"icon_v",@"914" : @"icon_ir"}
 

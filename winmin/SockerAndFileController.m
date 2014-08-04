@@ -11,7 +11,7 @@
 #import "DevicesProfileVC.h"
 
 @interface SockerAndFileController ()<UDPDelegate, PassValueDelegate>
-@property (nonatomic, retain) NSIndexPath *selectedIndexPath; //当前操作的列
+@property(nonatomic, retain) NSIndexPath *selectedIndexPath;  //当前操作的列
 @end
 
 @implementation SockerAndFileController
@@ -47,15 +47,6 @@
                                self.view.frame.size.height)];
   background_imageView.image = [UIImage imageNamed:@"background.png"];
   [super.view addSubview:background_imageView];
-
-  //  //右刷新
-  //  UIBarButtonItem *refreshBtn =
-  //      [[UIBarButtonItem alloc] initWithTitle:@"刷新"
-  //                                       style:UIBarButtonItemStylePlain
-  //                                      target:self
-  //                                      action:@selector(refreshViewControl:)];
-  //
-  //  self.navigationItem.rightBarButtonItem = refreshBtn;
 
   UIButton *right = [UIButton buttonWithType:UIButtonTypeCustom];
   [right setFrame:CGRectMake(290, 2, 28, 28)];
@@ -386,7 +377,8 @@
         aSwitch.status = SWITCH_LOCAL;
       }
     } else if (msg.msgId == 0xe && aSwitch.status != SWITCH_NEW &&
-               aSwitch.status == SWITCH_UNKNOWN) {
+               (aSwitch.status == SWITCH_UNKNOWN ||
+                aSwitch.status == SWITCH_OFFLINE)) {
       if (aSwitch.isLocked) {
         aSwitch.status = SWITCH_REMOTE_LOCK;
       } else {

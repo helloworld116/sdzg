@@ -47,33 +47,41 @@
 
 - (void)sendMsg09:(GCDAsyncUdpSocket *)udpSocket sendMode:(SENDMODE)mode {
   dispatch_async(GLOBAL_QUEUE, ^{
-      if (mode == ActiveMode) {
-        self.msg9SendCount = 0;
-      } else if (mode == PassiveMode) {
-        self.msg9SendCount++;
+      if (kSharedAppliction.networkStatus == ReachableViaWiFi) {
+        if (mode == ActiveMode) {
+          self.msg9SendCount = 0;
+        } else if (mode == PassiveMode) {
+          self.msg9SendCount++;
+        }
+        self.udpSocket = udpSocket;
+        self.msg = [CC3xMessageUtil getP2dMsg09];
+        self.host = BROADCAST_ADDRESS;
+        self.port = DEVICE_PORT;
+        self.tag = P2D_SCAN_DEV_09;
+        [self send];
+      } else {
+        //不在内网的情况下的处理
       }
-      self.udpSocket = udpSocket;
-      self.msg = [CC3xMessageUtil getP2dMsg09];
-      self.host = BROADCAST_ADDRESS;
-      self.port = DEVICE_PORT;
-      self.tag = P2D_SCAN_DEV_09;
-      [self send];
   });
 }
 
 - (void)sendMsg0B:(GCDAsyncUdpSocket *)udpSocket sendMode:(SENDMODE)mode {
   dispatch_async(GLOBAL_QUEUE, ^{
-      if (mode == ActiveMode) {
-        self.msgBSendCount = 0;
-      } else if (mode == PassiveMode) {
-        self.msgBSendCount++;
+      if (kSharedAppliction.networkStatus == ReachableViaWiFi) {
+        if (mode == ActiveMode) {
+          self.msgBSendCount = 0;
+        } else if (mode == PassiveMode) {
+          self.msgBSendCount++;
+        }
+        self.udpSocket = udpSocket;
+        self.msg = [CC3xMessageUtil getP2dMsg0B];
+        self.host = BROADCAST_ADDRESS;
+        self.port = DEVICE_PORT;
+        self.tag = P2D_STATE_INQUIRY_0B;
+        [self send];
+      } else {
+        //不在内网的情况下的处理
       }
-      self.udpSocket = udpSocket;
-      self.msg = [CC3xMessageUtil getP2dMsg0B];
-      self.host = BROADCAST_ADDRESS;
-      self.port = DEVICE_PORT;
-      self.tag = P2D_STATE_INQUIRY_0B;
-      [self send];
   });
 }
 
@@ -81,22 +89,56 @@
               mac:(NSString *)mac
          sendMode:(SENDMODE)mode {
   dispatch_async(GLOBAL_QUEUE, ^{
-      if (mode == ActiveMode) {
-        //        [self.msgDSendCountDict setObject:@(0) forKey:mac];
-        self.msgDSendCount = 0;
-      } else if (mode == PassiveMode) {
-        self.msgDSendCount++;
-        //        int count = [[self.msgDSendCountDict objectForKey:mac]
-        //        intValue];
-        //        count++;
-        //        [self.msgDSendCountDict setObject:@(count) forKey:mac];
+      if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
+      } else {
+        if (mode == ActiveMode) {
+          self.msgDSendCount = 0;
+        } else if (mode == PassiveMode) {
+          self.msgDSendCount++;
+        }
+        self.udpSocket = udpSocket;
+        self.msg = [CC3xMessageUtil getP2SMsg0D:mac];
+        self.host = SERVER_IP;
+        self.port = SERVER_PORT;
+        self.tag = P2S_STATE_INQUIRY_0D;
+        [self send];
       }
-      self.udpSocket = udpSocket;
-      self.msg = [CC3xMessageUtil getP2SMsg0D:mac];
-      self.host = SERVER_IP;
-      self.port = SERVER_PORT;
-      self.tag = P2S_STATE_INQUIRY_0D;
-      [self send];
+  });
+}
+
+- (void)sendMsg0D:(GCDAsyncUdpSocket *)udpSocket
+              mac:(NSString *)mac
+         sendMode:(SENDMODE)mode
+              tag:(long)tag {
+  dispatch_async(GLOBAL_QUEUE, ^{
+      if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
+      } else {
+        if (mode == ActiveMode) {
+          [self.msgDSendCountDict setObject:@(0) forKey:mac];
+        } else if (mode == PassiveMode) {
+          int count = [[self.msgDSendCountDict objectForKey:mac] intValue];
+          count++;
+          [self.msgDSendCountDict setObject:@(count) forKey:mac];
+        }
+        self.udpSocket = udpSocket;
+        self.msg = [CC3xMessageUtil getP2SMsg0D:mac];
+        self.host = SERVER_IP;
+        self.port = SERVER_PORT;
+        self.tag = tag;
+        [self send];
+      }
   });
 }
 
@@ -372,7 +414,7 @@
     self.msg47Or49SendCount++;
   }
   self.udpSocket = udpSocket;
-  self.msg = [CC3xMessageUtil getP2dMsg47:isLock];
+  self.msg = [CC3xMessageUtil getP2dMsg47:!isLock];
   self.host = aSwitch.ip;
   self.port = aSwitch.port;
   self.tag = P2D_DEV_LOCK_REQ_47;
@@ -389,7 +431,7 @@
     self.msg47Or49SendCount++;
   }
   self.udpSocket = udpSocket;
-  self.msg = [CC3xMessageUtil getP2sMsg49:aSwitch.macAddress lock:isLock];
+  self.msg = [CC3xMessageUtil getP2sMsg49:aSwitch.macAddress lock:!isLock];
   self.host = SERVER_IP;
   self.port = SERVER_PORT;
   self.tag = P2S_DEV_LOCK_REQ_49;
@@ -499,6 +541,13 @@
         }
       } else if (kSharedAppliction.networkStatus == ReachableViaWWAN) {
         [self sendMsg0D:udpSocket aSwitch:aSwitch sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -528,6 +577,13 @@
                 aSwitch:aSwitch
              isSwitchOn:isSwitchOn
                sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -547,6 +603,13 @@
         }
       } else if (kSharedAppliction.networkStatus == ReachableViaWWAN) {
         [self sendMsg19:udpSocket aSwitch:aSwitch sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -576,6 +639,13 @@
                 aSwitch:aSwitch
                timeList:timeList
                sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -595,6 +665,13 @@
         }
       } else if (kSharedAppliction.networkStatus == ReachableViaWWAN) {
         [self sendMsg27:udpSocket aSwitch:aSwitch sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -615,6 +692,13 @@
         }
       } else if (kSharedAppliction.networkStatus == ReachableViaWWAN) {
         [self sendMsg3B:udpSocket aSwitch:aSwitch on:on sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -635,6 +719,13 @@
         }
       } else if (kSharedAppliction.networkStatus == ReachableViaWWAN) {
         [self sendMsg41:udpSocket aSwitch:aSwitch name:name sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -661,6 +752,13 @@
         }
       } else if (kSharedAppliction.networkStatus == ReachableViaWWAN) {
         [self sendMsg49:udpSocket aSwitch:aSwitch isLock:isLock sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -694,6 +792,13 @@
               delayTime:delayTime
                switchOn:on
                sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
@@ -713,6 +818,13 @@
         }
       } else if (kSharedAppliction.networkStatus == ReachableViaWWAN) {
         [self sendMsg55:udpSocket aSwitch:aSwitch sendMode:mode];
+      } else if (kSharedAppliction.networkStatus == NotReachable) {
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kNotReachableNotification
+                          object:self
+                        userInfo:@{
+                          @"NetworkStatus" : @(NotReachable)
+                        }];
       }
   });
 }
