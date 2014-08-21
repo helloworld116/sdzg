@@ -10,7 +10,7 @@
 #import "Reachability.h"
 
 @interface NetUtil ()
-@property (nonatomic, strong) Reachability *hostReach;
+@property(nonatomic, strong) Reachability *hostReach;
 @end
 
 @implementation NetUtil
@@ -52,6 +52,9 @@
       kSharedAppliction.networkStatus = NotReachable;
       break;
   }
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:kNetChangeNotification
+                    object:nil];
 }
 
 @end

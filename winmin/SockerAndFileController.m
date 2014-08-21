@@ -90,6 +90,11 @@
   //    [background_imageView release];
   //    [refreshBtn release];
   self.udpSocket = [UdpSocketUtil shareInstance].udpSocket;
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(reachabilityChange:)
+             name:kNetChangeNotification
+           object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -109,6 +114,18 @@
   [super viewWillDisappear:animated];
 }
 
+- (void)didReceiveMemoryWarning {
+  [super didReceiveMemoryWarning];
+  // Dispose of any resources that can be recreated.
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:kNetChangeNotification
+                                                object:nil];
+}
+
+#pragma mark -
 //更新设备状态
 - (void)updateSwitchStatus {
   if (self.updateTimer) {
@@ -156,18 +173,6 @@
         }
       }
   });
-}
-
-- (void)dealloc {
-  if (self.updateTimer) {
-    [self.updateTimer invalidate];
-    _updateTimer = nil;
-  }
-}
-
-- (void)didReceiveMemoryWarning {
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
 }
 
 //发送扫描信息
@@ -335,6 +340,18 @@
                                     sendMode:ActiveMode];
 }
 
+#pragma mark - 网络更改通知
+- (void)reachabilityChange:(NSNotification *)notification {
+  if (kSharedAppliction.networkStatus == NotReachable) {
+    NSArray *switchs = [self.switchDict allValues];
+    for (CC3xSwitch *aSwitch in switchs) {
+      aSwitch.status = SWITCH_UNKNOWN;
+    }
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{ [self.tableView_DL reloadData]; });
+  }
+}
+
 #pragma mark - Navigation
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier
@@ -433,19 +450,21 @@
 #pragma mark UDPDelegate
 - (void)responseMsgIdA:(CC3xMessage *)msg {
   dispatch_sync(GLOBAL_QUEUE, ^{
-      CC3xSwitch *aSwitch = [[CC3xSwitch alloc] initWithName:msg.deviceName
-                                                  macAddress:msg.mac
-                                                      status:msg.state
-                                                          ip:msg.ip
-                                                        port:msg.port
-                                                    isLocked:msg.isLocked
-                                                        isOn:msg.isOn
-                                                   timerList:msg.timerTaskList
-                                                   imageName:nil];
-      if (![self.switchDict objectForKey:aSwitch.macAddress]) {
-        aSwitch.status = SWITCH_NEW;
+      if (msg.version == 1) {
+        CC3xSwitch *aSwitch = [[CC3xSwitch alloc] initWithName:msg.deviceName
+                                                    macAddress:msg.mac
+                                                        status:msg.state
+                                                            ip:msg.ip
+                                                          port:msg.port
+                                                      isLocked:msg.isLocked
+                                                          isOn:msg.isOn
+                                                     timerList:msg.timerTaskList
+                                                     imageName:nil];
+        if (![self.switchDict objectForKey:aSwitch.macAddress]) {
+          aSwitch.status = SWITCH_NEW;
+        }
+        [self.switchDict setObject:aSwitch forKey:msg.mac];
       }
-      [self.switchDict setObject:aSwitch forKey:msg.mac];
   });
 }
 
@@ -491,6 +510,23 @@
       [[MessageUtil shareInstance] sendMsg0D:self.udpSocket
                                          mac:mac
                                     sendMode:PassiveMode];
+      if ([MessageUtil shareInstance].msgDSendCount == kTryCount - 1) {
+        for (CustomCell *cell in [tableView_DL visibleCells]) {
+          if ([cell.macAddress isEqualToString:aSwitch.macAddress]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSIndexPath *indexPath = [tableView_DL indexPathForCell:cell];
+                if (indexPath) {
+                  NSArray *indexPaths = @[ indexPath ];
+                  [tableView_DL beginUpdates];
+                  [tableView_DL
+                      reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+                  [tableView_DL endUpdates];
+                }
+            });
+          }
+        }
+      }
       //      double delayInSeconds = 0.5 * j;
       //      //外网每个延迟0.5秒发送请求
       //      dispatch_time_t delayInNanoSeconds =
@@ -504,8 +540,6 @@
       //      j++;
     }
   }
-  //  if ([MessageUtil shareInstance].msgDSendCount == kTryCount - 1) {
-  //  }
 }
 
 - (void)responseMsgId26Or28:(CC3xMessage *)msg {

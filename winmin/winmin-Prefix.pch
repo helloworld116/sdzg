@@ -50,6 +50,7 @@
 
 //通知消息字段
 #define kDelayNotification @"DelayNotification"
+#define kNetChangeNotification @"NetChangeNotification"
 //UDP过期时间,单位秒
 #define kUDPTimeOut -1
 #define kCheckPrivatePrivateResponseInterval \
@@ -59,6 +60,12 @@
 #define kTryCount 3  //请求失败后自动尝试次数
 
 #define kTemplatePicDict @{@"902" : @"icon_ac",@"904" : @"icon_light",@"906" : @"icon_stb",@"908" : @"icon_plug",@"910" : @"icon_tv",@"912" : @"icon_v",@"914" : @"icon_ir"}
+
+#ifdef DEBUG
+#   define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#else
+#   define DLog(...)
+#endif
 
 
 
