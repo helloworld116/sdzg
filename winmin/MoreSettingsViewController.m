@@ -50,9 +50,9 @@
 
   // tableView列表显示
   _tableView = [[UITableView alloc]
-      initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT -
-                                                       STATUS_HEIGHT -
-                                                       NAVIGATION_HEIGHT - 49)
+      initWithFrame:CGRectMake(
+                        0, 0, DEVICE_WIDTH,
+                        DEVICE_HEIGHT - STATUS_HEIGHT - NAVIGATION_HEIGHT - 49)
               style:UITableViewStylePlain];
   _tableView.delegate = self;
   _tableView.dataSource = self;
@@ -66,20 +66,21 @@
   cell_name_array = [[NSArray alloc]
       initWithObjects:@"添加新设备", @"按键震动", @"APP下载链接",
                       @"FAQ", @"用户手册", @"关于", nil];
-  cell_image_array = [[NSArray alloc]
-      initWithObjects:
-          [UIImage imageNamed:@"icon_add_device"],
-          //                      [UIImage imageNamed:@"icon_upload_data"],
-          //                      [UIImage imageNamed:@"icon_download_data"],
-          [UIImage imageNamed:@"icon_shake"],
-          [UIImage imageNamed:@"icon_qrcode"], [UIImage imageNamed:@"icon_faq"],
-          [UIImage imageNamed:@"icon_faq"], [UIImage imageNamed:@"icon_about"],
-          nil];
+
+  cell_image_array =
+      [[NSArray alloc] initWithObjects:[UIImage imageNamed:@"icon_add_device"],
+                                       [UIImage imageNamed:@"icon_shake"],
+                                       [UIImage imageNamed:@"icon_qrcode"],
+                                       [UIImage imageNamed:@"icon_faq"],
+                                       [UIImage imageNamed:@"icon_faq"],
+                                       [UIImage imageNamed:@"icon_about"], nil];
+  NSLog(@"name count is %d and image count is %d", cell_name_array.count,
+        cell_image_array.count);
 }
 
 #pragma mark-----------------------tableview datasource
 - (NSInteger)tableView:(UITableView *)tableView
-    numberOfRowsInSection:(NSInteger)section { // 8个cell
+    numberOfRowsInSection:(NSInteger)section {  // 8个cell
   return [cell_name_array count];
 }
 
@@ -89,7 +90,7 @@
 //}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath { // cell样式
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {  // cell样式
   static NSString *identify = @"_cell";
   UITableViewCell *cell =
       [tableView dequeueReusableCellWithIdentifier:identify];
