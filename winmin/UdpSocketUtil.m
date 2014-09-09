@@ -17,7 +17,7 @@
   if (self) {
     self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self
                                                    delegateQueue:GLOBAL_QUEUE];
-    [CC3xUtility setupUdpSocket:self.udpSocket port:APP_PORT];
+    [CC3xUtility setupUdpSocket:self.udpSocket port:0];
   }
   return self;
 }

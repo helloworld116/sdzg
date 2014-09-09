@@ -14,7 +14,13 @@
 #import "DDLog.h"
 #include <netdb.h>
 @interface AddNewDevicesViewController ()
-
+@property(strong, nonatomic) UIProgressView *progressView;
+@property(strong, nonatomic) NSTimer *timer;
+@property(strong, nonatomic) UILabel *lbl1;
+@property(strong, nonatomic) UILabel *lbl2;
+@property(strong, nonatomic) UILabel *lbl3;
+@property(strong, nonatomic) UILabel *lbl4;
+@property(strong, nonatomic) UILabel *textView;
 @end
 
 @implementation AddNewDevicesViewController
@@ -166,20 +172,25 @@
        [self.switchesDict setObject:msg
        forKey:msg.mac];*/
       NSData *msg5 = [CC3xMessageUtil getP2dMsg05];
-
       [_udpSocket sendData:msg5
                  toAddress:address
                withTimeout:-1
                        tag:P2D_SERVER_INFO_05];
 
     } else if (msg.msgId == 0x06) {
-      NSLog(@"添加成功，mac:%@,state:%d", msg.mac, msg.state);
-      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"添加成功"
-                                                      message:msg.mac
-                                                     delegate:nil
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
-      [alert show];
+      [self stopAction];
+      //      NSLog(@"添加成功，mac:%@,state:%d", msg.mac, msg.state);
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+          [self dismissConfigView];
+          UIAlertView *alert =
+              [[UIAlertView alloc] initWithTitle:@"添加成功"
+                                         message:msg.mac
+                                        delegate:nil
+                               cancelButtonTitle:@"OK"
+                               otherButtonTitles:nil];
+          [alert show];
+      });
     }
 
   } else {
@@ -288,6 +299,9 @@
 
 //开始配置,自定义actionsheet
 - (void)startConfig {
+  [textfield_wifi resignFirstResponder];
+  [textfield_password resignFirstResponder];
+
   //设置主视图，半透明，
   CGRect frame = self.view.bounds;
   _View_config = [[UIView alloc]
@@ -305,7 +319,7 @@
       initWithFrame:CGRectMake(0, 5, CGRectGetWidth(_View_config.bounds),
                                32.0)];
   label_title.backgroundColor = [UIColor clearColor];
-  label_title.font = [UIFont systemFontOfSize:17.0];
+  label_title.font = [UIFont systemFontOfSize:16.0];
   label_title.text = @"网络配置";
   label_title.textAlignment = NSTextAlignmentCenter;
   [self.View_config addSubview:label_title];
@@ -313,15 +327,17 @@
   label_title = nil;
 
   //设置完成时显示文本
-  UITextView *textView =
-      [[UITextView alloc] initWithFrame:CGRectMake(0, 7.0, 80, 20)];
+  UILabel *textView =
+      [[UILabel alloc] initWithFrame:CGRectMake(10, 7.0, 80, 20)];
   //  textView.selectable = NO;
   textView.backgroundColor = [UIColor clearColor];
   textView.text = @"  配置中";
+  textView.font = [UIFont systemFontOfSize:13.f];
+  self.textView = textView;
   [_View_config addSubview:textView];
 
   //取消按钮
-  button_cancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+  button_cancel = [UIButton buttonWithType:UIButtonTypeCustom];
   button_cancel.frame = CGRectMake(20, self.View_config.frame.size.height - 40,
                                    frame.size.width - 40, 30);
   [button_cancel
@@ -332,18 +348,20 @@
                     action:@selector(dismissConfigView)
           forControlEvents:UIControlEventTouchUpInside];
   [_View_config addSubview:button_cancel];
-  button_cancel.hidden = YES;
+  //  button_cancel.hidden = YES;
 
   UILabel *lbl1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 35, 300, 20)];
   lbl1.backgroundColor = [UIColor clearColor];
   lbl1.font = [UIFont systemFontOfSize:13.f];
   lbl1.text = @"配置结束。请检查设备黄灯状态。";
+  self.lbl1 = lbl1;
   [self.View_config addSubview:lbl1];
 
   UILabel *lbl2 = [[UILabel alloc] initWithFrame:CGRectMake(10, 55, 300, 20)];
   lbl2.backgroundColor = [UIColor clearColor];
   lbl2.font = [UIFont systemFontOfSize:13.f];
   lbl2.text = @"常亮：配置成功，请回到系统页刷新查看。";
+  self.lbl2 = lbl2;
   [self.View_config addSubview:lbl2];
 
   UILabel *lbl3 = [[UILabel alloc] initWithFrame:CGRectMake(10, 75, 300, 40)];
@@ -353,6 +371,7 @@
   lbl3.text = @"慢" @"闪" @"：" @"设"
       @"备无法配置到路由，请检查密码后重启设备并"
       @"设置。";
+  self.lbl3 = lbl3;
   [self.View_config addSubview:lbl3];
 
   UILabel *lbl4 = [[UILabel alloc] initWithFrame:CGRectMake(10, 115, 300, 20)];
@@ -360,52 +379,62 @@
   lbl4.font = [UIFont systemFontOfSize:13.f];
   lbl4.text = @"快" @"闪" @"：" @"设" @"备"
       @"未收到配置请求，请重启设备并配置" @"。";
+  self.lbl4 = lbl4;
   [self.View_config addSubview:lbl4];
   lbl1.hidden = YES;
   lbl2.hidden = YES;
   lbl3.hidden = YES;
   lbl4.hidden = YES;
 
-  //添加进度条动画
-  _hud = [[MBProgressHUD alloc] initWithView:self.View_config];
-  self.hud.frame =
-      CGRectMake(0, textView.frame.origin.y + textView.frame.size.height + 10.0,
-                 frame.size.width, CGRectGetHeight(self.hud.frame));
+  //  //添加进度条动画
+  //  _hud = [[MBProgressHUD alloc] initWithView:self.View_config];
+  //  self.hud.frame =
+  //      CGRectMake(0, textView.frame.origin.y + textView.frame.size.height +
+  //      10.0,
+  //                 frame.size.width, CGRectGetHeight(self.hud.frame));
+  //
+  //  [_View_config addSubview:self.hud];
+  //
+  //  self.hud.mode = MBProgressHUDModeDeterminateHorizontalBar;
+  //  self.hud.delegate = self;
+  //  __block UIButton *button = button_cancel;
+  //  __block UITextView *tv = textView;
+  //  __block UILabel *_lbl1 = lbl1;
+  //  __block UILabel *_lbl2 = lbl2;
+  //  __block UILabel *_lbl3 = lbl3;
+  //  __block UILabel *_lbl4 = lbl4;
+  //  [self.hud showAnimated:YES
+  //      whileExecutingBlock:^{
+  //          float progress = 0.0f;
+  //          while (progress < 1.0f) {
+  //            progress += 0.01f;
+  //            self.hud.progress = progress;
+  //            usleep(100000 * 6);
+  //          }
+  //      }
+  //      completionBlock:^{
+  //          button.hidden = NO;
+  //          [self stopAction];
+  //          [_hud removeFromSuperview];
+  //          tv.text = @"";
+  //          _lbl1.hidden = NO;
+  //          _lbl2.hidden = NO;
+  //          _lbl3.hidden = NO;
+  //          _lbl4.hidden = NO;
+  //      }];
 
-  [_View_config addSubview:self.hud];
+  self.progressView = [[UIProgressView alloc]
+      initWithProgressViewStyle:UIProgressViewStyleDefault];
+  self.progressView.transform = CGAffineTransformMakeScale(1.0f, 3.0f);
+  self.progressView.progress = 0.f;
+  self.progressView.frame = CGRectMake(20, 50, 280, 20);
+  [self.View_config addSubview:self.progressView];
+  self.timer = [NSTimer scheduledTimerWithTimeInterval:1
+                                                target:self
+                                              selector:@selector(changeProgress)
+                                              userInfo:nil
+                                               repeats:YES];
 
-  self.hud.mode = MBProgressHUDModeDeterminateHorizontalBar;
-  self.hud.delegate = self;
-  __block UIButton *button = button_cancel;
-  __block UITextView *tv = textView;
-  __block UILabel *_lbl1 = lbl1;
-  __block UILabel *_lbl2 = lbl2;
-  __block UILabel *_lbl3 = lbl3;
-  __block UILabel *_lbl4 = lbl4;
-  [self.hud showAnimated:YES
-      whileExecutingBlock:^{
-          button.hidden = YES;
-          float progress = 0.0f;
-          while (progress < 1.0f) {
-            progress += 0.01f;
-            self.hud.progress = progress;
-            usleep(100000 * 6);
-          }
-      }
-      completionBlock:^{
-          button.hidden = NO;
-          [self stopAction];
-          [_hud removeFromSuperview];
-          tv.text = @"";
-          _lbl1.hidden = NO;
-          _lbl2.hidden = NO;
-          _lbl3.hidden = NO;
-          _lbl4.hidden = NO;
-      }];
-
-  //添加主视图到window上
-  //  UIApplication *app = [UIApplication sharedApplication];
-  //  [app.keyWindow addSubview:_View_config];
   [self.view addSubview:self.View_config];
 
   //视图出现动画持续
@@ -416,8 +445,24 @@
                    animations:^{ _View_config.center = center; }];
 }
 
+- (void)changeProgress {
+  self.progressView.progress += 1.f / 60;  //默认1分钟
+  if (self.progressView.progress == 1.f) {
+    [self.timer invalidate];
+    //停止发送
+    [self stopAction];
+    self.textView.text = @"";
+    _lbl1.hidden = NO;
+    _lbl2.hidden = NO;
+    _lbl3.hidden = NO;
+    _lbl4.hidden = NO;
+    self.progressView.hidden = YES;
+  }
+}
+
 - (void)stopAction {
   LogInfo(@"%s begin", __PRETTY_FUNCTION__);
+  [self.udpSocket close];
   @try {
     [config stopTransmitting];
   }
@@ -433,6 +478,7 @@
 - (void)dismissConfigView {
   [self stopAction];
   [self.udpSocket close];
+  [self.timer invalidate];
   [self.hud removeFromSuperview];
   [bg removeFromSuperview];
 
@@ -488,33 +534,6 @@
 - (void)appEnterInBackground:(NSNotification *)notification {
 }
 
-- (void)waitForAckThread:(id)sender {
-  @try {
-    LogInfo(@"%s begin", __PRETTY_FUNCTION__);
-    Boolean val = [config waitForAck];
-    LogInfo(@"Bool value == %d", val);
-    if (val) {
-      [self stopAction];
-      [self performSelectorOnMainThread:@selector(stopAction)
-                             withObject:nil
-                          waitUntilDone:YES];
-    }
-  }
-  @catch (NSException *exception) {
-    LogInfo(@"%s exception == %@", __FUNCTION__, [exception description]);
-    /// stop here
-  }
-  @finally {
-  }
-
-  if ([NSThread isMainThread] == NO) {
-    LogInfo(@"这不是主线程");
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-  } else {
-    LogInfo(@"这是主线程");
-  }
-  LogInfo(@"%s end", __PRETTY_FUNCTION__);
-}
 //取消按钮
 - (void)back {
   //取消按钮从视图中移除、释放
