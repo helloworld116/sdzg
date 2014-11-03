@@ -63,16 +63,16 @@
   _tableView.opaque = 0.8;
   //给定固定cell名和图标，存在数组中
   //    , @"导出数据", @"导入数据"
-  cell_name_array = [[NSArray alloc]
-      initWithObjects:@"添加新设备", @"按键震动", @"APP下载链接",
-                      @"FAQ", @"用户手册", @"关于", nil];
+
+  cell_name_array =
+      [[NSArray alloc] initWithObjects:@"添加新设备", @"按键震动",
+                                       @"FAQ", @"用户手册", @"关于", nil];
   cell_image_array = [[NSArray alloc]
       initWithObjects:
           [UIImage imageNamed:@"icon_add_device"],
           //                      [UIImage imageNamed:@"icon_upload_data"],
           //                      [UIImage imageNamed:@"icon_download_data"],
-          [UIImage imageNamed:@"icon_shake"],
-          [UIImage imageNamed:@"icon_qrcode"], [UIImage imageNamed:@"icon_faq"],
+          [UIImage imageNamed:@"icon_shake"], [UIImage imageNamed:@"icon_faq"],
           [UIImage imageNamed:@"icon_faq"], [UIImage imageNamed:@"icon_about"],
           nil];
 }
@@ -196,26 +196,26 @@
   if (row == 1) {
   }
   // APP下载链接
-  if (row == 2) {
-    APPQrcodeViewController *qrcodeVC = [kSharedAppliction.mainStoryboard
-        instantiateViewControllerWithIdentifier:@"APPQrcodeViewController"];
-    qrcodeVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:qrcodeVC animated:YES];
-  }
+  //  if (row == 2) {
+  //    APPQrcodeViewController *qrcodeVC = [kSharedAppliction.mainStoryboard
+  //        instantiateViewControllerWithIdentifier:@"APPQrcodeViewController"];
+  //    qrcodeVC.hidesBottomBarWhenPushed = YES;
+  //    [self.navigationController pushViewController:qrcodeVC animated:YES];
+  //  }
   // FAQ
-  if (row == 3) {
+  if (row == 2) {
     FAQViewController *faq = [[FAQViewController alloc] init];
     faq.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:faq animated:YES];
   }
   //用户手册
-  if (row == 4) {
+  if (row == 3) {
     USERSBookViewController *use = [[USERSBookViewController alloc] init];
     use.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:use animated:YES];
   }
   //关于我们
-  if (row == 5) {
+  if (row == 4) {
     AboutViewController *aboutVC = [kSharedAppliction.mainStoryboard
         instantiateViewControllerWithIdentifier:@"AboutViewController"];
     aboutVC.hidesBottomBarWhenPushed = YES;
