@@ -127,8 +127,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "224"
             endingLineNumber = "224"
-            landmarkName = "@implementation MoreSettingsViewController"
-            landmarkType = "3">
+            landmarkName = "-tableView:didSelectRowAtIndexPath:"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -185,13 +185,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "winmin/SockerAndFileController.m"
-            timestampString = "430296236.899992"
+            filePath = "winmin/MessageUtil.m"
+            timestampString = "431945235.396932"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "498"
-            endingLineNumber = "498"
-            landmarkName = "-responseMsgIdE:"
+            startingLineNumber = "570"
+            endingLineNumber = "570"
+            landmarkName = "-sendMsg11Or13:aSwitch:isSwitchOn:sendMode:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

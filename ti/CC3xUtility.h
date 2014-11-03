@@ -25,8 +25,9 @@
 #ifdef DEBUG
 #define SERVER_IP @"192.168.0.89"
 #else
-#define SERVER_IP @"server.itouchco.com"
+#define SERVER_IP @"183.63.35.203"
 #endif
+
 //"183.63.35.203:18080"
 // 115.28.178.252
 #define SERVER_PORT 20001

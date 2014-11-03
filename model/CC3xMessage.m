@@ -486,7 +486,7 @@ typedef struct {
   memcpy(msg.ip, bytes, sizeof(msg.ip));
   free(bytes);
   const char *defaultName = [DEFAULT_NAME UTF8String];
-  msg.port = SERVER_PORT;
+  msg.port = htons(SERVER_PORT);
   memset(msg.deviceName, 0, 32);
   memcpy(msg.deviceName, defaultName, strlen(defaultName));
 

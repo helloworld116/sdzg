@@ -100,6 +100,8 @@
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [UdpSocketUtil shareInstance].delegate = self;
+
+  [self refreshViewControl:nil];
   //查询开关状态
   [self updateSwitchStatus];
 }
