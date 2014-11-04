@@ -11,7 +11,7 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</key>
-		<string>https://github.com/helloworld116/sdzg.git</string>
+		<string>svn://192.168.0.89/data/svn/ais</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>winmin.xcodeproj</string>
@@ -20,8 +20,13 @@
 		<key>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</key>
 		<string>../..</string>
 	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</key>
+		<string>svn://192.168.0.89/data/svn/ais</string>
+	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/helloworld116/sdzg.git</string>
+	<string>svn://192.168.0.89/data/svn/ais/trunk/ios/winmin/winmin.xcodeproj</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
@@ -30,11 +35,19 @@
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</string>
+			<key>IDESourceControlWCCName</key>
+			<string>winmin</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</string>
 			<key>IDESourceControlWCCName</key>
-			<string>sdzg</string>
+			<string>winmin</string>
 		</dict>
 	</array>
 </dict>
