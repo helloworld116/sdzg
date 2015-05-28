@@ -13,20 +13,20 @@
 
 #define B2D(bytes) ([NSData dataWithBytes:&bytes length:sizeof(bytes)]);
 
-#define int2charArray(array, value)    \
-  do {                                 \
-    array[0] = ((value >> 24) & 0xff); \
-    array[1] = ((value >> 16) & 0xff); \
-    array[2] = ((value >> 8) & 0xff);  \
-    array[3] = ((value >> 0) & 0xff);  \
+#define int2charArray(array, value)                                            \
+  do {                                                                         \
+    array[0] = ((value >> 24) & 0xff);                                         \
+    array[1] = ((value >> 16) & 0xff);                                         \
+    array[2] = ((value >> 8) & 0xff);                                          \
+    array[3] = ((value >> 0) & 0xff);                                          \
   } while (0);
 
-#define charArray2int(array, value) \
-  do {                              \
-    value += array[0] << 24;        \
-    value += array[1] << 16;        \
-    value += array[2] << 8;         \
-    value += array[3] << 0;         \
+#define charArray2int(array, value)                                            \
+  do {                                                                         \
+    value += array[0] << 24;                                                   \
+    value += array[1] << 16;                                                   \
+    value += array[2] << 8;                                                    \
+    value += array[3] << 0;                                                    \
   } while (0);
 
 @implementation CC3xMessageUtil
@@ -107,9 +107,9 @@ typedef struct {
   unsigned short pm;
   unsigned char temperatureHigh;
   unsigned char temperatureLow;
-  unsigned char humidity;  //湿度
+  unsigned char humidity; //湿度
   unsigned short power;
-  unsigned char airTag;  //空气质量代号
+  unsigned char airTag; //空气质量代号
   unsigned short crc;
 } d2pMsg0C;
 
@@ -989,7 +989,9 @@ typedef struct {
     }
     message.humidity = msg.humidity;
     unsigned short power = (msg.power >> 8 | msg.power << 8);
-    message.power = power == 0 ? 0.f : 53035.5f / power;
+    float p = (power == 0 ? 0.f : 46246.9f / power);
+    float diff = p - 2.7;
+    message.power = (diff > 0 ? diff : 0.f);
     message.airTag = msg.airTag;
   }
   message.crc = msg.crc;
@@ -1093,7 +1095,7 @@ typedef struct {
                                            msg.mac[3], msg.mac[4], msg.mac[5]];
   //高低字节互换了
   message.delay =
-      msg.delay / 256;  //这个地方不知道什么原因导致左移两位，放大了256倍
+      msg.delay / 256; //这个地方不知道什么原因导致左移两位，放大了256倍
   message.isOn = msg.on;
   message.crc = msg.crc;
   return message;
@@ -1201,7 +1203,7 @@ typedef struct {
 + (Byte *)mac2HexBytes:(NSString *)mac {
   NSArray *macArray = [mac componentsSeparatedByString:@":"];
   Byte *bytes = malloc(macArray.count);
-  char byte_char[3] = {'\0', '\0', '\0'};
+  char byte_char[3] = { '\0', '\0', '\0' };
   for (int i = 0; i < macArray.count; i++) {
     NSString *str = macArray[i];
     byte_char[0] = [str characterAtIndex:0];

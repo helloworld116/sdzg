@@ -40,7 +40,7 @@
 
 #define BIND_PORT 43710
 
-#define REFRESH_DEV_TIME 15
+#define REFRESH_DEV_TIME 5
 
 #define DEFAULT_NAME NSLocalizedString(@"Smart switch", nil)
 #define DEFAULT_IMAGENAME @"icon_plug"
@@ -49,34 +49,34 @@
 
 #define kShake @"SHAKE_KEY"
 
-#define GLOBAL_QUEUE \
+#define GLOBAL_QUEUE                                                           \
   dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
 
 // Log
 #define LogAsync NO
 #define LogContext 65535
 
-#define LogObjc(flg, frmt, ...) \
+#define LogObjc(flg, frmt, ...)                                                \
   LOG_OBJC_MAYBE(LogAsync, logLevel, flg, LogContext, frmt, ##__VA_ARGS__)
-#define LogC(flg, frmt, ...) \
+#define LogC(flg, frmt, ...)                                                   \
   LOG_C_MAYBE(LogAsync, logLevel, flg, LogContext, frmt, ##__VA_ARGS__)
 
-#define LogError(frmt, ...) \
+#define LogError(frmt, ...)                                                    \
   LogObjc(LOG_FLAG_ERROR, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
-#define LogWarn(frmt, ...) \
+#define LogWarn(frmt, ...)                                                     \
   LogObjc(LOG_FLAG_WARN, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
-#define LogInfo(frmt, ...) \
+#define LogInfo(frmt, ...)                                                     \
   LogObjc(LOG_FLAG_INFO, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
-#define LogVerbose(frmt, ...) \
+#define LogVerbose(frmt, ...)                                                  \
   LogObjc(LOG_FLAG_VERBOSE, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 
-#define LogCError(frmt, ...) \
+#define LogCError(frmt, ...)                                                   \
   LogC(LOG_FLAG_ERROR, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
-#define LogCWarn(frmt, ...) \
+#define LogCWarn(frmt, ...)                                                    \
   LogC(LOG_FLAG_WARN, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
-#define LogCInfo(frmt, ...) \
+#define LogCInfo(frmt, ...)                                                    \
   LogC(LOG_FLAG_INFO, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
-#define LogCVerbose(frmt, ...) \
+#define LogCVerbose(frmt, ...)                                                 \
   LogC(LOG_FLAG_VERBOSE, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 
 #define LogTrace() LogObjc(LOG_FLAG_VERBOSE, @"%@: %@", THIS_FILE, THIS_METHOD)

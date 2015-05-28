@@ -20,13 +20,8 @@
 		<key>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</key>
 		<string>../..</string>
 	</dict>
-	<key>IDESourceControlProjectRepositoryRootDictionary</key>
-	<dict>
-		<key>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</key>
-		<string>svn://192.168.0.89/data/svn/ais</string>
-	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>svn://192.168.0.89/data/svn/ais/trunk/ios/winmin/winmin.xcodeproj</string>
+	<string>svn://192.168.0.89/data/svn/ais</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
@@ -35,7 +30,7 @@
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.subversion</string>
+			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</string>
 			<key>IDESourceControlWCCName</key>
@@ -43,7 +38,7 @@
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
+			<string>public.vcs.subversion</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>0CB310DFDEF86A507CE975D90F43E8F6C77C8540</string>
 			<key>IDESourceControlWCCName</key>
